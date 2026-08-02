@@ -1,10 +1,12 @@
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Write};
 use std::path::Path;
+use std::process::Command; // 🛠️ Módulo nativo para executar comandos no SO
 
 const START_MARKER: &str = "# --- NOSTAK BLOCK START ---";
 const END_MARKER: &str = "# --- NOSTAK BLOCK END ---";
 
+/// Retorna o caminho do arquivo 'hosts' de acordo com o Sistema Operacional
 pub fn get_hosts_path() -> &'static str {
     if cfg!(target_os = "windows") {
         r"C:\Windows\System32\drivers\etc\hosts"
@@ -13,6 +15,25 @@ pub fn get_hosts_path() -> &'static str {
     }
 }
 
+/// Limpa o cache de DNS do sistema operacional para garantir que os bloqueios
+/// entrem em vigor instantaneamente em qualquer navegador ou aplicação.
+pub fn flush_dns_cache() {
+    if cfg!(target_os = "windows") {
+        // No Windows: ipconfig /flushdns
+        let _ = Command::new("ipconfig").arg("/flushdns").output();
+    } else if cfg!(target_os = "macos") {
+        // No macOS: limpa a dscacheutil e reinicia o serviço mDNSResponder
+        let _ = Command::new("dscacheutil").arg("-flushcache").output();
+        let _ = Command::new("killall")
+            .args(["-HUP", "mDNSResponder"])
+            .output();
+    } else if cfg!(target_os = "linux") {
+        // No Linux (distros modernas com systemd-resolved, como Linux Mint e Ubuntu)
+        let _ = Command::new("resolvectl").arg("flush-caches").output();
+    }
+}
+
+/// Cria um backup do arquivo hosts original antes de qualquer alteração
 pub fn create_backup() -> io::Result<()> {
     let hosts_path = get_hosts_path();
     let backup_path = format!("{}.nostak.bak", hosts_path);
@@ -24,9 +45,13 @@ pub fn create_backup() -> io::Result<()> {
     Ok(())
 }
 
+/// Adiciona uma lista de sites ao arquivo hosts apontando para 127.0.0.1
 pub fn block_domains(domains: &[&str]) -> io::Result<()> {
     create_backup()?;
+
     let hosts_path = get_hosts_path();
+
+    // Limpa bloqueios anteriores do Nostak se existirem
     unblock_domains()?;
 
     let mut content = String::new();
@@ -47,10 +72,14 @@ pub fn block_domains(domains: &[&str]) -> io::Result<()> {
     let mut file = OpenOptions::new().append(true).open(hosts_path)?;
     file.write_all(new_block.as_bytes())?;
 
-    println!("[Nostak] Domínios bloqueados com sucesso!");
+    // 🚀 Limpa o cache de DNS para que o bloqueio seja instantâneo
+    flush_dns_cache();
+
+    println!("[Nostak] Domínios bloqueados e cache de DNS limpo!");
     Ok(())
 }
 
+/// Remove o bloco de domínios bloqueados pelo Nostak do arquivo hosts
 pub fn unblock_domains() -> io::Result<()> {
     let hosts_path = get_hosts_path();
     let mut content = String::new();
@@ -81,6 +110,9 @@ pub fn unblock_domains() -> io::Result<()> {
     let new_content = filtered_lines.join("\n") + "\n";
     fs::write(hosts_path, new_content)?;
 
-    println!("[Nostak] Domínios desbloqueados com sucesso!");
+    // 🚀 Limpa o cache de DNS para que o desbloqueio seja instantâneo
+    flush_dns_cache();
+
+    println!("[Nostak] Domínios desbloqueados e cache de DNS limpo!");
     Ok(())
 }
