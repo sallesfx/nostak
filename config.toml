@@ -1,0 +1,29 @@
+tempo_foco_minutos = 25
+tempo_pausa_minutos = 5
+categorias_ativas = [
+    "redes_sociais",
+    "streaming_e_videos",
+]
+sites_personalizados = []
+
+[categorias]
+redes_sociais = [
+    "instagram.com",
+    "x.com",
+    "twitter.com",
+    "tiktok.com",
+    "facebook.com",
+    "reddit.com",
+]
+noticias_e_portais = [
+    "g1.globo.com",
+    "uol.com.br",
+    "ge.globo.com",
+    "cnnbrasil.com.br",
+]
+streaming_e_videos = [
+    "youtube.com",
+    "netflix.com",
+    "twitch.tv",
+    "primevideo.com",
+]
