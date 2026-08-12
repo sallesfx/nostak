@@ -1,6 +1,6 @@
 use std::collections::HashSet;
-use std::fs::{self, File, OpenOptions};
-use std::io::{self, Read, Write};
+use std::fs;
+use std::io;
 use std::path::Path;
 use std::process::Command; // 🛠️ Módulo nativo para executar comandos no SO
 
@@ -55,14 +55,51 @@ pub fn flush_dns_cache() {
     }
 }
 
+/// Tenta escrever o conteúdo no arquivo hosts; se falhar por permissão, tenta elevação via pkexec no Linux
+fn write_hosts_file(new_content: &str) -> io::Result<()> {
+    let hosts_path = get_hosts_path();
+
+    // Tenta escrita direta (caso o app esteja com permissão de escrita)
+    match fs::write(hosts_path, new_content) {
+        Ok(_) => Ok(()),
+        Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {
+            if cfg!(target_os = "linux") {
+                let temp_path = "/tmp/nostak_hosts_temp";
+                fs::write(temp_path, new_content)?;
+
+                let status = Command::new("pkexec")
+                    .args(["cp", temp_path, hosts_path])
+                    .status();
+
+                let _ = fs::remove_file(temp_path);
+
+                match status {
+                    Ok(s) if s.success() => Ok(()),
+                    _ => Err(io::Error::new(
+                        io::ErrorKind::PermissionDenied,
+                        "Permissão negada. É necessário autorizar o acesso de administrador para alterar o arquivo hosts.",
+                    )),
+                }
+            } else {
+                Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    "Permissão negada. Execute o aplicativo como Administrador para alterar o arquivo hosts.",
+                ))
+            }
+        }
+        Err(e) => Err(e),
+    }
+}
+
 /// Cria um backup do arquivo hosts original antes de qualquer alteração
 pub fn create_backup() -> io::Result<()> {
     let hosts_path = get_hosts_path();
     let backup_path = format!("{}.nostak.bak", hosts_path);
 
     if !Path::new(&backup_path).exists() {
-        fs::copy(hosts_path, &backup_path)?;
-        println!("[Nostak] Backup do arquivo hosts criado em: {}", backup_path);
+        if let Ok(content) = fs::read_to_string(hosts_path) {
+            let _ = fs::write(&backup_path, content);
+        }
     }
     Ok(())
 }
@@ -72,9 +109,24 @@ pub fn block_domains(domains: &[&str]) -> io::Result<()> {
     create_backup()?;
 
     let hosts_path = get_hosts_path();
+    let raw_content = fs::read_to_string(hosts_path).unwrap_or_default();
 
-    // Limpa bloqueios anteriores do Nostak se existirem
-    unblock_domains()?;
+    // Remove qualquer bloco anterior do Nostak para evitar duplicatas
+    let mut base_lines = Vec::new();
+    let mut inside_block = false;
+    for line in raw_content.lines() {
+        if line.trim() == START_MARKER {
+            inside_block = true;
+            continue;
+        }
+        if line.trim() == END_MARKER {
+            inside_block = false;
+            continue;
+        }
+        if !inside_block {
+            base_lines.push(line);
+        }
+    }
 
     let mut domain_set = HashSet::new();
     for domain in domains {
@@ -86,18 +138,20 @@ pub fn block_domains(domains: &[&str]) -> io::Result<()> {
     }
 
     let mut new_block = String::new();
-    new_block.push_str(&format!("\n{}\n", START_MARKER));
-
+    new_block.push_str(&format!("{}\n", START_MARKER));
     for domain in domain_set {
         new_block.push_str(&format!("127.0.0.1 {}\n", domain));
     }
+    new_block.push_str(END_MARKER);
 
-    new_block.push_str(&format!("{}\n", END_MARKER));
+    let mut full_text = base_lines.join("\n");
+    if !full_text.ends_with('\n') {
+        full_text.push('\n');
+    }
+    full_text.push_str(&new_block);
+    full_text.push('\n');
 
-    let mut file = OpenOptions::new().append(true).open(hosts_path)?;
-    file.write_all(new_block.as_bytes())?;
-
-    // 🚀 Limpa o cache de DNS para que o bloqueio seja instantâneo
+    write_hosts_file(&full_text)?;
     flush_dns_cache();
 
     println!("[Nostak] Domínios bloqueados e cache de DNS limpo!");
@@ -107,9 +161,10 @@ pub fn block_domains(domains: &[&str]) -> io::Result<()> {
 /// Remove o bloco de domínios bloqueados pelo Nostak do arquivo hosts
 pub fn unblock_domains() -> io::Result<()> {
     let hosts_path = get_hosts_path();
-    let mut content = String::new();
-
-    File::open(hosts_path)?.read_to_string(&mut content)?;
+    let content = match fs::read_to_string(hosts_path) {
+        Ok(c) => c,
+        Err(_) => return Ok(()),
+    };
 
     if !content.contains(START_MARKER) {
         return Ok(());
@@ -133,9 +188,7 @@ pub fn unblock_domains() -> io::Result<()> {
     }
 
     let new_content = filtered_lines.join("\n") + "\n";
-    fs::write(hosts_path, new_content)?;
-
-    // 🚀 Limpa o cache de DNS para que o desbloqueio seja instantâneo
+    write_hosts_file(&new_content)?;
     flush_dns_cache();
 
     println!("[Nostak] Domínios desbloqueados e cache de DNS limpo!");

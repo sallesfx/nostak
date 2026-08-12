@@ -3,12 +3,14 @@ let secondsRemaining = 1500; // 25:00
 
 // Helper seguro para chamadas Tauri IPC
 async function invokeTauri(cmd, args = {}) {
-    if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
-        return await window.__TAURI__.core.invoke(cmd, args);
-    } else {
-        console.warn(`[Nostak Simulation] Tauri IPC não detectado. Executando ${cmd}`, args);
-        return `[Simulado] Comando ${cmd} executado.`;
+    if (window.__TAURI__) {
+        const invokeFn = window.__TAURI__.core?.invoke || window.__TAURI__.invoke;
+        if (typeof invokeFn === 'function') {
+            return await invokeFn(cmd, args);
+        }
     }
+    console.warn(`[Nostak Simulation] Tauri IPC não detectado. Executando ${cmd}`, args);
+    return `[Simulado] Comando ${cmd} executado.`;
 }
 
 function formatTime(seconds) {
