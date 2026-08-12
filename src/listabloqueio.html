@@ -121,9 +121,9 @@
     </div>
     <div class="flex items-center gap-6">
         <div class="hidden md:flex gap-8">
-            <a class="text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm px-2 py-1" href="#">Jornada</a>
-            <a class="text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm px-2 py-1" href="#">Temporizador</a>
-            <a class="text-primary font-bold font-label-sm text-label-sm px-2 py-1 border-b-2 border-primary" href="#">Lista de Bloqueio</a>
+            <a class="text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm px-2 py-1" href="jornada.html">Jornada</a>
+            <a class="text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm px-2 py-1" href="index.html">Temporizador</a>
+            <a class="text-primary font-bold font-label-sm text-label-sm px-2 py-1 border-b-2 border-primary" href="listabloqueio.html">Lista de Bloqueio</a>
             <a class="text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm px-2 py-1" href="#">Diário</a>
         </div>
         <div class="flex items-center gap-4">
@@ -141,15 +141,15 @@
             <p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Navegando pelo Foco Profundo</p>
         </div>
         <nav class="flex flex-col gap-2">
-            <a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+            <a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="jornada.html">
                 <span class="material-symbols-outlined">route</span>
                 <span class="font-label-sm text-label-sm">Jornada</span>
             </a>
-            <a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+            <a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="index.html">
                 <span class="material-symbols-outlined">timer</span>
                 <span class="font-label-sm text-label-sm">Temporizador</span>
             </a>
-            <a class="flex items-center gap-4 p-3 text-primary border-l-2 border-primary bg-surface-container-high transition-colors" href="#">
+            <a class="flex items-center gap-4 p-3 text-primary border-l-2 border-primary bg-surface-container-high transition-colors" href="listabloqueio.html">
                 <span class="material-symbols-outlined">block</span>
                 <span class="font-label-sm text-label-sm">Lista de Bloqueio</span>
             </a>
@@ -299,22 +299,22 @@
 </div>
 <!-- BottomNavBar (Mobile Only) -->
 <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container border-t border-outline-variant flex justify-around py-3 z-50">
-    <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="jornada.html">
         <span class="material-symbols-outlined">route</span>
         <span class="font-label-sm text-[10px]">Jornada</span>
-    </button>
-    <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+    </a>
+    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="index.html">
         <span class="material-symbols-outlined">timer</span>
         <span class="font-label-sm text-[10px]">Temporizador</span>
-    </button>
-    <button class="flex flex-col items-center gap-1 text-primary">
+    </a>
+    <a class="flex flex-col items-center gap-1 text-primary" href="listabloqueio.html">
         <span class="material-symbols-outlined">block</span>
         <span class="font-label-sm text-[10px]">Bloqueio</span>
-    </button>
-    <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+    </a>
+    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
         <span class="material-symbols-outlined">book</span>
         <span class="font-label-sm text-[10px]">Diário</span>
-    </button>
+    </a>
 </nav>
 <script>
     // Interaction for toggle switches

@@ -6,7 +6,15 @@ use tauri::command;
 
 #[command]
 fn zarpar_jornada(sites: Vec<String>) -> Result<String, String> {
-    let sites_ref: Vec<&str> = sites.iter().map(|s| s.as_str()).collect();
+    let sites_para_bloquear = if sites.is_empty() {
+        let config = config::Config::load_or_create()
+            .map_err(|e| format!("Falha ao carregar configurações: {}", e))?;
+        config.get_all_blocked_sites()
+    } else {
+        sites
+    };
+
+    let sites_ref: Vec<&str> = sites_para_bloquear.iter().map(|s| s.as_str()).collect();
 
     // Executa apenas o bloqueador de hosts
     hosts_manager::block_domains(&sites_ref)
@@ -21,6 +29,12 @@ fn ancorar_porto_seguro() -> Result<String, String> {
         .map_err(|e| format!("Falha ao baixar âncora: {}", e))?;
 
     Ok("Navio ancorado em Porto Seguro. Bloqueios removidos.".into())
+}
+
+#[command]
+fn obter_configuracoes() -> Result<config::Config, String> {
+    config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -38,7 +52,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             zarpar_jornada,
-            ancorar_porto_seguro
+            ancorar_porto_seguro,
+            obter_configuracoes
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao executar a aplicação Tauri");

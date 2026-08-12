@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Write};
 use std::path::Path;
@@ -5,6 +6,27 @@ use std::process::Command; // 🛠️ Módulo nativo para executar comandos no S
 
 const START_MARKER: &str = "# --- NOSTAK BLOCK START ---";
 const END_MARKER: &str = "# --- NOSTAK BLOCK END ---";
+
+/// Sanitiza e normaliza um domínio retornando uma tupla (raiz, www)
+fn normalize_domain(domain: &str) -> (String, String) {
+    let clean = domain
+        .trim()
+        .trim_start_matches("http://")
+        .trim_start_matches("https://")
+        .split('/')
+        .next()
+        .unwrap_or("")
+        .to_lowercase();
+
+    let root = if clean.starts_with("www.") {
+        clean[4..].to_string()
+    } else {
+        clean
+    };
+
+    let www = format!("www.{}", root);
+    (root, www)
+}
 
 /// Retorna o caminho do arquivo 'hosts' de acordo com o Sistema Operacional
 pub fn get_hosts_path() -> &'static str {
@@ -54,17 +76,20 @@ pub fn block_domains(domains: &[&str]) -> io::Result<()> {
     // Limpa bloqueios anteriores do Nostak se existirem
     unblock_domains()?;
 
-    let mut content = String::new();
-    File::open(hosts_path)?.read_to_string(&mut content)?;
+    let mut domain_set = HashSet::new();
+    for domain in domains {
+        let (root, www) = normalize_domain(domain);
+        if !root.is_empty() {
+            domain_set.insert(root);
+            domain_set.insert(www);
+        }
+    }
 
     let mut new_block = String::new();
     new_block.push_str(&format!("\n{}\n", START_MARKER));
 
-    for domain in domains {
+    for domain in domain_set {
         new_block.push_str(&format!("127.0.0.1 {}\n", domain));
-        if !domain.starts_with("www.") {
-            new_block.push_str(&format!("127.0.0.1 www.{}\n", domain));
-        }
     }
 
     new_block.push_str(&format!("{}\n", END_MARKER));

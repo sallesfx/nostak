@@ -143,13 +143,13 @@
             <p class="text-on-surface-variant px-4 font-label-md text-label-md">Navegando pelo Foco Profundo</p>
         </div>
         <nav class="flex-grow flex flex-col gap-1">
-            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md" href="#">
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md" href="jornada.html">
                 <span class="material-symbols-outlined">route</span> Jornada
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-primary border-l-2 border-primary bg-surface-container-high transition-colors font-label-md text-label-md" href="#">
+            <a class="flex items-center gap-3 px-4 py-3 text-primary border-l-2 border-primary bg-surface-container-high transition-colors font-label-md text-label-md" href="index.html">
                 <span class="material-symbols-outlined">timer</span> Temporizador
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md" href="#">
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md" href="listabloqueio.html">
                 <span class="material-symbols-outlined">block</span> Lista de Bloqueio
             </a>
             <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md" href="#">
@@ -388,81 +388,25 @@
 </div>
 <!-- Mobile BottomNavBar -->
 <nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container border-t border-outline-variant flex justify-around py-3 px-2 z-50">
-    <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="jornada.html">
         <span class="material-symbols-outlined">route</span>
         <span class="text-[10px] font-label-md">Jornada</span>
-    </button>
-    <button class="flex flex-col items-center gap-1 text-primary">
+    </a>
+    <a class="flex flex-col items-center gap-1 text-primary" href="index.html">
         <span class="material-symbols-outlined">timer</span>
         <span class="text-[10px] font-label-md">Temporizador</span>
-    </button>
-    <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+    </a>
+    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="listabloqueio.html">
         <span class="material-symbols-outlined">block</span>
         <span class="text-[10px] font-label-md">Bloqueio</span>
-    </button>
-    <button class="flex flex-col items-center gap-1 text-on-surface-variant">
+    </a>
+    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
         <span class="material-symbols-outlined">book</span>
         <span class="text-[10px] font-label-md">Diário</span>
-    </button>
+    </a>
 </nav>
 <script>
-    const container = document.getElementById('timer-container');
-    const badge = document.getElementById('status-badge');
-    const activeDisplay = document.getElementById('timer-display-active');
-
-    let timerInterval;
-    let secondsRemaining = 1500; // 25:00
-
-    function updateTimerUI() {
-        const mins = Math.floor(secondsRemaining / 60);
-        const secs = secondsRemaining % 60;
-        const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        if(activeDisplay) activeDisplay.textContent = timeStr;
-    }
-
-    function startVoyage() {
-        container.className = 'state-active bg-surface-container-low border border-outline-variant flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
-        badge.textContent = 'Sessão Ativa';
-        badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2 py-1 border border-primary bg-surface-container-low/80 backdrop-blur-sm';
-
-        if (!timerInterval) {
-            timerInterval = setInterval(() => {
-                if (secondsRemaining > 0) {
-                    secondsRemaining--;
-                    updateTimerUI();
-                } else {
-                    clearInterval(timerInterval);
-                    timerInterval = null;
-                }
-            }, 1000);
-        }
-    }
-
-    function pauseVoyage() {
-        container.className = 'state-paused bg-surface-container-low border border-outline-variant flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
-        badge.textContent = 'Porto Seguro';
-        badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2 py-1 border border-primary bg-surface-container-low/80 backdrop-blur-sm';
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
-
-    function failVoyage() {
-        container.className = 'state-failed bg-surface-container-low border border-outline-variant flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
-        badge.textContent = 'Interrompido';
-        badge.className = 'font-label-md text-label-md text-error uppercase tracking-widest px-2 py-1 border border-error bg-surface-container-low/80 backdrop-blur-sm';
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
-
-    function resetVoyage() {
-        secondsRemaining = 1500;
-        updateTimerUI();
-        container.className = 'state-idle bg-surface-container-low border border-outline-variant flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
-        badge.textContent = 'Aguardando';
-        badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2 py-1 border border-primary bg-surface-container-low/80 backdrop-blur-sm';
-    }
-
-    // Mock interaction for checklist
+    // Interatividade da checklist de tarefas
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('change', (e) => {
             const span = e.target.nextElementSibling;
