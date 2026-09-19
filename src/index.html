@@ -38,7 +38,19 @@
                             <div
                                 class="mb-2 text-on-surface-variant font-label-md text-label-md uppercase tracking-[0.2em]">
                                 Foco Ininterrupto</div>
-                            <div class="font-display-lg text-display-lg text-primary mb-12 tabular-nums">25:00</div>
+                            <div id="timer-display-idle" class="font-display-lg text-display-lg text-primary mb-6 tabular-nums">25:00</div>
+                            <!-- Presets Náuticos -->
+                            <div class="flex items-center gap-2 mb-10">
+                                <button class="btn-preset px-4 py-1.5 border border-primary bg-primary/10 text-primary text-xs font-label-md transition-all font-bold" data-foco="25" data-pausa="5">
+                                    25m / 5m
+                                </button>
+                                <button class="btn-preset px-4 py-1.5 border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all" data-foco="45" data-pausa="10">
+                                    45m / 10m
+                                </button>
+                                <button class="btn-preset px-4 py-1.5 border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all" data-foco="60" data-pausa="15">
+                                    60m / 15m
+                                </button>
+                            </div>
                             <div class="flex gap-4">
                                 <button
                                     class="bg-primary text-on-primary px-12 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-primary-fixed-dim transition-colors"
@@ -129,15 +141,24 @@
                             </div>
                             <div class="relative z-20 flex flex-col items-center pt-24">
                                 <div
+                                    id="paused-phase-title"
                                     class="mb-2 text-on-surface-variant font-label-md text-label-md uppercase tracking-[0.2em]">
                                     Ancorado em Porto Seguro</div>
-                                <div class="font-display-lg text-display-lg text-primary mb-8 tabular-nums opacity-60">
+                                <div id="timer-display-paused" class="font-display-lg text-display-lg text-primary mb-8 tabular-nums opacity-60">
                                     Pausado</div>
-                                <button
-                                    class="bg-primary text-on-primary px-12 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-primary-fixed-dim transition-colors"
-                                    onclick="startVoyage()">
-                                    Retomar Viagem
-                                </button>
+                                <div class="flex gap-4">
+                                    <button
+                                        id="btn-resume-voyage"
+                                        class="bg-primary text-on-primary px-12 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-primary-fixed-dim transition-colors"
+                                        onclick="startVoyage()">
+                                        Retomar Viagem
+                                    </button>
+                                    <button
+                                        class="border border-outline text-on-surface px-8 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-surface-variant transition-colors"
+                                        onclick="resetVoyage()">
+                                        Encerrar
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <!-- 4. Interrupted State (ANIMATION_17) -->

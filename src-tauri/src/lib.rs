@@ -67,6 +67,16 @@ fn remover_sereia(site: String) -> Result<config::Config, String> {
     Ok(config)
 }
 
+#[command]
+fn atualizar_tempos(tempo_foco_minutos: u64, tempo_pausa_minutos: u64) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.atualizar_tempos(tempo_foco_minutos, tempo_pausa_minutos);
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -86,7 +96,8 @@ pub fn run() {
             obter_configuracoes,
             alternar_categoria,
             adicionar_sereia,
-            remover_sereia
+            remover_sereia,
+            atualizar_tempos
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao executar a aplicação Tauri");
