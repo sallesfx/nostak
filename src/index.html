@@ -38,13 +38,83 @@
                             <div
                                 class="mb-2 text-on-surface-variant font-label-md text-label-md uppercase tracking-[0.2em]">
                                 Foco Ininterrupto</div>
-                            <div class="font-display-lg text-display-lg text-primary mb-12 tabular-nums">25:00</div>
+                            <div id="timer-display-idle" class="font-display-lg text-display-lg text-primary mb-6 tabular-nums">25:00</div>
+                            <!-- Presets Náuticos e Botão Personalizar -->
+                            <div class="flex items-center gap-2 mb-10 flex-wrap justify-center">
+                                <button class="btn-preset px-4 py-1.5 border border-primary bg-primary/10 text-primary text-xs font-label-md transition-all font-bold" data-foco="25" data-pausa="5">
+                                    25m / 5m
+                                </button>
+                                <button class="btn-preset px-4 py-1.5 border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all" data-foco="45" data-pausa="10">
+                                    45m / 10m
+                                </button>
+                                <button class="btn-preset px-4 py-1.5 border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all" data-foco="60" data-pausa="15">
+                                    60m / 15m
+                                </button>
+                                <button id="btn-open-custom-timer" class="px-3 py-1.5 border border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-[14px]">tune</span>
+                                    <span>Personalizar</span>
+                                </button>
+                            </div>
                             <div class="flex gap-4">
                                 <button
                                     class="bg-primary text-on-primary px-12 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-primary-fixed-dim transition-colors"
                                     onclick="startVoyage()">
                                     Zarpar
                                 </button>
+                            </div>
+                        </div>
+
+                        <!-- Modal de Personalização do Temporizador -->
+                        <div id="modal-custom-timer" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+                            <div class="bg-surface-container-low border border-outline-variant p-6 sm:p-8 max-w-md w-full mx-4 relative shadow-2xl">
+                                <div class="flex items-center justify-between border-b border-outline-variant pb-3 mb-6">
+                                    <div class="flex items-center gap-2 text-primary">
+                                        <span class="material-symbols-outlined text-lg">explore</span>
+                                        <h3 class="font-headline-sm text-sm uppercase tracking-widest font-bold">Calibrar Rota de Foco</h3>
+                                    </div>
+                                    <button id="btn-close-custom-timer" class="text-on-surface-variant hover:text-primary transition-colors">
+                                        <span class="material-symbols-outlined text-xl">close</span>
+                                    </button>
+                                </div>
+
+                                <form id="form-custom-timer" class="space-y-6">
+                                    <div>
+                                        <label class="block text-xs uppercase font-label-md text-on-surface-variant tracking-wider mb-2">
+                                            Tempo em Alto Mar (Foco)
+                                        </label>
+                                        <div class="flex items-center gap-2">
+                                            <button type="button" id="btn-focus-minus" class="w-10 h-10 border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">-</button>
+                                            <div class="relative flex-1">
+                                                <input type="number" id="input-custom-focus" min="1" max="180" value="25" class="w-full bg-surface-container border border-outline-variant px-4 py-2 text-center text-primary font-display-md text-xl font-bold focus:border-primary focus:outline-none tabular-nums">
+                                                <span class="absolute right-3 top-2.5 text-xs text-on-surface-variant uppercase pointer-events-none">min</span>
+                                            </div>
+                                            <button type="button" id="btn-focus-plus" class="w-10 h-10 border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">+</button>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs uppercase font-label-md text-on-surface-variant tracking-wider mb-2">
+                                            Porto de Descanso (Pausa)
+                                        </label>
+                                        <div class="flex items-center gap-2">
+                                            <button type="button" id="btn-break-minus" class="w-10 h-10 border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">-</button>
+                                            <div class="relative flex-1">
+                                                <input type="number" id="input-custom-break" min="1" max="60" value="5" class="w-full bg-surface-container border border-outline-variant px-4 py-2 text-center text-on-surface font-display-md text-xl font-bold focus:border-primary focus:outline-none tabular-nums">
+                                                <span class="absolute right-3 top-2.5 text-xs text-on-surface-variant uppercase pointer-events-none">min</span>
+                                            </div>
+                                            <button type="button" id="btn-break-plus" class="w-10 h-10 border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">+</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex gap-3 pt-4 border-t border-outline-variant">
+                                        <button type="button" id="btn-cancel-custom-timer" class="flex-1 py-2.5 border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline text-xs uppercase tracking-wider font-label-md transition-colors">
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" class="flex-1 py-2.5 bg-primary text-on-primary font-bold text-xs uppercase tracking-widest hover:bg-primary-fixed-dim transition-colors">
+                                            Definir Rota
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                         <!-- 2. Active Navigation State (ANIMATION_16) -->
@@ -129,15 +199,24 @@
                             </div>
                             <div class="relative z-20 flex flex-col items-center pt-24">
                                 <div
+                                    id="paused-phase-title"
                                     class="mb-2 text-on-surface-variant font-label-md text-label-md uppercase tracking-[0.2em]">
                                     Ancorado em Porto Seguro</div>
-                                <div class="font-display-lg text-display-lg text-primary mb-8 tabular-nums opacity-60">
+                                <div id="timer-display-paused" class="font-display-lg text-display-lg text-primary mb-8 tabular-nums opacity-60">
                                     Pausado</div>
-                                <button
-                                    class="bg-primary text-on-primary px-12 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-primary-fixed-dim transition-colors"
-                                    onclick="startVoyage()">
-                                    Retomar Viagem
-                                </button>
+                                <div class="flex gap-4">
+                                    <button
+                                        id="btn-resume-voyage"
+                                        class="bg-primary text-on-primary px-12 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-primary-fixed-dim transition-colors"
+                                        onclick="startVoyage()">
+                                        Retomar Viagem
+                                    </button>
+                                    <button
+                                        class="border border-outline text-on-surface px-8 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-surface-variant transition-colors"
+                                        onclick="resetVoyage()">
+                                        Encerrar
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <!-- 4. Interrupted State (ANIMATION_17) -->

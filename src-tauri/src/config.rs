@@ -131,6 +131,11 @@ impl Config {
         self.sites_personalizados.retain(|s| s != site);
     }
 
+    pub fn atualizar_tempos(&mut self, foco: u64, pausa: u64) {
+        self.tempo_foco_minutos = foco;
+        self.tempo_pausa_minutos = pausa;
+    }
+
     pub fn get_all_blocked_sites(&self) -> Vec<String> {
         let mut blocked_set = std::collections::HashSet::new();
 
@@ -172,5 +177,13 @@ mod tests {
 
         cfg.remover_site_personalizado("reddit.com");
         assert!(!cfg.sites_personalizados.contains(&"reddit.com".to_string()));
+    }
+
+    #[test]
+    fn test_atualizar_tempos() {
+        let mut cfg = Config::default();
+        cfg.atualizar_tempos(45, 10);
+        assert_eq!(cfg.tempo_foco_minutos, 45);
+        assert_eq!(cfg.tempo_pausa_minutos, 10);
     }
 }
