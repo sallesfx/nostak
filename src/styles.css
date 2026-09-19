@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: inline-block;
+    line-height: 1;
+    user-select: none;
+}
+
+/* Custom scrollbar for minimalist aesthetic */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: #060e20;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #414754;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #8b90a0;
+}
+
+/* Eliminate browser default focus rings for flat aesthetic */
+*:focus {
+    outline: none !important;
+}
+
+.flat-border {
+    border: 1px solid #414754;
+}
+
+.active-edge {
+    border-left: 2px solid #adc7ff;
+}
+
+/* Map Grid Pattern */
+.map-grid {
+    background-image: radial-gradient(#414754 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+/* Custom Toggle Switch */
+.toggle-input:checked + .toggle-track {
+    background-color: #4a8eff; /* primary-container */
+}
+
+.toggle-input:checked + .toggle-track .toggle-thumb {
+    transform: translateX(20px);
+    background-color: #00285b; /* on-primary-container */
+}
+
+.toggle-track {
+    transition: background-color 0.15s ease-in-out;
+}
+
+.toggle-thumb {
+    transition: transform 0.15s ease-in-out;
+}
+
+/* Timer Animation States */
+.state-content {
+    display: none;
+}
+
+.state-active .state-content-active {
+    display: flex;
+}
+
+.state-idle .state-content-idle {
+    display: flex;
+}
+
+.state-paused .state-content-paused {
+    display: flex;
+}
+
+.state-failed .state-content-failed {
+    display: flex;
+}

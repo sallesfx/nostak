@@ -1,167 +1,27 @@
-<!DOCTYPE html><html class="dark" lang="pt-BR" style=""><head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Foco - Lista de Bloqueio</title>
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Nostak - Lista de Bloqueio</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "surface-container-lowest": "#060e20",
-                        "on-tertiary": "#2b3137",
-                        "tertiary": "#c1c7cf",
-                        "on-primary": "#002e68",
-                        "secondary-container": "#434957",
-                        "tertiary-fixed": "#dde3eb",
-                        "secondary-fixed-dim": "#c1c6d7",
-                        "on-tertiary-fixed-variant": "#41474e",
-                        "surface-bright": "#31394d",
-                        "error": "#ffb4ab",
-                        "surface-container": "#171f33",
-                        "outline-variant": "#414754",
-                        "surface": "#0b1326",
-                        "surface-container-low": "#131b2e",
-                        "primary-fixed": "#d8e2ff",
-                        "tertiary-container": "#8b9199",
-                        "secondary-fixed": "#dde2f3",
-                        "on-surface-variant": "#c1c6d7",
-                        "primary-fixed-dim": "#adc7ff",
-                        "on-secondary-fixed-variant": "#414754",
-                        "on-primary-fixed": "#001a41",
-                        "inverse-surface": "#dae2fd",
-                        "on-error-container": "#ffdad6",
-                        "background": "#0b1326",
-                        "primary": "#adc7ff",
-                        "secondary": "#c1c6d7",
-                        "on-secondary-container": "#b3b8c8",
-                        "primary-container": "#4a8eff",
-                        "surface-tint": "#adc7ff",
-                        "tertiary-fixed-dim": "#c1c7cf",
-                        "on-tertiary-container": "#242a30",
-                        "on-primary-container": "#00285b",
-                        "inverse-on-surface": "#283044",
-                        "on-surface": "#dae2fd",
-                        "surface-dim": "#0b1326",
-                        "on-error": "#690005",
-                        "outline": "#8b90a0",
-                        "inverse-primary": "#005bc0",
-                        "on-secondary-fixed": "#161c27",
-                        "on-primary-fixed-variant": "#004493",
-                        "error-container": "#93000a",
-                        "surface-variant": "#2d3449",
-                        "surface-container-high": "#222a3d",
-                        "surface-container-highest": "#2d3449",
-                        "on-secondary": "#2a303d",
-                        "on-background": "#dae2fd",
-                        "on-tertiary-fixed": "#161c22"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
-                    },
-                    "spacing": {
-                        "container-max": "1440px",
-                        "margin": "24px",
-                        "gutter": "16px",
-                        "unit": "4px"
-                    },
-                    "fontFamily": {
-                        "headline-md": ["Geist"],
-                        "body-md": ["Geist"],
-                        "body-lg": ["Geist"],
-                        "headline-lg": ["Geist"],
-                        "label-sm": ["JetBrains Mono"],
-                        "code-md": ["JetBrains Mono"]
-                    },
-                    "fontSize": {
-                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
-                        "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
-                        "label-sm": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500"}],
-                        "code-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            user-select: none;
-        }
-        /* Custom Toggle Switch - Flat Implementation using new Primary Blue */
-        .toggle-input:checked + .toggle-track {
-            background-color: #4a8eff; /* primary-container */
-        }
-        .toggle-input:checked + .toggle-track .toggle-thumb {
-            transform: translateX(20px);
-            background-color: #00285b; /* on-primary-container */
-        }
-        .toggle-track {
-            transition: background-color 0.1s steps(2);
-        }
-        .toggle-thumb {
-            transition: transform 0.1s steps(2);
-        }
-    </style>
+    <script src="./theme.js"></script>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./components.js" type="module"></script>
     <script src="./main.js" type="module"></script>
 </head>
-<body class="bg-surface text-on-surface font-body-md antialiased">
-<!-- TopAppBar -->
-<header class="w-full top-0 sticky bg-surface border-b border-outline-variant flex justify-between items-center px-8 py-4 z-50">
-    <div class="flex items-center gap-4">
-        <span class="font-headline-md text-headline-md font-bold text-primary">Nostak</span>
-    </div>
-    <div class="flex items-center gap-6">
-        <div class="hidden md:flex gap-8">
-            <a class="text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm px-2 py-1" href="jornada.html">Jornada</a>
-            <a class="text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm px-2 py-1" href="index.html">Temporizador</a>
-            <a class="text-primary font-bold font-label-sm text-label-sm px-2 py-1 border-b-2 border-primary" href="listabloqueio.html">Lista de Bloqueio</a>
-            <a class="text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm px-2 py-1" href="#">Diário</a>
-        </div>
-        <div class="flex items-center gap-4">
-            <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-variant p-2">settings</button>
 
-        </div>
-    </div>
-</header>
-<!-- Main Layout Container -->
-<div class="flex min-h-screen">
-    <!-- SideNavBar -->
-    <aside class="hidden md:flex flex-col h-screen w-64 left-0 top-0 fixed bg-surface-container border-r border-outline-variant p-4 pt-24">
-        <div class="mb-8 px-4">
-            <h2 class="font-headline-md text-headline-md text-primary">Nostak</h2>
-            <p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Navegando pelo Foco Profundo</p>
-        </div>
-        <nav class="flex flex-col gap-2">
-            <a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="jornada.html">
-                <span class="material-symbols-outlined">route</span>
-                <span class="font-label-sm text-label-sm">Jornada</span>
-            </a>
-            <a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="index.html">
-                <span class="material-symbols-outlined">timer</span>
-                <span class="font-label-sm text-label-sm">Temporizador</span>
-            </a>
-            <a class="flex items-center gap-4 p-3 text-primary border-l-2 border-primary bg-surface-container-high transition-colors" href="listabloqueio.html">
-                <span class="material-symbols-outlined">block</span>
-                <span class="font-label-sm text-label-sm">Lista de Bloqueio</span>
-            </a>
-            <a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
-                <span class="material-symbols-outlined">book</span>
-                <span class="font-label-sm text-label-sm">Diário</span>
-            </a>
-            <a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#"><span class="material-symbols-outlined">settings</span><span class="font-label-sm text-label-sm">Configurações</span></a><a class="flex items-center gap-4 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#"><span class="material-symbols-outlined">help</span><span class="font-label-sm text-label-sm">Suporte</span></a></nav>
-        <div class="mt-auto p-4"><div class="flex justify-center gap-6 pt-4 border-t border-outline-variant"><a href="#" class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">language</span></a><a href="#" class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">share</span></a></div></div>
-    </aside>
-    <!-- Main Canvas -->
-    <main class="flex-1 md:ml-64 p-6 md:p-8">
+<body class="bg-background text-on-surface font-body-md selection:bg-primary selection:text-on-primary">
+    <!-- TopAppBar Component -->
+    <nostak-header></nostak-header>
+
+    <div class="flex min-h-[calc(100vh-4rem)]">
+        <!-- SideNavBar Component -->
+        <nostak-sidebar active="listabloqueio"></nostak-sidebar>
+
+        <!-- Main Canvas -->
+        <main class="flex-grow p-4 md:p-8 max-w-[1200px] mx-auto overflow-y-auto">
         <header class="mb-12">
             <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Silenciando as Sereias</h1>
             <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Configure sua rota de navegação. Silencia as distrações que ameaçam desviar sua jornada ou defina suas próprias 'Sereias' para silenciar as profundezas da estagnação.</p>
@@ -297,25 +157,8 @@
         </div>
     </main>
 </div>
-<!-- BottomNavBar (Mobile Only) -->
-<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container border-t border-outline-variant flex justify-around py-3 z-50">
-    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="jornada.html">
-        <span class="material-symbols-outlined">route</span>
-        <span class="font-label-sm text-[10px]">Jornada</span>
-    </a>
-    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="index.html">
-        <span class="material-symbols-outlined">timer</span>
-        <span class="font-label-sm text-[10px]">Temporizador</span>
-    </a>
-    <a class="flex flex-col items-center gap-1 text-primary" href="listabloqueio.html">
-        <span class="material-symbols-outlined">block</span>
-        <span class="font-label-sm text-[10px]">Bloqueio</span>
-    </a>
-    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
-        <span class="material-symbols-outlined">book</span>
-        <span class="font-label-sm text-[10px]">Diário</span>
-    </a>
-</nav>
+    <!-- Mobile BottomNavBar Component -->
+    <nostak-mobile-nav active="listabloqueio"></nostak-mobile-nav>
 <script>
     // Interaction for toggle switches
     document.querySelectorAll('.toggle-input').forEach(input => {
