@@ -297,6 +297,74 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimerPreset(foco, pausa);
         });
     });
+
+    // Elementos do Modal de Personalização
+    const modal = document.getElementById('modal-custom-timer');
+    const btnOpenModal = document.getElementById('btn-open-custom-timer');
+    const btnCloseModal = document.getElementById('btn-close-custom-timer');
+    const btnCancelModal = document.getElementById('btn-cancel-custom-timer');
+    const formCustomTimer = document.getElementById('form-custom-timer');
+    const inputFocus = document.getElementById('input-custom-focus');
+    const inputBreak = document.getElementById('input-custom-break');
+    const btnFocusMinus = document.getElementById('btn-focus-minus');
+    const btnFocusPlus = document.getElementById('btn-focus-plus');
+    const btnBreakMinus = document.getElementById('btn-break-minus');
+    const btnBreakPlus = document.getElementById('btn-break-plus');
+
+    const openCustomModal = () => {
+        if (inputFocus) inputFocus.value = focusMinutes;
+        if (inputBreak) inputBreak.value = breakMinutes;
+        if (modal) modal.classList.remove('hidden');
+    };
+
+    const closeCustomModal = () => {
+        if (modal) modal.classList.add('hidden');
+    };
+
+    if (btnOpenModal) btnOpenModal.addEventListener('click', openCustomModal);
+    if (btnCloseModal) btnCloseModal.addEventListener('click', closeCustomModal);
+    if (btnCancelModal) btnCancelModal.addEventListener('click', closeCustomModal);
+
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeCustomModal();
+        });
+    }
+
+    if (btnFocusMinus && inputFocus) {
+        btnFocusMinus.addEventListener('click', () => {
+            const cur = parseInt(inputFocus.value) || 25;
+            inputFocus.value = Math.max(1, cur - 5);
+        });
+    }
+    if (btnFocusPlus && inputFocus) {
+        btnFocusPlus.addEventListener('click', () => {
+            const cur = parseInt(inputFocus.value) || 25;
+            inputFocus.value = Math.min(180, cur + 5);
+        });
+    }
+    if (btnBreakMinus && inputBreak) {
+        btnBreakMinus.addEventListener('click', () => {
+            const cur = parseInt(inputBreak.value) || 5;
+            inputBreak.value = Math.max(1, cur - 1);
+        });
+    }
+    if (btnBreakPlus && inputBreak) {
+        btnBreakPlus.addEventListener('click', () => {
+            const cur = parseInt(inputBreak.value) || 5;
+            inputBreak.value = Math.min(60, cur + 1);
+        });
+    }
+
+    if (formCustomTimer) {
+        formCustomTimer.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const f = parseInt(inputFocus?.value) || 25;
+            const p = parseInt(inputBreak?.value) || 5;
+            setTimerPreset(Math.min(180, Math.max(1, f)), Math.min(60, Math.max(1, p)));
+            closeCustomModal();
+        });
+    }
 });
 
 // Torna as funções disponíveis globalmente
