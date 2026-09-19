@@ -148,6 +148,7 @@ async function resetVoyage() {
 }
 
 // Torna as funções disponíveis globalmente
+window.invokeTauri = invokeTauri;
 window.startVoyage = startVoyage;
 window.pauseVoyage = pauseVoyage;
 window.failVoyage = failVoyage;

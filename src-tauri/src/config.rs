@@ -49,6 +49,16 @@ impl Default for Config {
             ],
         );
 
+        categorias.insert(
+            "jogos".to_string(),
+            vec![
+                "steamcommunity.com".to_string(),
+                "roblox.com".to_string(),
+                "epicgames.com".to_string(),
+                "discord.com".to_string(),
+            ],
+        );
+
         Self {
             tempo_foco_minutos: 25,
             tempo_pausa_minutos: 5,
@@ -63,8 +73,18 @@ impl Default for Config {
 }
 
 impl Config {
+    pub fn get_config_path() -> &'static str {
+        if Path::new("config.toml").exists() {
+            "config.toml"
+        } else if Path::new("../config.toml").exists() {
+            "../config.toml"
+        } else {
+            "config.toml"
+        }
+    }
+
     pub fn load_or_create() -> Result<Self, io::Error> {
-        let path = "config.toml";
+        let path = Self::get_config_path();
 
         if Path::new(path).exists() {
             let content = fs::read_to_string(path)?;
@@ -77,9 +97,38 @@ impl Config {
                 .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
 
             fs::write(path, toml_string)?;
-            println!("[Nostak] Arquivo 'config.toml' com categorias gerado!");
+            println!("[Nostak] Arquivo '{}' com categorias gerado!", path);
             Ok(default_config)
         }
+    }
+
+    pub fn save(&self) -> Result<(), io::Error> {
+        let path = Self::get_config_path();
+        let toml_string = toml::to_string_pretty(self)
+            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+        fs::write(path, toml_string)?;
+        Ok(())
+    }
+
+    pub fn alternar_categoria(&mut self, categoria: &str, ativa: bool) {
+        if ativa {
+            if !self.categorias_ativas.iter().any(|c| c == categoria) {
+                self.categorias_ativas.push(categoria.to_string());
+            }
+        } else {
+            self.categorias_ativas.retain(|c| c != categoria);
+        }
+    }
+
+    pub fn adicionar_site_personalizado(&mut self, site: String) {
+        let clean = site.trim().to_lowercase();
+        if !clean.is_empty() && !self.sites_personalizados.contains(&clean) {
+            self.sites_personalizados.push(clean);
+        }
+    }
+
+    pub fn remover_site_personalizado(&mut self, site: &str) {
+        self.sites_personalizados.retain(|s| s != site);
     }
 
     pub fn get_all_blocked_sites(&self) -> Vec<String> {
@@ -98,5 +147,30 @@ impl Config {
         }
 
         blocked_set.into_iter().collect()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_alternar_categoria() {
+        let mut cfg = Config::default();
+        cfg.alternar_categoria("jogos", true);
+        assert!(cfg.categorias_ativas.contains(&"jogos".to_string()));
+        cfg.alternar_categoria("jogos", false);
+        assert!(!cfg.categorias_ativas.contains(&"jogos".to_string()));
+    }
+
+    #[test]
+    fn test_adicionar_remover_sereia() {
+        let mut cfg = Config::default();
+        cfg.adicionar_site_personalizado("reddit.com".to_string());
+        assert!(cfg.sites_personalizados.contains(&"reddit.com".to_string()));
+        assert!(cfg.get_all_blocked_sites().contains(&"reddit.com".to_string()));
+
+        cfg.remover_site_personalizado("reddit.com");
+        assert!(!cfg.sites_personalizados.contains(&"reddit.com".to_string()));
     }
 }

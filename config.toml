@@ -27,3 +27,9 @@ streaming_e_videos = [
     "twitch.tv",
     "primevideo.com",
 ]
+jogos = [
+    "steamcommunity.com",
+    "roblox.com",
+    "epicgames.com",
+    "discord.com",
+]

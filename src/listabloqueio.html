@@ -29,45 +29,14 @@
         <!-- Grid: Categories -->
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-12">
             <!-- Redes Sociais -->
-            <div class="bg-surface-container p-6 border border-outline-variant flex flex-col justify-between h-48">
+            <div data-category="redes_sociais" class="bg-surface-container p-6 border border-outline-variant flex flex-col justify-between h-48">
                 <div>
                     <span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;">public</span>
                     <h3 class="font-headline-md text-headline-md text-on-surface">Redes Sociais</h3>
+                    <p class="font-label-sm text-xs text-on-surface-variant opacity-70 mt-1">Instagram, X, TikTok, Facebook...</p>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="font-label-sm text-label-sm text-primary">Ativado</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input checked="" class="sr-only toggle-input" type="checkbox">
-                        <div class="w-12 h-6 bg-surface-variant border border-outline-variant toggle-track relative">
-                            <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant toggle-thumb"></div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-            <!-- Streaming -->
-            <div class="bg-surface-container p-6 border border-outline-variant flex flex-col justify-between h-48">
-                <div>
-                    <span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;">movie</span>
-                    <h3 class="font-headline-md text-headline-md text-on-surface">Streaming</h3>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="font-label-sm text-label-sm text-primary">Ativado</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input checked="" class="sr-only toggle-input" type="checkbox">
-                        <div class="w-12 h-6 bg-surface-variant border border-outline-variant toggle-track relative">
-                            <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant toggle-thumb"></div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-            <!-- Notícias -->
-            <div class="bg-surface-container p-6 border border-outline-variant flex flex-col justify-between h-48">
-                <div>
-                    <span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;">newspaper</span>
-                    <h3 class="font-headline-md text-headline-md text-on-surface">Notícias</h3>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Desativado</span>
+                    <span class="category-status font-label-sm text-label-sm text-primary">Ativado</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input class="sr-only toggle-input" type="checkbox">
                         <div class="w-12 h-6 bg-surface-variant border border-outline-variant toggle-track relative">
@@ -76,104 +45,254 @@
                     </label>
                 </div>
             </div>
-            <!-- Jogos -->
-            <div class="bg-surface-container p-6 border border-outline-variant flex flex-col justify-between h-48">
+
+            <!-- Streaming -->
+            <div data-category="streaming_e_videos" class="bg-surface-container p-6 border border-outline-variant flex flex-col justify-between h-48">
                 <div>
-                    <span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;">sports_esports</span>
-                    <h3 class="font-headline-md text-headline-md text-on-surface">Jogos</h3>
+                    <span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;">movie</span>
+                    <h3 class="font-headline-md text-headline-md text-on-surface">Streaming</h3>
+                    <p class="font-label-sm text-xs text-on-surface-variant opacity-70 mt-1">YouTube, Netflix, Twitch, Prime...</p>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="font-label-sm text-label-sm text-primary">Ativado</span>
+                    <span class="category-status font-label-sm text-label-sm text-primary">Ativado</span>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input checked="" class="sr-only toggle-input" type="checkbox">
+                        <input class="sr-only toggle-input" type="checkbox">
                         <div class="w-12 h-6 bg-surface-variant border border-outline-variant toggle-track relative">
                             <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant toggle-thumb"></div>
                         </div>
                     </label>
                 </div>
             </div>
-            <div class="bg-surface-container p-6 border border-outline-variant flex flex-col justify-between h-48">
+
+            <!-- Notícias -->
+            <div data-category="noticias_e_portais" class="bg-surface-container p-6 border border-outline-variant flex flex-col justify-between h-48">
                 <div>
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="material-symbols-outlined text-primary" style="font-size: 32px;">edit_note</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input class="sr-only toggle-input" type="checkbox">
-                            <div class="w-12 h-6 bg-surface-variant border border-outline-variant toggle-track relative">
-                                <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant toggle-thumb"></div>
-                            </div>
-                        </label>
-                    </div>
-                    <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Personalizado</h3>
-                    <div class="flex border border-outline-variant focus-within:border-primary">
-                        <input class="flex-1 bg-surface p-2 focus:outline-none text-on-surface font-body-md text-sm w-full" placeholder="URL para bloquear" type="text">
-                        <button class="bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary px-3 font-label-sm text-label-sm uppercase font-bold transition-colors border-l border-outline-variant">ADD</button>
-                    </div>
+                    <span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;">newspaper</span>
+                    <h3 class="font-headline-md text-headline-md text-on-surface">Notícias</h3>
+                    <p class="font-label-sm text-xs text-on-surface-variant opacity-70 mt-1">G1, UOL, GE, CNN Brasil...</p>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="font-label-sm text-label-sm text-on-surface-variant">Desativado</span>
+                    <span class="category-status font-label-sm text-label-sm text-on-surface-variant">Desativado</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input class="sr-only toggle-input" type="checkbox">
+                        <div class="w-12 h-6 bg-surface-variant border border-outline-variant toggle-track relative">
+                            <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant toggle-thumb"></div>
+                        </div>
+                    </label>
                 </div>
-            </div></section>
-        <!-- Asymmetric Layout for Whitelist and Hours -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
-            <!-- Focus Hours -->
+            </div>
 
-            <!-- Whitelist -->
-            <section class="bg-surface-container border border-outline-variant p-8 lg:col-span-12">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="font-headline-md text-headline-md text-on-surface">Navegação Manual (Whitelist)</h2>
-                    <span class="font-label-sm text-label-sm bg-primary text-on-primary px-4 py-1">6 Ativos</span>
+            <!-- Jogos -->
+            <div data-category="jogos" class="bg-surface-container p-6 border border-outline-variant flex flex-col justify-between h-48">
+                <div>
+                    <span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;">sports_esports</span>
+                    <h3 class="font-headline-md text-headline-md text-on-surface">Jogos</h3>
+                    <p class="font-label-sm text-xs text-on-surface-variant opacity-70 mt-1">Steam, Roblox, Epic, Discord...</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="flex items-center justify-between border border-outline-variant p-4">
-                        <span class="font-body-md text-body-md">github.com</span>
-                        <button class="material-symbols-outlined text-error hover:bg-error-container p-1">close</button>
-                    </div>
-                    <div class="flex items-center justify-between border border-outline-variant p-4">
-                        <span class="font-body-md text-body-md">stackoverflow.com</span>
-                        <button class="material-symbols-outlined text-error hover:bg-error-container p-1">close</button>
-                    </div>
-                    <div class="flex items-center justify-between border border-outline-variant p-4">
-                        <span class="font-body-md text-body-md">notion.so</span>
-                        <button class="material-symbols-outlined text-error hover:bg-error-container p-1">close</button>
-                    </div>
-                    <div class="flex items-center justify-between border border-outline-variant p-4">
-                        <span class="font-body-md text-body-md">figma.com</span>
-                        <button class="material-symbols-outlined text-error hover:bg-error-container p-1">close</button>
-                    </div>
-                    <div class="flex items-center justify-between border border-outline-variant p-4">
-                        <span class="font-body-md text-body-md">docs.google.com</span>
-                        <button class="material-symbols-outlined text-error hover:bg-error-container p-1">close</button>
-                    </div>
-                    <div class="flex items-center justify-between border border-outline-variant p-4">
-                        <span class="font-body-md text-body-md">linear.app</span>
-                        <button class="material-symbols-outlined text-error hover:bg-error-container p-1">close</button>
-                    </div>
+                <div class="flex items-center justify-between">
+                    <span class="category-status font-label-sm text-label-sm text-on-surface-variant">Desativado</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input class="sr-only toggle-input" type="checkbox">
+                        <div class="w-12 h-6 bg-surface-variant border border-outline-variant toggle-track relative">
+                            <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant toggle-thumb"></div>
+                        </div>
+                    </label>
                 </div>
-                <div class="mt-8 flex gap-4">
-                    <input class="flex-1 bg-surface border border-outline-variant p-3 focus:outline-none focus:border-primary text-on-surface font-body-md" placeholder="Adicionar nova URL (ex: slack.com)" type="text">
-                    <button class="bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary px-8 font-label-sm text-label-sm uppercase font-bold transition-colors">Adicionar</button>
+            </div>
+        </section>
+
+        <!-- Sereias Personalizadas -->
+        <section class="bg-surface-container border border-outline-variant p-6 md:p-8 mb-12">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="font-headline-md text-headline-md text-on-surface">Sereias Personalizadas</h2>
+                    <p class="text-on-surface-variant font-label-sm mt-0.5">Cadastre domínios específicos que desviam sua atenção para silenciá-los durante o foco.</p>
                 </div>
-            </section>
-        </div>
+                <span id="custom-sites-count" class="font-label-sm text-label-sm bg-primary text-on-primary px-4 py-1 self-start md:self-auto font-bold tracking-wider">0 Ativos</span>
+            </div>
+
+            <!-- Formulário de Adicionar Nova Sereia -->
+            <form id="form-add-sereia" class="flex flex-col sm:flex-row gap-3 mb-8">
+                <div class="relative flex-grow">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">link</span>
+                    <input id="input-new-sereia" class="w-full bg-surface-container-low border border-outline-variant pl-10 pr-4 py-3 focus:outline-none focus:border-primary text-on-surface font-body-md text-sm placeholder:text-on-surface-variant/50" placeholder="Exemplo: reddit.com, anime.tv ou gshow.globo.com" type="text" required>
+                </div>
+                <button type="submit" class="bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary px-6 py-3 font-label-sm text-label-sm uppercase font-bold tracking-wider transition-colors flex items-center justify-center gap-2 shrink-0">
+                    <span class="material-symbols-outlined text-lg">add</span>
+                    Adicionar Sereia
+                </button>
+            </form>
+
+            <!-- Lista Dinâmica de Sereias -->
+            <div id="custom-sites-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <!-- Preenchido dinamicamente via JS -->
+            </div>
+
+            <div id="custom-sites-empty" class="hidden text-center py-10 border border-dashed border-outline-variant/60 text-on-surface-variant">
+                <span class="material-symbols-outlined text-3xl mb-1 text-primary/60">sailing</span>
+                <p class="font-body-md text-sm">Nenhuma sereia personalizada cadastrada.</p>
+                <p class="font-label-sm text-xs opacity-60 mt-0.5">Digite um domínio acima e clique em 'Adicionar Sereia'.</p>
+            </div>
+        </section>
     </main>
 </div>
-    <!-- Mobile BottomNavBar Component -->
-    <nostak-mobile-nav active="listabloqueio"></nostak-mobile-nav>
+
+<!-- Mobile BottomNavBar Component -->
+<nostak-mobile-nav active="listabloqueio"></nostak-mobile-nav>
+
 <script>
-    // Interaction for toggle switches
-    document.querySelectorAll('.toggle-input').forEach(input => {
-        input.addEventListener('change', (e) => {
-            const statusLabel = e.target.closest('div.flex').querySelector('span');
+    async function callTauri(cmd, args = {}) {
+        if (window.invokeTauri) {
+            return await window.invokeTauri(cmd, args);
+        }
+        if (window.__TAURI__) {
+            const invokeFn = window.__TAURI__.core?.invoke || window.__TAURI__.invoke;
+            if (typeof invokeFn === 'function') {
+                return await invokeFn(cmd, args);
+            }
+        }
+        console.warn(`[Nostak] Simulando chamada Tauri: ${cmd}`, args);
+        return null;
+    }
+
+    function renderConfiguracoes(config) {
+        if (!config) return;
+
+        // Atualiza os interruptores das categorias
+        const ativas = config.categorias_ativas || [];
+        document.querySelectorAll('[data-category]').forEach(card => {
+            const catId = card.getAttribute('data-category');
+            const input = card.querySelector('.toggle-input');
+            const statusLabel = card.querySelector('.category-status');
+            const isAtiva = ativas.includes(catId);
+
+            if (input) input.checked = isAtiva;
             if (statusLabel) {
-                statusLabel.textContent = e.target.checked ? 'Ativado' : 'Desativado';
-                statusLabel.classList.toggle('text-on-surface-variant', !e.target.checked);
-                statusLabel.classList.toggle('text-primary', e.target.checked);
+                statusLabel.textContent = isAtiva ? 'Ativado' : 'Desativado';
+                statusLabel.classList.toggle('text-on-surface-variant', !isAtiva);
+                statusLabel.classList.toggle('text-primary', isAtiva);
             }
         });
+
+        // Atualiza as sereias personalizadas
+        const sites = config.sites_personalizados || [];
+        const countBadge = document.getElementById('custom-sites-count');
+        const listContainer = document.getElementById('custom-sites-list');
+        const emptyState = document.getElementById('custom-sites-empty');
+
+        if (countBadge) {
+            countBadge.textContent = `${sites.length} ${sites.length === 1 ? 'Ativo' : 'Ativos'}`;
+        }
+
+        if (listContainer) {
+            listContainer.innerHTML = '';
+            if (sites.length === 0) {
+                if (emptyState) emptyState.classList.remove('hidden');
+            } else {
+                if (emptyState) emptyState.classList.add('hidden');
+                sites.forEach(site => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center justify-between bg-surface-container-low border border-outline-variant px-4 py-3 group hover:border-outline transition-colors';
+                    item.innerHTML = `
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <span class="material-symbols-outlined text-primary text-xl">block</span>
+                            <span class="font-body-md text-sm text-on-surface truncate">${site}</span>
+                        </div>
+                        <button class="btn-remove-site text-on-surface-variant hover:text-error hover:bg-error/10 p-1.5 transition-colors rounded" data-site="${site}" title="Remover Sereia">
+                            <span class="material-symbols-outlined text-lg">close</span>
+                        </button>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            }
+        }
+    }
+
+    async function carregarConfiguracoes() {
+        try {
+            const config = await callTauri('obter_configuracoes');
+            if (config) {
+                renderConfiguracoes(config);
+            }
+        } catch (e) {
+            console.error("[Nostak] Erro ao obter configurações:", e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarConfiguracoes();
+
+        // Alternância de categorias
+        document.querySelectorAll('[data-category] .toggle-input').forEach(input => {
+            input.addEventListener('change', async (e) => {
+                const card = e.target.closest('[data-category]');
+                const catId = card.getAttribute('data-category');
+                const ativa = e.target.checked;
+                const statusLabel = card.querySelector('.category-status');
+
+                if (statusLabel) {
+                    statusLabel.textContent = ativa ? 'Ativado' : 'Desativado';
+                    statusLabel.classList.toggle('text-on-surface-variant', !ativa);
+                    statusLabel.classList.toggle('text-primary', ativa);
+                }
+
+                try {
+                    const configAtualizada = await callTauri('alternar_categoria', { categoria: catId, ativa });
+                    if (configAtualizada) {
+                        renderConfiguracoes(configAtualizada);
+                    }
+                } catch (err) {
+                    console.error(`[Nostak] Erro ao alternar categoria ${catId}:`, err);
+                    e.target.checked = !ativa;
+                }
+            });
+        });
+
+        // Adicionar novo site
+        const formAdd = document.getElementById('form-add-sereia');
+        const inputSite = document.getElementById('input-new-sereia');
+        if (formAdd && inputSite) {
+            formAdd.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const rawSite = inputSite.value.trim().toLowerCase();
+                if (!rawSite) return;
+
+                const cleanSite = rawSite.replace(/^https?:\/\//, '').split('/')[0].trim();
+                if (!cleanSite) return;
+
+                try {
+                    const configAtualizada = await callTauri('adicionar_sereia', { site: cleanSite });
+                    inputSite.value = '';
+                    if (configAtualizada) {
+                        renderConfiguracoes(configAtualizada);
+                    }
+                } catch (err) {
+                    alert("Não foi possível adicionar a Sereia: " + err);
+                }
+            });
+        }
+
+        // Remover site
+        const listContainer = document.getElementById('custom-sites-list');
+        if (listContainer) {
+            listContainer.addEventListener('click', async (e) => {
+                const btn = e.target.closest('.btn-remove-site');
+                if (!btn) return;
+
+                const site = btn.getAttribute('data-site');
+                if (!site) return;
+
+                try {
+                    const configAtualizada = await callTauri('remover_sereia', { site });
+                    if (configAtualizada) {
+                        renderConfiguracoes(configAtualizada);
+                    }
+                } catch (err) {
+                    alert("Não foi possível remover a Sereia: " + err);
+                }
+            });
+        }
     });
 </script>
-
-
-
-
-</body></html>
+</body>
+</html>

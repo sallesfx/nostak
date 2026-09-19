@@ -37,6 +37,36 @@ fn obter_configuracoes() -> Result<config::Config, String> {
         .map_err(|e| format!("Falha ao ler configuração: {}", e))
 }
 
+#[command]
+fn alternar_categoria(categoria: String, ativa: bool) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.alternar_categoria(&categoria, ativa);
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
+fn adicionar_sereia(site: String) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.adicionar_site_personalizado(site);
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
+fn remover_sereia(site: String) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.remover_site_personalizado(&site);
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -53,7 +83,10 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             zarpar_jornada,
             ancorar_porto_seguro,
-            obter_configuracoes
+            obter_configuracoes,
+            alternar_categoria,
+            adicionar_sereia,
+            remover_sereia
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao executar a aplicação Tauri");
