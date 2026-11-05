@@ -266,48 +266,59 @@
                         <div class="flex items-center justify-between mb-6 border-b border-outline-variant pb-4">
                             <h3 class="font-headline-md text-headline-md text-on-surface">Diário do Navegador</h3>
                             <button
+                                id="btn-toggle-add-task"
+                                type="button"
                                 class="text-primary font-label-md text-label-md flex items-center gap-1.5 hover:text-tertiary transition-colors uppercase tracking-wider">
                                 <span class="material-symbols-outlined text-lg">add</span> Nova Tarefa
                             </button>
                         </div>
-                        <div class="flex flex-col gap-3">
-                            <label
-                                class="group flex items-center gap-4 p-4 rounded-sm border border-outline-variant hover:border-outline hover:bg-surface-container cursor-pointer transition-colors">
-                                <input checked=""
-                                    class="w-4 h-4 bg-transparent border-outline text-primary-container focus:ring-0 rounded-sm"
-                                    type="checkbox" />
-                                <span
-                                    class="flex-grow font-body-md text-body-md text-on-surface-variant line-through">Mapear
-                                    rota de águas profundas</span>
-                                <span class="material-symbols-outlined text-primary text-lg">check_circle</span>
-                            </label>
-                            <label
-                                class="group flex items-center gap-4 p-4 rounded-sm border border-outline-variant hover:border-outline hover:bg-surface-container cursor-pointer transition-colors">
+
+                        <!-- Formulário Inline para Adicionar Tarefa -->
+                        <form id="form-add-task" class="hidden mb-6 p-4 bg-surface-container border border-outline-variant rounded-sm space-y-3">
+                            <div class="flex flex-col sm:flex-row gap-3">
                                 <input
-                                    class="w-4 h-4 bg-transparent border-outline text-primary-container focus:ring-0 rounded-sm"
-                                    type="checkbox" />
-                                <span class="flex-grow font-body-md text-body-md text-on-surface">Limpar convés de
-                                    distrações digitais</span>
-                                <span class="text-primary bg-primary/10 border border-primary/30 px-2 py-0.5 rounded-sm font-label-sm text-label-sm uppercase">Urgente</span>
-                            </label>
-                            <label
-                                class="group flex items-center gap-4 p-4 rounded-sm border border-outline-variant hover:border-outline hover:bg-surface-container cursor-pointer transition-colors">
-                                <input
-                                    class="w-4 h-4 bg-transparent border-outline text-primary-container focus:ring-0 rounded-sm"
-                                    type="checkbox" />
-                                <span class="flex-grow font-body-md text-body-md text-on-surface">Calibrar sextante de
-                                    produtividade</span>
-                                <span class="text-secondary bg-secondary-container/30 border border-secondary/30 px-2 py-0.5 rounded-sm font-label-sm text-label-sm uppercase">Rotina</span>
-                            </label>
-                            <label
-                                class="group flex items-center gap-4 p-4 rounded-sm border border-outline-variant hover:border-outline hover:bg-surface-container cursor-pointer transition-colors">
-                                <input
-                                    class="w-4 h-4 bg-transparent border-outline text-primary-container focus:ring-0 rounded-sm"
-                                    type="checkbox" />
-                                <span class="flex-grow font-body-md text-body-md text-on-surface">Navegar por 45 min sem
-                                    interrupção</span>
-                                <span class="text-tertiary bg-tertiary/10 border border-tertiary/30 px-2 py-0.5 rounded-sm font-label-sm text-label-sm uppercase">Foco</span>
-                            </label>
+                                    id="input-task-title"
+                                    type="text"
+                                    placeholder="Descreva a próxima manobra ou tarefa de estudo..."
+                                    class="flex-grow bg-surface-container-low border border-outline-variant rounded-sm px-3.5 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:outline-none transition-colors"
+                                    required
+                                />
+                                <select
+                                    id="select-task-category"
+                                    class="bg-surface-container-low border border-outline-variant rounded-sm px-3.5 py-2.5 text-xs font-label-md uppercase tracking-wider text-on-surface focus:border-primary focus:outline-none transition-colors sm:w-36"
+                                >
+                                    <option value="Rotina">Rotina</option>
+                                    <option value="Urgente">Urgente</option>
+                                    <option value="Foco">Foco</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-end gap-2 pt-1">
+                                <button
+                                    id="btn-cancel-add-task"
+                                    type="button"
+                                    class="px-4 py-1.5 rounded-sm border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline text-xs uppercase tracking-wider font-label-md transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    class="px-5 py-1.5 rounded-sm bg-primary-container text-on-primary hover:bg-tertiary text-xs uppercase tracking-wider font-label-md font-bold transition-colors"
+                                >
+                                    Registrar
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Lista Dinâmica de Tarefas -->
+                        <div id="tasks-list" class="flex flex-col gap-3">
+                            <!-- Preenchido dinamicamente via tasks.js -->
+                        </div>
+
+                        <!-- Estado Vazio -->
+                        <div id="tasks-empty" class="hidden text-center py-8 border border-dashed border-outline-variant/60 rounded-sm text-on-surface-variant">
+                            <span class="material-symbols-outlined text-2xl mb-1 text-secondary/70">menu_book</span>
+                            <p class="font-body-md text-sm">Nenhuma tarefa registrada no Diário do Navegador.</p>
+                            <p class="font-label-sm text-xs opacity-60 mt-0.5">Clique em '+ Nova Tarefa' para planejar sua travessia.</p>
                         </div>
                     </section>
                 </div>
@@ -390,21 +401,6 @@
     </div>
     <!-- Mobile BottomNavBar Component -->
     <nostak-mobile-nav active="temporizador"></nostak-mobile-nav>
-    <script>
-        // Interatividade da checklist de tarefas
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', (e) => {
-                const span = e.target.nextElementSibling;
-                if (e.target.checked) {
-                    span.classList.add('line-through', 'text-on-surface-variant');
-                    span.classList.remove('text-on-surface');
-                } else {
-                    span.classList.remove('line-through', 'text-on-surface-variant');
-                    span.classList.add('text-on-surface');
-                }
-            });
-        });
-    </script>
 </body>
 
 </html>

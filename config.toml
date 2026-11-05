@@ -7,6 +7,12 @@ categorias_ativas = [
 sites_personalizados = []
 
 [categorias]
+noticias_e_portais = [
+    "g1.globo.com",
+    "uol.com.br",
+    "ge.globo.com",
+    "cnnbrasil.com.br",
+]
 redes_sociais = [
     "instagram.com",
     "x.com",
@@ -14,12 +20,6 @@ redes_sociais = [
     "tiktok.com",
     "facebook.com",
     "reddit.com",
-]
-noticias_e_portais = [
-    "g1.globo.com",
-    "uol.com.br",
-    "ge.globo.com",
-    "cnnbrasil.com.br",
 ]
 streaming_e_videos = [
     "youtube.com",
@@ -33,3 +33,9 @@ jogos = [
     "epicgames.com",
     "discord.com",
 ]
+
+[[tarefas]]
+id = 1
+texto = "mudancas nostak"
+categoria = "Rotina"
+concluida = false
