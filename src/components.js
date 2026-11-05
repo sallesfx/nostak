@@ -311,13 +311,13 @@ function ensureSettingsModalMounted() {
                     <div class="flex items-center justify-between p-3.5 bg-surface-container-low border border-outline-variant rounded-sm">
                         <div class="pr-4">
                             <div class="font-body-md text-sm text-on-surface flex items-center gap-2">
-                                <span>Sino Náutico (Alerta Sonoro)</span>
+                                <span id="settings-title-sound">Sino Náutico (Alerta Sonoro)</span>
                                 <button type="button" id="btn-test-bell" class="text-xs font-label-sm text-primary hover:text-tertiary underline uppercase tracking-wider">Testar</button>
                             </div>
                             <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Tocar badalada suave ao concluir ciclos de foco e descanso.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input id="settings-toggle-sound" aria-label="Ativar ou desativar sino náutico" class="sr-only toggle-input" type="checkbox" checked>
+                            <input id="settings-toggle-sound" aria-labelledby="settings-title-sound" class="sr-only toggle-input" type="checkbox" checked>
                             <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                                 <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                             </div>
@@ -326,11 +326,11 @@ function ensureSettingsModalMounted() {
 
                     <div class="flex items-center justify-between p-3.5 bg-surface-container-low border border-outline-variant rounded-sm">
                         <div class="pr-4">
-                            <div class="font-body-md text-sm text-on-surface">Descanso Automático</div>
+                            <div id="settings-title-autobreak" class="font-body-md text-sm text-on-surface">Descanso Automático</div>
                             <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Iniciar a contagem de Porto Seguro automaticamente ao finalizar o foco.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input id="settings-toggle-autobreak" aria-label="Ativar ou desativar descanso automático" class="sr-only toggle-input" type="checkbox" checked>
+                            <input id="settings-toggle-autobreak" aria-labelledby="settings-title-autobreak" class="sr-only toggle-input" type="checkbox" checked>
                             <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                                 <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                             </div>
@@ -473,7 +473,7 @@ export class NostakHeader extends HTMLElement {
                     <span class="font-headline-md text-headline-md font-bold text-primary tracking-wide">Nostak</span>
                 </a>
                 <div class="flex items-center gap-4">
-                    <button type="button" class="material-symbols-outlined text-on-surface-variant hover:text-primary hover:bg-surface-container-high p-2 rounded transition-colors" title="Configurações" id="btn-header-settings">
+                    <button type="button" class="material-symbols-outlined text-on-surface-variant hover:text-primary hover:bg-surface-container-high p-2 rounded transition-colors" title="Configurações" aria-label="Abrir configurações da embarcação" id="btn-header-settings">
                         settings
                     </button>
                 </div>
