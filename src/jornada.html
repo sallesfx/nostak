@@ -9,7 +9,7 @@
     <script src="./theme.js"></script>
     <link rel="stylesheet" href="./styles.css" />
     <script src="./components.js" type="module"></script>
-    <script src="./main.js" type="module"></script>
+    <script src="./progress.js" type="module"></script>
 </head>
 
 <body class="bg-background text-on-surface font-body-md selection:bg-primary selection:text-on-primary">
@@ -32,17 +32,21 @@
                     </div>
                     <div class="bg-surface-container border border-outline-variant rounded-sm p-4">
                         <span class="text-secondary font-label-sm uppercase tracking-widest block mb-1">POSIÇÃO ATUAL</span>
-                        <span class="font-headline-sm text-headline-sm text-on-surface">Setor 04: Mar de Silêncio</span>
+                        <span id="journey-sector-name" class="font-headline-sm text-headline-sm text-on-surface">Setor 01: Baía da Partida</span>
                     </div>
                 </div>
                 <!-- Stylized Map Path -->
                 <div class="flex-grow flex items-center justify-center relative">
                     <svg class="w-full max-w-2xl h-32" fill="none" viewBox="0 0 800 100" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0 50C100 50 150 20 250 20C350 20 450 80 550 80C650 80 700 50 800 50" opacity="0.7" stroke="#94d0e1" stroke-dasharray="8 8" stroke-width="2"></path>
-                        <circle cx="250" cy="20" fill="#94d0e1" r="6"></circle>
-                        <circle cx="550" cy="80" fill="#f2be8c" r="6"></circle>
-                        <rect class="animate-pulse" fill="#f2be8c" height="16" width="16" x="542" y="72" rx="2"></rect>
-                        <text fill="#ffdcbd" font-family="Geist, Inter, sans-serif" font-size="11" font-weight="600" letter-spacing="0.06em" x="565" y="95">VOCÊ</text>
+                        <circle cx="90" cy="42" fill="#94d0e1" r="4" opacity="0.6"></circle>
+                        <circle cx="250" cy="20" fill="#94d0e1" r="5" opacity="0.8"></circle>
+                        <circle cx="400" cy="50" fill="#94d0e1" r="5" opacity="0.8"></circle>
+                        <circle cx="550" cy="80" fill="#94d0e1" r="5" opacity="0.8"></circle>
+                        <circle cx="750" cy="50" fill="#e0c39e" r="6" opacity="0.9"></circle>
+                        <circle id="journey-map-circle" cx="90" cy="42" fill="#f2be8c" r="6"></circle>
+                        <rect id="journey-map-marker" class="animate-pulse" fill="#f2be8c" height="16" width="16" x="82" y="34" rx="2"></rect>
+                        <text id="journey-map-label" fill="#ffdcbd" font-family="Geist, Inter, sans-serif" font-size="11" font-weight="600" letter-spacing="0.06em" x="105" y="57">VOCÊ</text>
                     </svg>
                 </div>
             </div>
@@ -55,7 +59,7 @@
                 </div>
                 <div>
                     <p class="text-on-surface-variant font-label-md uppercase tracking-wider mb-1">LÉGUAS PERCORRIDAS</p>
-                    <p class="font-display-lg text-display-lg text-primary">1.240 <span class="text-headline-sm font-headline-sm opacity-60">nm</span></p>
+                    <p id="journey-total-miles" class="font-display-lg text-display-lg text-primary">0 <span class="text-headline-sm font-headline-sm opacity-60">nm</span></p>
                 </div>
             </div>
             <div class="bg-surface-container p-6 border border-outline-variant rounded flex items-center gap-6">
@@ -64,7 +68,7 @@
                 </div>
                 <div>
                     <p class="text-on-surface-variant font-label-md uppercase tracking-wider mb-1">SEREIAS SILENCIADAS</p>
-                    <p class="font-display-lg text-display-lg text-secondary">42 <span class="text-headline-sm font-headline-sm opacity-60">distrações</span></p>
+                    <p id="journey-total-sirens" class="font-display-lg text-display-lg text-secondary">0 <span class="text-headline-sm font-headline-sm opacity-60">distrações</span></p>
                 </div>
             </div>
         </section>
@@ -79,35 +83,40 @@
                 <div class="bg-surface-container-low border border-outline-variant rounded p-5 hover:bg-surface-container transition-colors cursor-default group" style="transition: 0.15s ease-out;">
                     <div class="flex justify-between items-start mb-4">
                         <span class="material-symbols-outlined text-primary" data-icon="anchor">anchor</span>
-                        <span class="text-label-sm font-label-sm bg-primary/15 text-primary border border-primary/30 rounded-sm px-2 py-0.5 uppercase">NÍVEL 4</span>
+                        <span id="mastery-anchor-badge" class="text-label-sm font-label-sm bg-primary/15 text-primary border border-primary/30 rounded-sm px-2 py-0.5 uppercase">NÍVEL 0</span>
                     </div>
-                    <h4 class="font-headline-sm text-headline-sm text-on-surface mb-2">Âncora de Aço</h4>
-                    <p class="text-body-sm font-body-sm text-on-surface-variant">Capacidade de manter o foco por mais de 90 minutos ininterruptos.</p>
-                    <div class="mt-4 w-full h-1 bg-surface-variant rounded-full overflow-hidden">
-                        <div class="h-full bg-primary w-3/4"></div>
+                    <h4 class="font-headline-sm text-headline-sm text-on-surface mb-1">Âncora de Aço</h4>
+                    <p class="text-body-sm font-body-sm text-on-surface-variant">Capacidade de manter o foco por até 90 minutos ininterruptos.</p>
+                    <p id="mastery-anchor-meta" class="text-label-sm font-label-sm text-primary/80 mt-3 uppercase">Recorde atual: 0 / 90 min</p>
+                    <div class="mt-2 w-full h-1 bg-surface-variant rounded-full overflow-hidden">
+                        <div id="mastery-anchor-bar" class="h-full bg-primary w-0 transition-all duration-500"></div>
                     </div>
                 </div>
                 <!-- Mastery Card 2 -->
                 <div class="bg-surface-container-low border border-outline-variant rounded p-5 hover:bg-surface-container transition-colors cursor-default group" style="transition: 0.15s ease-out;">
                     <div class="flex justify-between items-start mb-4">
                         <span class="material-symbols-outlined text-secondary" data-icon="visibility_off">visibility_off</span>
-                        <span class="text-label-sm font-label-sm bg-secondary-container/40 text-secondary border border-secondary/30 rounded-sm px-2 py-0.5 uppercase">NÍVEL 2</span>
+                        <span id="mastery-horizon-badge" class="text-label-sm font-label-sm bg-secondary-container/40 text-secondary border border-secondary/30 rounded-sm px-2 py-0.5 uppercase">NÍVEL 0</span>
                     </div>
-                    <h4 class="font-headline-sm text-headline-sm text-on-surface mb-2">Visão de Horizonte</h4>
-                    <p class="text-body-sm font-body-sm text-on-surface-variant">Ignorar notificações periféricas durante sessões críticas.</p>
-                    <div class="mt-4 w-full h-1 bg-surface-variant rounded-full overflow-hidden">
-                        <div class="h-full bg-secondary w-1/3"></div>
+                    <h4 class="font-headline-sm text-headline-sm text-on-surface mb-1">Visão de Horizonte</h4>
+                    <p class="text-body-sm font-body-sm text-on-surface-variant">Bloquear distrações digitais durante travessias concluídas.</p>
+                    <p id="mastery-horizon-meta" class="text-label-sm font-label-sm text-secondary/80 mt-3 uppercase">0 / 50 distrações bloqueadas</p>
+                    <div class="mt-2 w-full h-1 bg-surface-variant rounded-full overflow-hidden">
+                        <div id="mastery-horizon-bar" class="h-full bg-secondary w-0 transition-all duration-500"></div>
                     </div>
                 </div>
                 <!-- Mastery Card 3 -->
                 <div class="bg-surface-container-low border border-outline-variant rounded p-5 hover:bg-surface-container transition-colors cursor-default group" style="transition: 0.15s ease-out;">
                     <div class="flex justify-between items-start mb-4">
                         <span class="material-symbols-outlined text-tertiary" data-icon="explore">explore</span>
-                        <span class="text-label-sm font-label-sm bg-primary-container text-on-primary rounded-sm px-2 py-0.5 uppercase font-bold">COMPLETO</span>
+                        <span id="mastery-master-badge" class="text-label-sm font-label-sm bg-tertiary/15 text-tertiary border border-tertiary/30 rounded-sm px-2 py-0.5 uppercase font-bold">NÍVEL 0</span>
                     </div>
-                    <h4 class="font-headline-sm text-headline-sm text-on-surface mb-2">Navegador Mestre</h4>
-                    <p class="text-body-sm font-body-sm text-on-surface-variant">Planejamento semanal concluído sem desvios de rota.</p>
-                    <div class="mt-4 w-full h-1 bg-tertiary rounded-full overflow-hidden"></div>
+                    <h4 class="font-headline-sm text-headline-sm text-on-surface mb-1">Navegador Mestre</h4>
+                    <p class="text-body-sm font-body-sm text-on-surface-variant">Consistência de jornadas concluídas até o porto seguro.</p>
+                    <p id="mastery-master-meta" class="text-label-sm font-label-sm text-tertiary/80 mt-3 uppercase">0 / 10 viagens concluídas</p>
+                    <div class="mt-2 w-full h-1 bg-surface-variant rounded-full overflow-hidden">
+                        <div id="mastery-master-bar" class="h-full bg-tertiary w-0 transition-all duration-500"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -121,12 +130,12 @@
                     O Arquipélago da Maestria aguarda por aqueles que dominam suas próprias marés. Continue sua jornada para desbloquear o sistema de Diário Avançado e as métricas de Fluxo.
                 </p>
                 <div class="flex gap-4">
-                    <button class="bg-primary-container text-on-primary px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-wider hover:bg-tertiary transition-all">
-                        EXPANDIR MAPA
-                    </button>
-                    <button class="border border-outline-variant px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-wider text-on-surface-variant hover:text-secondary hover:border-secondary transition-colors">
-                        VER RECOMPENSAS
-                    </button>
+                    <a href="index.html" class="bg-primary-container text-on-primary px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-wider hover:bg-tertiary transition-all">
+                        INICIAR NOVA TRAVESSIA
+                    </a>
+                    <a href="listabloqueio.html" class="border border-outline-variant px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-wider text-on-surface-variant hover:text-secondary hover:border-secondary transition-colors">
+                        CONFIGURAR SEREIAS
+                    </a>
                 </div>
             </div>
             <!-- Abstract graphic element -->
@@ -152,6 +161,4 @@
         card.style.transition = 'all 0.15s ease-out';
     });
 </script>
-
-
 </body></html>

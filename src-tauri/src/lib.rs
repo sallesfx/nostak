@@ -108,6 +108,26 @@ fn remover_tarefa(id: u64) -> Result<config::Config, String> {
     Ok(config)
 }
 
+#[command]
+fn registrar_sessao_concluida(minutos_foco: u64) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.registrar_sessao_concluida(minutos_foco);
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
+fn registrar_sessao_interrompida() -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.registrar_sessao_interrompida();
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -131,7 +151,9 @@ pub fn run() {
             atualizar_tempos,
             adicionar_tarefa,
             alternar_tarefa,
-            remover_tarefa
+            remover_tarefa,
+            registrar_sessao_concluida,
+            registrar_sessao_interrompida
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao executar a aplicação Tauri");
