@@ -72,44 +72,44 @@
                         </div>
 
                         <!-- Modal de Personalização do Temporizador -->
-                        <div id="modal-custom-timer" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden">
+                        <div id="modal-custom-timer" role="dialog" aria-modal="true" aria-labelledby="custom-timer-dialog-title" aria-hidden="true" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden">
                             <div class="bg-surface-container border border-outline-variant rounded-md p-6 sm:p-8 max-w-md w-full mx-4 relative">
                                 <div class="flex items-center justify-between border-b border-outline-variant pb-3 mb-6">
                                     <div class="flex items-center gap-2 text-primary">
-                                        <span class="material-symbols-outlined text-lg">explore</span>
-                                        <h3 class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Calibrar Rota de Foco</h3>
+                                        <span class="material-symbols-outlined text-lg" aria-hidden="true">explore</span>
+                                        <h3 id="custom-timer-dialog-title" class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Calibrar Rota de Foco</h3>
                                     </div>
-                                    <button id="btn-close-custom-timer" class="text-on-surface-variant hover:text-primary transition-colors">
-                                        <span class="material-symbols-outlined text-xl">close</span>
+                                    <button type="button" id="btn-close-custom-timer" aria-label="Fechar modal de calibração" class="text-on-surface-variant hover:text-primary transition-colors">
+                                        <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
                                     </button>
                                 </div>
 
                                 <form id="form-custom-timer" class="space-y-6">
                                     <div>
-                                        <label class="block text-xs uppercase font-label-md text-on-surface-variant tracking-wider mb-2">
+                                        <label for="input-custom-focus" class="block text-xs uppercase font-label-md text-on-surface-variant tracking-wider mb-2 cursor-pointer">
                                             Tempo em Alto Mar (Foco)
                                         </label>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" id="btn-focus-minus" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">-</button>
+                                            <button type="button" id="btn-focus-minus" aria-label="Diminuir tempo de foco em 5 minutos" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">-</button>
                                             <div class="relative flex-1">
-                                                <input type="number" id="input-custom-focus" min="1" max="180" value="25" class="w-full bg-surface-container-low rounded-sm border border-outline-variant px-4 py-2 text-center text-primary font-display-md text-xl font-bold focus:border-primary focus:outline-none tabular-nums">
+                                                <input type="number" id="input-custom-focus" min="1" max="180" value="25" class="w-full bg-surface-container-low rounded-sm border border-outline-variant px-4 py-2 text-center text-primary font-display-md text-xl font-bold focus:border-primary tabular-nums">
                                                 <span class="absolute right-3 top-2.5 text-xs text-on-surface-variant uppercase pointer-events-none">min</span>
                                             </div>
-                                            <button type="button" id="btn-focus-plus" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">+</button>
+                                            <button type="button" id="btn-focus-plus" aria-label="Aumentar tempo de foco em 5 minutos" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">+</button>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label class="block text-xs uppercase font-label-md text-on-surface-variant tracking-wider mb-2">
+                                        <label for="input-custom-break" class="block text-xs uppercase font-label-md text-on-surface-variant tracking-wider mb-2 cursor-pointer">
                                             Porto de Descanso (Pausa)
                                         </label>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" id="btn-break-minus" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-secondary hover:text-secondary flex items-center justify-center font-bold text-lg transition-colors">-</button>
+                                            <button type="button" id="btn-break-minus" aria-label="Diminuir tempo de pausa em 1 minuto" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-secondary hover:text-secondary flex items-center justify-center font-bold text-lg transition-colors">-</button>
                                             <div class="relative flex-1">
-                                                <input type="number" id="input-custom-break" min="1" max="60" value="5" class="w-full bg-surface-container-low rounded-sm border border-outline-variant px-4 py-2 text-center text-secondary font-display-md text-xl font-bold focus:border-secondary focus:outline-none tabular-nums">
+                                                <input type="number" id="input-custom-break" min="1" max="60" value="5" class="w-full bg-surface-container-low rounded-sm border border-outline-variant px-4 py-2 text-center text-secondary font-display-md text-xl font-bold focus:border-secondary tabular-nums">
                                                 <span class="absolute right-3 top-2.5 text-xs text-on-surface-variant uppercase pointer-events-none">min</span>
                                             </div>
-                                            <button type="button" id="btn-break-plus" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-secondary hover:text-secondary flex items-center justify-center font-bold text-lg transition-colors">+</button>
+                                            <button type="button" id="btn-break-plus" aria-label="Aumentar tempo de pausa em 1 minuto" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-secondary hover:text-secondary flex items-center justify-center font-bold text-lg transition-colors">+</button>
                                         </div>
                                     </div>
 
@@ -310,11 +310,12 @@
                             </div>
                             <!-- Formulário Inline para Salvar Template -->
                             <form id="form-save-template" class="hidden mt-3 pt-3 border-t border-outline-variant flex flex-col sm:flex-row gap-2">
+                                <label for="input-template-name" class="sr-only">Nome do template de tarefas</label>
                                 <input
                                     id="input-template-name"
                                     type="text"
                                     placeholder="Nome do template (ex: Alemão, Matemática, Concurso)..."
-                                    class="flex-grow bg-surface-container-low border border-outline-variant rounded-sm px-3 py-1.5 text-xs text-on-surface placeholder:text-on-surface-variant/50 focus:border-secondary focus:outline-none transition-colors"
+                                    class="flex-grow bg-surface-container-low border border-outline-variant rounded-sm px-3 py-1.5 text-xs text-on-surface placeholder:text-on-surface-variant/50 focus:border-secondary transition-colors"
                                     required
                                 />
                                 <div class="flex gap-2">
@@ -338,17 +339,19 @@
                         <!-- Formulário Inline para Adicionar Tarefa -->
                         <form id="form-add-task" class="hidden mb-6 p-4 bg-surface-container border border-outline-variant rounded-sm space-y-3">
                             <div class="flex flex-col sm:flex-row gap-3">
+                                <label for="input-task-title" class="sr-only">Descrição da próxima tarefa</label>
                                 <input
                                     id="input-task-title"
                                     type="text"
                                     placeholder="Descreva a próxima manobra ou tarefa de estudo..."
-                                    class="flex-grow bg-surface-container-low border border-outline-variant rounded-sm px-3.5 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:outline-none transition-colors"
+                                    class="flex-grow bg-surface-container-low border border-outline-variant rounded-sm px-3.5 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary transition-colors"
                                     required
                                 />
+                                <label for="select-task-sessions" class="sr-only">Quantidade de sessões Pomodoro</label>
                                 <select
                                     id="select-task-sessions"
                                     title="Quantidade de sessões Pomodoro para esta tarefa"
-                                    class="bg-surface-container-low border border-outline-variant rounded-sm px-3 py-2.5 text-xs font-label-md uppercase tracking-wider text-primary focus:border-primary focus:outline-none transition-colors sm:w-36"
+                                    class="bg-surface-container-low border border-outline-variant rounded-sm px-3 py-2.5 text-xs font-label-md uppercase tracking-wider text-primary focus:border-primary transition-colors sm:w-36"
                                 >
                                     <option value="1">1 Sessão</option>
                                     <option value="2">2 Sessões</option>
@@ -357,9 +360,10 @@
                                     <option value="5">5 Sessões</option>
                                     <option value="6">6 Sessões</option>
                                 </select>
+                                <label for="select-task-category" class="sr-only">Categoria da tarefa</label>
                                 <select
                                     id="select-task-category"
-                                    class="bg-surface-container-low border border-outline-variant rounded-sm px-3.5 py-2.5 text-xs font-label-md uppercase tracking-wider text-on-surface focus:border-primary focus:outline-none transition-colors sm:w-32"
+                                    class="bg-surface-container-low border border-outline-variant rounded-sm px-3.5 py-2.5 text-xs font-label-md uppercase tracking-wider text-on-surface focus:border-primary transition-colors sm:w-32"
                                 >
                                     <option value="Rotina">Rotina</option>
                                     <option value="Urgente">Urgente</option>

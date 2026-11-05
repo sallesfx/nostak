@@ -1,6 +1,7 @@
 import { invokeTauri, playNauticalBell } from './ipc.js';
 import { initTasks, renderTasksState } from './tasks.js';
 import { renderDashboardProgress } from './progress.js';
+import { openModalDialog, closeModalDialog, bindModalKeyboardTrap } from './components.js';
 
 const TIMER_STORAGE_KEY = 'nostak_active_timer';
 const DEFAULT_TITLE = 'Nostak - Navegando pelo Foco Profundo';
@@ -426,12 +427,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const openCustomModal = () => {
         if (inputFocus) inputFocus.value = focusMinutes;
         if (inputBreak) inputBreak.value = breakMinutes;
-        if (modal) modal.classList.remove('hidden');
+        if (modal) openModalDialog(modal, '#input-custom-focus');
     };
 
     const closeCustomModal = () => {
-        if (modal) modal.classList.add('hidden');
+        if (modal) closeModalDialog(modal);
     };
+
+    if (modal) {
+        bindModalKeyboardTrap(modal, closeCustomModal);
+    }
 
     if (btnOpenModal) btnOpenModal.addEventListener('click', openCustomModal);
     if (btnCloseModal) btnCloseModal.addEventListener('click', closeCustomModal);

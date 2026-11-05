@@ -423,8 +423,6 @@ select option {
 .group:hover .group-hover\:scale-105 { transform: scale(1.05); }
 .focus\:border-primary:focus { border-color: #f2be8c; }
 .focus\:border-secondary:focus { border-color: #94d0e1; }
-.focus\:outline-none:focus { outline: 2px solid transparent; outline-offset: 2px; }
-.focus\:ring-0:focus { box-shadow: none; }
 
 @media (min-width: 640px) {
   .sm\:p-8 { padding: 2rem; }
@@ -479,8 +477,25 @@ select option {
     background: #9c8e82;
 }
 
-*:focus {
-    outline: none !important;
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 2px solid #f2be8c;
+    outline-offset: 2px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #f2be8c;
+    outline-offset: 0px;
+}
+
+.toggle-input:focus-visible + .toggle-track {
+    outline: 2px solid #f2be8c;
+    outline-offset: 2px;
 }
 
 .flat-border {

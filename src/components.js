@@ -16,6 +16,87 @@ function detectActiveRoute(element) {
     return 'temporizador'; // default: index.html
 }
 
+const FOCUSABLE_SELECTOR = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+/**
+ * Gerencia abertura acessível de um modal (role="dialog", focus inicial e registro do elemento disparador)
+ */
+export function openModalDialog(modalEl, initialFocusSelector = null) {
+    if (!modalEl) return;
+    modalEl._triggerElement = document.activeElement;
+    modalEl.classList.remove('hidden');
+    modalEl.setAttribute('aria-hidden', 'false');
+
+    requestAnimationFrame(() => {
+        const target = (initialFocusSelector && modalEl.querySelector(initialFocusSelector))
+            || modalEl.querySelector(FOCUSABLE_SELECTOR);
+        if (target && typeof target.focus === 'function') {
+            target.focus();
+        }
+    });
+}
+
+/**
+ * Gerencia fechamento acessível de um modal e devolve o foco ao botão disparador
+ */
+export function closeModalDialog(modalEl) {
+    if (!modalEl) return;
+    modalEl.classList.add('hidden');
+    modalEl.setAttribute('aria-hidden', 'true');
+
+    const trigger = modalEl._triggerElement;
+    if (trigger && typeof trigger.focus === 'function') {
+        trigger.focus();
+    }
+    modalEl._triggerElement = null;
+}
+
+/**
+ * Registra Focus Trap (Tab / Shift+Tab) e tecla Escape para qualquer modal
+ */
+export function bindModalKeyboardTrap(modalEl, onCloseCallback = null) {
+    if (!modalEl || modalEl._a11yBound) return;
+    modalEl._a11yBound = true;
+
+    const handleClose = () => {
+        if (typeof onCloseCallback === 'function') {
+            onCloseCallback();
+        } else {
+            closeModalDialog(modalEl);
+        }
+    };
+
+    document.addEventListener('keydown', (e) => {
+        if (modalEl.classList.contains('hidden')) return;
+
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            handleClose();
+            return;
+        }
+
+        if (e.key === 'Tab') {
+            const focusables = Array.from(modalEl.querySelectorAll(FOCUSABLE_SELECTOR));
+            if (focusables.length === 0) return;
+
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+
+            if (e.shiftKey) {
+                if (document.activeElement === first || !modalEl.contains(document.activeElement)) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            } else {
+                if (document.activeElement === last || !modalEl.contains(document.activeElement)) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        }
+    });
+}
+
 /**
  * Abre o Modal Global de Configurações a partir de qualquer página
  */
@@ -47,7 +128,7 @@ export async function openSettingsModal() {
     const feedbackEl = document.getElementById('settings-status-feedback');
     if (feedbackEl) feedbackEl.classList.add('hidden');
 
-    modal.classList.remove('hidden');
+    openModalDialog(modal, '#settings-input-focus');
 }
 
 function showSettingsFeedback(msg, isError = false) {
@@ -64,16 +145,20 @@ function ensureSettingsModalMounted() {
 
     const wrapper = document.createElement('div');
     wrapper.id = 'modal-global-settings';
+    wrapper.setAttribute('role', 'dialog');
+    wrapper.setAttribute('aria-modal', 'true');
+    wrapper.setAttribute('aria-labelledby', 'settings-dialog-title');
+    wrapper.setAttribute('aria-hidden', 'true');
     wrapper.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden';
     wrapper.innerHTML = `
         <div class="bg-surface-container border border-outline-variant rounded-md p-6 sm:p-8 max-w-lg w-full mx-4 relative">
             <div class="flex items-center justify-between border-b border-outline-variant pb-3 mb-6">
                 <div class="flex items-center gap-2 text-primary">
-                    <span class="material-symbols-outlined text-lg">tune</span>
-                    <h3 class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Configurações da Embarcação</h3>
+                    <span class="material-symbols-outlined text-lg" aria-hidden="true">tune</span>
+                    <h3 id="settings-dialog-title" class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Configurações da Embarcação</h3>
                 </div>
-                <button type="button" id="btn-close-global-settings" class="text-on-surface-variant hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined text-xl">close</span>
+                <button type="button" id="btn-close-global-settings" aria-label="Fechar configurações" class="text-on-surface-variant hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
                 </button>
             </div>
 
@@ -91,7 +176,7 @@ function ensureSettingsModalMounted() {
                             <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Tocar badalada suave ao concluir ciclos de foco e descanso.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input id="settings-toggle-sound" class="sr-only toggle-input" type="checkbox" checked>
+                            <input id="settings-toggle-sound" aria-label="Ativar ou desativar sino náutico" class="sr-only toggle-input" type="checkbox" checked>
                             <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                                 <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                             </div>
@@ -104,7 +189,7 @@ function ensureSettingsModalMounted() {
                             <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Iniciar a contagem de Porto Seguro automaticamente ao finalizar o foco.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input id="settings-toggle-autobreak" class="sr-only toggle-input" type="checkbox" checked>
+                            <input id="settings-toggle-autobreak" aria-label="Ativar ou desativar descanso automático" class="sr-only toggle-input" type="checkbox" checked>
                             <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                                 <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                             </div>
@@ -117,12 +202,12 @@ function ensureSettingsModalMounted() {
                     <h4 class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Calibração Padrão (Minutos)</h4>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="p-3 bg-surface-container-low border border-outline-variant rounded-sm">
-                            <label class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5">Foco em Alto Mar</label>
-                            <input type="number" id="settings-input-focus" min="1" max="180" value="25" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-primary font-display-md text-lg font-bold focus:border-primary focus:outline-none tabular-nums">
+                            <label for="settings-input-focus" class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5 cursor-pointer">Foco em Alto Mar</label>
+                            <input type="number" id="settings-input-focus" min="1" max="180" value="25" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-primary font-display-md text-lg font-bold focus:border-primary tabular-nums">
                         </div>
                         <div class="p-3 bg-surface-container-low border border-outline-variant rounded-sm">
-                            <label class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5">Pausa em Porto</label>
-                            <input type="number" id="settings-input-break" min="1" max="60" value="5" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-secondary font-display-md text-lg font-bold focus:border-secondary focus:outline-none tabular-nums">
+                            <label for="settings-input-break" class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5 cursor-pointer">Pausa em Porto</label>
+                            <input type="number" id="settings-input-break" min="1" max="60" value="5" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-secondary font-display-md text-lg font-bold focus:border-secondary tabular-nums">
                         </div>
                     </div>
                 </div>
@@ -159,7 +244,8 @@ function ensureSettingsModalMounted() {
 
     document.body.appendChild(wrapper);
 
-    const closeModal = () => wrapper.classList.add('hidden');
+    const closeModal = () => closeModalDialog(wrapper);
+    bindModalKeyboardTrap(wrapper, closeModal);
 
     wrapper.addEventListener('click', (e) => {
         if (e.target === wrapper) closeModal();

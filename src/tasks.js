@@ -118,7 +118,8 @@ export function renderTarefas(tarefas = [], tarefaAtivaId = null) {
             <input
                 type="checkbox"
                 data-task-id="${tarefa.id}"
-                class="task-checkbox w-4 h-4 bg-transparent border-outline text-primary-container focus:ring-0 rounded-sm cursor-pointer shrink-0"
+                aria-label="Marcar tarefa ${escapeHtml(tarefa.texto)} como concluída"
+                class="task-checkbox w-4 h-4 bg-transparent border-outline text-primary-container rounded-sm cursor-pointer shrink-0"
                 ${tarefa.concluida ? 'checked' : ''}
             />
             <span data-task-id="${tarefa.id}" class="task-text ${textClasses}">
