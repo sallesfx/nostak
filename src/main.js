@@ -1,20 +1,11 @@
+import { invokeTauri } from './ipc.js';
+import { initTasks } from './tasks.js';
+
 let timerInterval = null;
 let focusMinutes = 25;
 let breakMinutes = 5;
 let currentPhase = 'idle'; // 'idle' | 'focus' | 'break' | 'paused'
 let secondsRemaining = focusMinutes * 60;
-
-// Helper seguro para chamadas Tauri IPC
-async function invokeTauri(cmd, args = {}) {
-    if (window.__TAURI__) {
-        const invokeFn = window.__TAURI__.core?.invoke || window.__TAURI__.invoke;
-        if (typeof invokeFn === 'function') {
-            return await invokeFn(cmd, args);
-        }
-    }
-    console.warn(`[Nostak Simulation] Tauri IPC não detectado. Executando ${cmd}`, args);
-    return `[Simulado] Comando ${cmd} executado.`;
-}
 
 function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
@@ -271,24 +262,30 @@ async function resetVoyage() {
     }
 }
 
-async function initTimerConfig() {
+async function initAppConfig() {
     try {
         const config = await invokeTauri('obter_configuracoes');
-        if (config && config.tempo_foco_minutos) {
-            focusMinutes = config.tempo_foco_minutos;
-            breakMinutes = config.tempo_pausa_minutos || 5;
-            secondsRemaining = focusMinutes * 60;
-            updateTimerUI();
-            updatePresetButtonsUI();
+        if (config) {
+            if (config.tempo_foco_minutos) {
+                focusMinutes = config.tempo_foco_minutos;
+                breakMinutes = config.tempo_pausa_minutos || 5;
+                secondsRemaining = focusMinutes * 60;
+                updateTimerUI();
+                updatePresetButtonsUI();
+            }
+            initTasks(config.tarefas || []);
+        } else {
+            initTasks([]);
         }
     } catch (e) {
-        console.error("[Nostak] Erro ao carregar configurações de tempo:", e);
+        console.error("[Nostak] Erro ao carregar configurações:", e);
+        initTasks([]);
     }
 }
 
 // Inicializa quando a página carregar
 document.addEventListener('DOMContentLoaded', () => {
-    initTimerConfig();
+    initAppConfig();
 
     document.querySelectorAll('.btn-preset').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -367,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Torna as funções disponíveis globalmente
+// Torna as funções disponíveis globalmente para handlers inline
 window.invokeTauri = invokeTauri;
 window.startVoyage = startVoyage;
 window.pauseVoyage = pauseVoyage;

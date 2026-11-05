@@ -4,6 +4,43 @@ use std::fs;
 use std::io;
 use std::path::Path;
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct Tarefa {
+    pub id: u64,
+    pub texto: String,
+    pub categoria: String,
+    pub concluida: bool,
+}
+
+pub fn default_tarefas() -> Vec<Tarefa> {
+    vec![
+        Tarefa {
+            id: 1,
+            texto: "Mapear rota de águas profundas".to_string(),
+            categoria: "Rotina".to_string(),
+            concluida: true,
+        },
+        Tarefa {
+            id: 2,
+            texto: "Limpar convés de distrações digitais".to_string(),
+            categoria: "Urgente".to_string(),
+            concluida: false,
+        },
+        Tarefa {
+            id: 3,
+            texto: "Calibrar sextante de produtividade".to_string(),
+            categoria: "Rotina".to_string(),
+            concluida: false,
+        },
+        Tarefa {
+            id: 4,
+            texto: "Navegar por 45 min sem interrupção".to_string(),
+            categoria: "Foco".to_string(),
+            concluida: false,
+        },
+    ]
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     pub tempo_foco_minutos: u64,
@@ -11,6 +48,8 @@ pub struct Config {
     pub categorias_ativas: Vec<String>,
     pub sites_personalizados: Vec<String>,
     pub categorias: HashMap<String, Vec<String>>,
+    #[serde(default = "default_tarefas")]
+    pub tarefas: Vec<Tarefa>,
 }
 
 impl Default for Config {
@@ -68,15 +107,15 @@ impl Default for Config {
             ],
             sites_personalizados: vec![],
             categorias,
+            tarefas: default_tarefas(),
         }
     }
 }
 
 impl Config {
+    /// Prioriza o `config.toml` na raiz do projeto (mesmo quando executado a partir de `src-tauri/`).
     pub fn get_config_path() -> &'static str {
-        if Path::new("config.toml").exists() {
-            "config.toml"
-        } else if Path::new("../config.toml").exists() {
+        if Path::new("../config.toml").exists() {
             "../config.toml"
         } else {
             "config.toml"
@@ -136,6 +175,38 @@ impl Config {
         self.tempo_pausa_minutos = pausa;
     }
 
+    pub fn adicionar_tarefa(&mut self, texto: String, categoria: String) -> Option<Tarefa> {
+        let clean_texto = texto.trim().to_string();
+        if clean_texto.is_empty() {
+            return None;
+        }
+        let clean_cat = if categoria.trim().is_empty() {
+            "Rotina".to_string()
+        } else {
+            categoria.trim().to_string()
+        };
+
+        let next_id = self.tarefas.iter().map(|t| t.id).max().unwrap_or(0) + 1;
+        let nova = Tarefa {
+            id: next_id,
+            texto: clean_texto,
+            categoria: clean_cat,
+            concluida: false,
+        };
+        self.tarefas.push(nova.clone());
+        Some(nova)
+    }
+
+    pub fn alternar_tarefa(&mut self, id: u64, concluida: bool) {
+        if let Some(tarefa) = self.tarefas.iter_mut().find(|t| t.id == id) {
+            tarefa.concluida = concluida;
+        }
+    }
+
+    pub fn remover_tarefa(&mut self, id: u64) {
+        self.tarefas.retain(|t| t.id != id);
+    }
+
     pub fn get_all_blocked_sites(&self) -> Vec<String> {
         let mut blocked_set = std::collections::HashSet::new();
 
@@ -185,5 +256,22 @@ mod tests {
         cfg.atualizar_tempos(45, 10);
         assert_eq!(cfg.tempo_foco_minutos, 45);
         assert_eq!(cfg.tempo_pausa_minutos, 10);
+    }
+
+    #[test]
+    fn test_gerenciar_tarefas() {
+        let mut cfg = Config::default();
+        let initial_len = cfg.tarefas.len();
+
+        let criada = cfg.adicionar_tarefa("Estudar Rust".to_string(), "Foco".to_string());
+        assert!(criada.is_some());
+        let id = criada.unwrap().id;
+        assert_eq!(cfg.tarefas.len(), initial_len + 1);
+
+        cfg.alternar_tarefa(id, true);
+        assert!(cfg.tarefas.iter().find(|t| t.id == id).unwrap().concluida);
+
+        cfg.remover_tarefa(id);
+        assert_eq!(cfg.tarefas.len(), initial_len);
     }
 }

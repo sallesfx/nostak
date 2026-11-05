@@ -77,6 +77,37 @@ fn atualizar_tempos(tempo_foco_minutos: u64, tempo_pausa_minutos: u64) -> Result
     Ok(config)
 }
 
+#[command]
+fn adicionar_tarefa(texto: String, categoria: String) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.adicionar_tarefa(texto, categoria)
+        .ok_or_else(|| "O texto da tarefa não pode estar vazio.".to_string())?;
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
+fn alternar_tarefa(id: u64, concluida: bool) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.alternar_tarefa(id, concluida);
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
+fn remover_tarefa(id: u64) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.remover_tarefa(id);
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -97,7 +128,10 @@ pub fn run() {
             alternar_categoria,
             adicionar_sereia,
             remover_sereia,
-            atualizar_tempos
+            atualizar_tempos,
+            adicionar_tarefa,
+            alternar_tarefa,
+            remover_tarefa
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao executar a aplicação Tauri");
