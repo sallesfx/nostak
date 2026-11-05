@@ -44,7 +44,7 @@ export function renderConfiguracoes(config) {
                         <span class="material-symbols-outlined text-secondary text-xl">block</span>
                         <span class="font-body-md text-sm text-on-surface truncate">${site}</span>
                     </div>
-                    <button class="btn-remove-site text-on-surface-variant hover:text-error hover:bg-error/10 p-1.5 transition-colors rounded-sm" data-site="${site}" title="Remover Sereia" aria-label="Remover sereia ${site} da lista de bloqueio">
+                    <button class="btn-remove-site text-on-surface-variant hover:text-error hover:bg-error/10 w-7 h-7 flex items-center justify-center transition-colors rounded-sm shrink-0" data-site="${site}" title="Remover Sereia" aria-label="Remover sereia ${site} da lista de bloqueio">
                         <span class="material-symbols-outlined text-lg" aria-hidden="true">close</span>
                     </button>
                 `;
