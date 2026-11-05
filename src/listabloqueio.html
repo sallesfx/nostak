@@ -39,7 +39,7 @@
                 <div class="flex items-center justify-between">
                     <span class="category-status font-label-sm text-label-sm uppercase tracking-wider text-primary">Ativado</span>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input class="sr-only toggle-input" type="checkbox">
+                        <input aria-label="Bloquear categoria Redes Sociais" class="sr-only toggle-input" type="checkbox">
                         <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                             <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                         </div>
@@ -57,7 +57,7 @@
                 <div class="flex items-center justify-between">
                     <span class="category-status font-label-sm text-label-sm uppercase tracking-wider text-primary">Ativado</span>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input class="sr-only toggle-input" type="checkbox">
+                        <input aria-label="Bloquear categoria Streaming e Vídeos" class="sr-only toggle-input" type="checkbox">
                         <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                             <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                         </div>
@@ -75,7 +75,7 @@
                 <div class="flex items-center justify-between">
                     <span class="category-status font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Desativado</span>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input class="sr-only toggle-input" type="checkbox">
+                        <input aria-label="Bloquear categoria Notícias e Portais" class="sr-only toggle-input" type="checkbox">
                         <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                             <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                         </div>
@@ -93,7 +93,7 @@
                 <div class="flex items-center justify-between">
                     <span class="category-status font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Desativado</span>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input class="sr-only toggle-input" type="checkbox">
+                        <input aria-label="Bloquear categoria Jogos" class="sr-only toggle-input" type="checkbox">
                         <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                             <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                         </div>
@@ -115,7 +115,8 @@
             <!-- Formulário de Adicionar Nova Sereia -->
             <form id="form-add-sereia" class="flex flex-col sm:flex-row gap-3 mb-8">
                 <div class="relative flex-grow">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">link</span>
+                    <label for="input-new-sereia" class="sr-only">Domínio do site personalizado para bloquear</label>
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl" aria-hidden="true">link</span>
                     <input id="input-new-sereia" class="w-full bg-surface-container-low border border-outline-variant rounded pl-10 pr-4 py-3 focus:border-primary text-on-surface font-body-md text-sm placeholder:text-on-surface-variant/50 transition-colors" placeholder="Exemplo: reddit.com, anime.tv ou gshow.globo.com" type="text" required>
                 </div>
                 <button type="submit" class="bg-primary-container text-on-primary hover:bg-tertiary px-6 py-3 rounded font-label-sm text-label-sm uppercase font-bold tracking-wider transition-colors flex items-center justify-center gap-2 shrink-0">

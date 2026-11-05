@@ -176,7 +176,7 @@ function ensureSettingsModalMounted() {
                             <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Tocar badalada suave ao concluir ciclos de foco e descanso.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input id="settings-toggle-sound" class="sr-only toggle-input" type="checkbox" checked>
+                            <input id="settings-toggle-sound" aria-label="Ativar ou desativar sino náutico" class="sr-only toggle-input" type="checkbox" checked>
                             <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                                 <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                             </div>
@@ -189,7 +189,7 @@ function ensureSettingsModalMounted() {
                             <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Iniciar a contagem de Porto Seguro automaticamente ao finalizar o foco.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input id="settings-toggle-autobreak" class="sr-only toggle-input" type="checkbox" checked>
+                            <input id="settings-toggle-autobreak" aria-label="Ativar ou desativar descanso automático" class="sr-only toggle-input" type="checkbox" checked>
                             <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                                 <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                             </div>
@@ -202,11 +202,11 @@ function ensureSettingsModalMounted() {
                     <h4 class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Calibração Padrão (Minutos)</h4>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="p-3 bg-surface-container-low border border-outline-variant rounded-sm">
-                            <label class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5">Foco em Alto Mar</label>
+                            <label for="settings-input-focus" class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5 cursor-pointer">Foco em Alto Mar</label>
                             <input type="number" id="settings-input-focus" min="1" max="180" value="25" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-primary font-display-md text-lg font-bold focus:border-primary tabular-nums">
                         </div>
                         <div class="p-3 bg-surface-container-low border border-outline-variant rounded-sm">
-                            <label class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5">Pausa em Porto</label>
+                            <label for="settings-input-break" class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5 cursor-pointer">Pausa em Porto</label>
                             <input type="number" id="settings-input-break" min="1" max="60" value="5" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-secondary font-display-md text-lg font-bold focus:border-secondary tabular-nums">
                         </div>
                     </div>
