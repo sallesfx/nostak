@@ -1,4 +1,4 @@
-import { invokeTauri } from './ipc.js';
+import { invokeTauri, playNauticalBell } from './ipc.js';
 import { initTasks } from './tasks.js';
 import { renderDashboardProgress } from './progress.js';
 
@@ -8,42 +8,11 @@ const DEFAULT_TITLE = 'Nostak - Navegando pelo Foco Profundo';
 let timerInterval = null;
 let focusMinutes = 25;
 let breakMinutes = 5;
+let somAtivo = true;
+let autoIniciarDescanso = true;
 let currentPhase = 'idle'; // 'idle' | 'focus' | 'break' | 'paused'
 let secondsRemaining = focusMinutes * 60;
 let targetEndTimestamp = null;
-
-/**
- * Toca um sino náutico suave sintetizado via Web Audio API (sem arquivos externos).
- */
-function playNauticalBell(type = 'focus-end') {
-    try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        const ctx = new AudioCtx();
-
-        const notes = type === 'focus-end' ? [528, 792] : [660, 528];
-        notes.forEach((freq, idx) => {
-            const startTime = ctx.currentTime + idx * 0.35;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, startTime);
-
-            gain.gain.setValueAtTime(0.001, startTime);
-            gain.gain.exponentialRampToValueAtTime(0.22, startTime + 0.03);
-            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.4);
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-
-            osc.start(startTime);
-            osc.stop(startTime + 1.45);
-        });
-    } catch (e) {
-        console.warn('[Nostak] Áudio indisponível:', e);
-    }
-}
 
 function saveTimerSessionState() {
     if (currentPhase === 'idle') {
@@ -197,21 +166,41 @@ function startCountdownLoop() {
             timerInterval = null;
             targetEndTimestamp = null;
             if (currentPhase === 'focus') {
-                playNauticalBell('focus-end');
-                startBreakSession();
+                if (somAtivo) playNauticalBell('focus-end');
+                completeFocusPhase();
             } else if (currentPhase === 'break') {
-                playNauticalBell('break-end');
+                if (somAtivo) playNauticalBell('break-end');
                 finishBreakSession();
             }
         }
     }, 1000);
 }
 
+async function completeFocusPhase() {
+    // Desbloqueia os sites e registra a sessão de foco concluída
+    try {
+        await invokeTauri('ancorar_porto_seguro');
+        const configAtualizada = await invokeTauri('registrar_sessao_concluida', {
+            minutosFoco: focusMinutes
+        });
+        if (configAtualizada && configAtualizada.progresso) {
+            renderDashboardProgress(configAtualizada.progresso);
+        }
+    } catch (e) {
+        console.error("[Nostak] Erro ao finalizar foco e registrar sessão:", e);
+    }
+
+    if (autoIniciarDescanso) {
+        startBreakSession();
+    } else {
+        finishBreakSession();
+    }
+}
+
 async function startVoyage() {
     const badge = document.getElementById('status-badge');
 
     try {
-        // Envia lista vazia para utilizar os domínios configurados no config.toml do Rust
         const resposta = await invokeTauri('zarpar_jornada', { sites: [] });
         console.log("[Nostak]", resposta);
 
@@ -237,23 +226,10 @@ async function startVoyage() {
     }
 }
 
-async function startBreakSession() {
+function startBreakSession() {
     currentPhase = 'break';
     secondsRemaining = breakMinutes * 60;
     targetEndTimestamp = Date.now() + secondsRemaining * 1000;
-
-    // Desbloqueia os sites para o descanso e registra a sessão de foco concluída
-    try {
-        await invokeTauri('ancorar_porto_seguro');
-        const configAtualizada = await invokeTauri('registrar_sessao_concluida', {
-            minutosFoco: focusMinutes
-        });
-        if (configAtualizada && configAtualizada.progresso) {
-            renderDashboardProgress(configAtualizada.progresso);
-        }
-    } catch (e) {
-        console.error("[Nostak] Erro ao finalizar foco e registrar sessão:", e);
-    }
 
     applyPhaseVisualState('break');
     updateTimerUI();
@@ -377,20 +353,30 @@ function tryRestoreActiveTimerSession() {
     return false;
 }
 
+function applyConfigToTimer(config, preserveActiveTimer = true) {
+    if (!config) return;
+    somAtivo = config.som_ativo !== false;
+    autoIniciarDescanso = config.auto_iniciar_descanso !== false;
+
+    if ((!preserveActiveTimer || currentPhase === 'idle') && config.tempo_foco_minutos) {
+        focusMinutes = config.tempo_foco_minutos;
+        breakMinutes = config.tempo_pausa_minutos || 5;
+        secondsRemaining = focusMinutes * 60;
+        updateTimerUI();
+        updatePresetButtonsUI();
+    }
+    if (config.progresso) {
+        renderDashboardProgress(config.progresso);
+    }
+}
+
 async function initAppConfig() {
     const restored = tryRestoreActiveTimerSession();
     try {
         const config = await invokeTauri('obter_configuracoes');
         if (config) {
-            if (!restored && config.tempo_foco_minutos) {
-                focusMinutes = config.tempo_foco_minutos;
-                breakMinutes = config.tempo_pausa_minutos || 5;
-                secondsRemaining = focusMinutes * 60;
-                updateTimerUI();
-                updatePresetButtonsUI();
-            }
+            applyConfigToTimer(config, restored);
             initTasks(config.tarefas || []);
-            renderDashboardProgress(config.progresso || {});
         } else {
             initTasks([]);
             renderDashboardProgress({});
@@ -401,6 +387,13 @@ async function initAppConfig() {
         renderDashboardProgress({});
     }
 }
+
+// Escuta atualizações vindas do Modal Global de Configurações
+window.addEventListener('nostak:config-updated', (e) => {
+    if (e.detail) {
+        applyConfigToTimer(e.detail, true);
+    }
+});
 
 // Inicializa quando a página carregar
 document.addEventListener('DOMContentLoaded', () => {
