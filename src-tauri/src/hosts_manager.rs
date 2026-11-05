@@ -158,6 +158,15 @@ pub fn block_domains(domains: &[&str]) -> io::Result<()> {
     Ok(())
 }
 
+/// Verifica se existem bloqueios ativos do Nostak no arquivo hosts
+pub fn has_active_blocks() -> bool {
+    let hosts_path = get_hosts_path();
+    match fs::read_to_string(hosts_path) {
+        Ok(content) => content.contains(START_MARKER),
+        Err(_) => false,
+    }
+}
+
 /// Remove o bloco de domínios bloqueados pelo Nostak do arquivo hosts
 pub fn unblock_domains() -> io::Result<()> {
     let hosts_path = get_hosts_path();
@@ -193,4 +202,21 @@ pub fn unblock_domains() -> io::Result<()> {
 
     println!("[Nostak] Domínios desbloqueados e cache de DNS limpo!");
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_normalize_domain() {
+        assert_eq!(
+            normalize_domain("https://www.YouTube.com/watch?v=123"),
+            ("youtube.com".to_string(), "www.youtube.com".to_string())
+        );
+        assert_eq!(
+            normalize_domain("  reddit.com/r/rust "),
+            ("reddit.com".to_string(), "www.reddit.com".to_string())
+        );
+    }
 }

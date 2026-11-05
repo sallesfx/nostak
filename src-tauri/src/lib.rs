@@ -1,6 +1,5 @@
 mod config;
 mod hosts_manager;
-mod timer;
 
 use tauri::command;
 
@@ -140,6 +139,14 @@ pub fn run() {
                 )?;
             }
             Ok(())
+        })
+        .on_window_event(|_window, event| {
+            if let tauri::WindowEvent::CloseRequested { .. } | tauri::WindowEvent::Destroyed = event {
+                if hosts_manager::has_active_blocks() {
+                    println!("[Nostak] Janela fechada durante sessão ativa. Removendo bloqueios de segurança...");
+                    let _ = hosts_manager::unblock_domains();
+                }
+            }
         })
         .invoke_handler(tauri::generate_handler![
             zarpar_jornada,
