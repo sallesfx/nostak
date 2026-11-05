@@ -77,6 +77,26 @@ fn atualizar_tempos(tempo_foco_minutos: u64, tempo_pausa_minutos: u64) -> Result
 }
 
 #[command]
+fn atualizar_preferencias(som_ativo: bool, auto_iniciar_descanso: bool) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.atualizar_preferencias(som_ativo, auto_iniciar_descanso);
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
+fn resetar_progresso() -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.resetar_progresso();
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
 fn adicionar_tarefa(texto: String, categoria: String) -> Result<config::Config, String> {
     let mut config = config::Config::load_or_create()
         .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
@@ -156,6 +176,8 @@ pub fn run() {
             adicionar_sereia,
             remover_sereia,
             atualizar_tempos,
+            atualizar_preferencias,
+            resetar_progresso,
             adicionar_tarefa,
             alternar_tarefa,
             remover_tarefa,

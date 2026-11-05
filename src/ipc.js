@@ -1,6 +1,6 @@
 /**
  * Módulo central de comunicação IPC com o backend Rust (Tauri v2).
- * Inclui fallback seguro para visualização em navegador comum.
+ * Inclui fallback seguro para visualização em navegador comum e utilitário de áudio náutico.
  */
 
 export async function invokeTauri(cmd, args = {}) {
@@ -14,12 +14,47 @@ export async function invokeTauri(cmd, args = {}) {
     return simulateTauriCommand(cmd, args);
 }
 
+/**
+ * Toca um sino náutico suave sintetizado via Web Audio API (sem arquivos externos).
+ */
+export function playNauticalBell(type = 'focus-end') {
+    try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+
+        const notes = type === 'focus-end' ? [528, 792] : [660, 528];
+        notes.forEach((freq, idx) => {
+            const startTime = ctx.currentTime + idx * 0.35;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, startTime);
+
+            gain.gain.setValueAtTime(0.001, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.22, startTime + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.4);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(startTime);
+            osc.stop(startTime + 1.45);
+        });
+    } catch (e) {
+        console.warn('[Nostak] Áudio indisponível:', e);
+    }
+}
+
 // Fallback em memória/localStorage apenas quando aberto fora do Tauri
 function getMockConfig() {
     const raw = localStorage.getItem('nostak_mock_config');
     if (raw) {
         try {
             const parsed = JSON.parse(raw);
+            if (typeof parsed.som_ativo !== 'boolean') parsed.som_ativo = true;
+            if (typeof parsed.auto_iniciar_descanso !== 'boolean') parsed.auto_iniciar_descanso = true;
             if (!parsed.progresso) {
                 parsed.progresso = {
                     total_minutos_foco: 0,
@@ -35,6 +70,8 @@ function getMockConfig() {
     return {
         tempo_foco_minutos: 25,
         tempo_pausa_minutos: 5,
+        som_ativo: true,
+        auto_iniciar_descanso: true,
         categorias_ativas: ['redes_sociais', 'streaming_e_videos'],
         sites_personalizados: [],
         tarefas: [
@@ -66,6 +103,19 @@ function simulateTauriCommand(cmd, args) {
         case 'atualizar_tempos':
             cfg.tempo_foco_minutos = args.tempoFocoMinutos ?? cfg.tempo_foco_minutos;
             cfg.tempo_pausa_minutos = args.tempoPausaMinutos ?? cfg.tempo_pausa_minutos;
+            return saveMockConfig(cfg);
+        case 'atualizar_preferencias':
+            if (typeof args.somAtivo === 'boolean') cfg.som_ativo = args.somAtivo;
+            if (typeof args.autoIniciarDescanso === 'boolean') cfg.auto_iniciar_descanso = args.autoIniciarDescanso;
+            return saveMockConfig(cfg);
+        case 'resetar_progresso':
+            cfg.progresso = {
+                total_minutos_foco: 0,
+                sessoes_concluidas: 0,
+                sessoes_interrompidas: 0,
+                maior_sessao_minutos: 0,
+                sereias_silenciadas: 0
+            };
             return saveMockConfig(cfg);
         case 'alternar_categoria':
             if (args.ativa && !cfg.categorias_ativas.includes(args.categoria)) {
@@ -119,3 +169,4 @@ function simulateTauriCommand(cmd, args) {
 }
 
 window.invokeTauri = invokeTauri;
+window.playNauticalBell = playNauticalBell;

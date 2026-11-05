@@ -165,3 +165,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Atualiza em tempo real caso o usuário zere o progresso pelo Modal Global de Configurações
+window.addEventListener('nostak:config-updated', (e) => {
+    if (e.detail && e.detail.progresso) {
+        if (document.getElementById('journey-total-miles')) {
+            renderJourneyPage(e.detail.progresso);
+        }
+        renderDashboardProgress(e.detail.progresso);
+    }
+});
+
