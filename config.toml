@@ -5,6 +5,7 @@ categorias_ativas = [
     "streaming_e_videos",
 ]
 sites_personalizados = []
+tarefas = []
 
 [categorias]
 noticias_e_portais = [
@@ -12,6 +13,12 @@ noticias_e_portais = [
     "uol.com.br",
     "ge.globo.com",
     "cnnbrasil.com.br",
+]
+jogos = [
+    "steamcommunity.com",
+    "roblox.com",
+    "epicgames.com",
+    "discord.com",
 ]
 redes_sociais = [
     "instagram.com",
@@ -27,15 +34,10 @@ streaming_e_videos = [
     "twitch.tv",
     "primevideo.com",
 ]
-jogos = [
-    "steamcommunity.com",
-    "roblox.com",
-    "epicgames.com",
-    "discord.com",
-]
 
-[[tarefas]]
-id = 1
-texto = "mudancas nostak"
-categoria = "Rotina"
-concluida = false
+[progresso]
+total_minutos_foco = 0
+sessoes_concluidas = 0
+sessoes_interrompidas = 1
+maior_sessao_minutos = 0
+sereias_silenciadas = 0

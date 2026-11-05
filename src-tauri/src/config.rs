@@ -12,6 +12,15 @@ pub struct Tarefa {
     pub concluida: bool,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+pub struct Progresso {
+    pub total_minutos_foco: u64,
+    pub sessoes_concluidas: u64,
+    pub sessoes_interrompidas: u64,
+    pub maior_sessao_minutos: u64,
+    pub sereias_silenciadas: u64,
+}
+
 pub fn default_tarefas() -> Vec<Tarefa> {
     vec![
         Tarefa {
@@ -50,6 +59,8 @@ pub struct Config {
     pub categorias: HashMap<String, Vec<String>>,
     #[serde(default = "default_tarefas")]
     pub tarefas: Vec<Tarefa>,
+    #[serde(default)]
+    pub progresso: Progresso,
 }
 
 impl Default for Config {
@@ -108,6 +119,7 @@ impl Default for Config {
             sites_personalizados: vec![],
             categorias,
             tarefas: default_tarefas(),
+            progresso: Progresso::default(),
         }
     }
 }
@@ -207,6 +219,20 @@ impl Config {
         self.tarefas.retain(|t| t.id != id);
     }
 
+    pub fn registrar_sessao_concluida(&mut self, minutos_foco: u64) {
+        let bloqueados = self.get_all_blocked_sites().len() as u64;
+        self.progresso.total_minutos_foco += minutos_foco;
+        self.progresso.sessoes_concluidas += 1;
+        if minutos_foco > self.progresso.maior_sessao_minutos {
+            self.progresso.maior_sessao_minutos = minutos_foco;
+        }
+        self.progresso.sereias_silenciadas += bloqueados;
+    }
+
+    pub fn registrar_sessao_interrompida(&mut self) {
+        self.progresso.sessoes_interrompidas += 1;
+    }
+
     pub fn get_all_blocked_sites(&self) -> Vec<String> {
         let mut blocked_set = std::collections::HashSet::new();
 
@@ -273,5 +299,25 @@ mod tests {
 
         cfg.remover_tarefa(id);
         assert_eq!(cfg.tarefas.len(), initial_len);
+    }
+
+    #[test]
+    fn test_registrar_progresso_sessoes() {
+        let mut cfg = Config::default();
+        let qtd_bloqueados = cfg.get_all_blocked_sites().len() as u64;
+
+        cfg.registrar_sessao_concluida(45);
+        assert_eq!(cfg.progresso.total_minutos_foco, 45);
+        assert_eq!(cfg.progresso.sessoes_concluidas, 1);
+        assert_eq!(cfg.progresso.maior_sessao_minutos, 45);
+        assert_eq!(cfg.progresso.sereias_silenciadas, qtd_bloqueados);
+
+        cfg.registrar_sessao_concluida(25);
+        assert_eq!(cfg.progresso.total_minutos_foco, 70);
+        assert_eq!(cfg.progresso.sessoes_concluidas, 2);
+        assert_eq!(cfg.progresso.maior_sessao_minutos, 45);
+
+        cfg.registrar_sessao_interrompida();
+        assert_eq!(cfg.progresso.sessoes_interrompidas, 1);
     }
 }
