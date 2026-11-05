@@ -19,7 +19,17 @@ function getMockConfig() {
     const raw = localStorage.getItem('nostak_mock_config');
     if (raw) {
         try {
-            return JSON.parse(raw);
+            const parsed = JSON.parse(raw);
+            if (!parsed.progresso) {
+                parsed.progresso = {
+                    total_minutos_foco: 0,
+                    sessoes_concluidas: 0,
+                    sessoes_interrompidas: 0,
+                    maior_sessao_minutos: 0,
+                    sereias_silenciadas: 0
+                };
+            }
+            return parsed;
         } catch (_) {}
     }
     return {
@@ -32,7 +42,14 @@ function getMockConfig() {
             { id: 2, texto: 'Limpar convés de distrações digitais', categoria: 'Urgente', concluida: false },
             { id: 3, texto: 'Calibrar sextante de produtividade', categoria: 'Rotina', concluida: false },
             { id: 4, texto: 'Navegar por 45 min sem interrupção', categoria: 'Foco', concluida: false }
-        ]
+        ],
+        progresso: {
+            total_minutos_foco: 0,
+            sessoes_concluidas: 0,
+            sessoes_interrompidas: 0,
+            maior_sessao_minutos: 0,
+            sereias_silenciadas: 0
+        }
     };
 }
 
@@ -83,10 +100,22 @@ function simulateTauriCommand(cmd, args) {
         case 'remover_tarefa':
             cfg.tarefas = cfg.tarefas.filter(item => item.id !== args.id);
             return saveMockConfig(cfg);
+        case 'registrar_sessao_concluida': {
+            const mins = args.minutosFoco || cfg.tempo_foco_minutos || 25;
+            cfg.progresso.total_minutos_foco += mins;
+            cfg.progresso.sessoes_concluidas += 1;
+            if (mins > cfg.progresso.maior_sessao_minutos) {
+                cfg.progresso.maior_sessao_minutos = mins;
+            }
+            cfg.progresso.sereias_silenciadas += (cfg.categorias_ativas.length * 4) + cfg.sites_personalizados.length;
+            return saveMockConfig(cfg);
+        }
+        case 'registrar_sessao_interrompida':
+            cfg.progresso.sessoes_interrompidas += 1;
+            return saveMockConfig(cfg);
         default:
             return `[Simulado] Comando ${cmd} executado.`;
     }
 }
 
 window.invokeTauri = invokeTauri;
-

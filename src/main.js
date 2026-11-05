@@ -1,5 +1,6 @@
 import { invokeTauri } from './ipc.js';
 import { initTasks } from './tasks.js';
+import { renderDashboardProgress } from './progress.js';
 
 let timerInterval = null;
 let focusMinutes = 25;
@@ -122,11 +123,17 @@ async function startBreakSession() {
     currentPhase = 'break';
     secondsRemaining = breakMinutes * 60;
 
-    // Desbloqueia os sites para o descanso
+    // Desbloqueia os sites para o descanso e registra a sessão de foco concluída
     try {
         await invokeTauri('ancorar_porto_seguro');
+        const configAtualizada = await invokeTauri('registrar_sessao_concluida', {
+            minutosFoco: focusMinutes
+        });
+        if (configAtualizada && configAtualizada.progresso) {
+            renderDashboardProgress(configAtualizada.progresso);
+        }
     } catch (e) {
-        console.error("[Nostak] Erro ao liberar sites para o descanso:", e);
+        console.error("[Nostak] Erro ao finalizar foco e registrar sessão:", e);
     }
 
     if (container) {
@@ -213,6 +220,10 @@ async function failVoyage() {
 
     try {
         await invokeTauri('ancorar_porto_seguro');
+        const configAtualizada = await invokeTauri('registrar_sessao_interrompida');
+        if (configAtualizada && configAtualizada.progresso) {
+            renderDashboardProgress(configAtualizada.progresso);
+        }
 
         if (timerInterval) {
             clearInterval(timerInterval);
@@ -274,12 +285,15 @@ async function initAppConfig() {
                 updatePresetButtonsUI();
             }
             initTasks(config.tarefas || []);
+            renderDashboardProgress(config.progresso || {});
         } else {
             initTasks([]);
+            renderDashboardProgress({});
         }
     } catch (e) {
         console.error("[Nostak] Erro ao carregar configurações:", e);
         initTasks([]);
+        renderDashboardProgress({});
     }
 }
 

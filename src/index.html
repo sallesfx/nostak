@@ -333,30 +333,30 @@
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
                                     <span class="font-body-md text-body-md text-on-surface">Combustível Mental</span>
-                                    <span class="font-label-md text-label-md text-primary">65%</span>
+                                    <span id="metric-fuel-label" class="font-label-md text-label-md text-primary">100%</span>
                                 </div>
                                 <div class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden">
-                                    <div class="h-full bg-primary w-[65%]"></div>
+                                    <div id="metric-fuel-bar" class="h-full bg-primary w-full transition-all duration-500"></div>
                                 </div>
                             </div>
                             <!-- Metric 2 -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
                                     <span class="font-body-md text-body-md text-on-surface">Distância Percorrida</span>
-                                    <span class="font-label-md text-label-md text-secondary">12nm</span>
+                                    <span id="metric-distance-label" class="font-label-md text-label-md text-secondary">0nm</span>
                                 </div>
                                 <div class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden">
-                                    <div class="h-full bg-secondary w-[40%]"></div>
+                                    <div id="metric-distance-bar" class="h-full bg-secondary w-0 transition-all duration-500"></div>
                                 </div>
                             </div>
                             <!-- Metric 3 -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
                                     <span class="font-body-md text-body-md text-on-surface">Vento de Popa</span>
-                                    <span class="font-label-md text-label-md text-tertiary">Estável</span>
+                                    <span id="metric-wind-label" class="font-label-md text-label-md text-tertiary">Calmo</span>
                                 </div>
                                 <div class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden">
-                                    <div class="h-full bg-tertiary w-[85%]"></div>
+                                    <div id="metric-wind-bar" class="h-full bg-tertiary w-[50%] transition-all duration-500"></div>
                                 </div>
                             </div>
                         </div>
@@ -385,14 +385,14 @@
                     <!-- Stats Quick View -->
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-surface-container-low border border-outline-variant rounded p-4">
-                            <div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Média Semanal
+                            <div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Horas em Foco
                             </div>
-                            <div class="font-headline-md text-headline-md text-primary">4.2h</div>
+                            <div id="stat-hours-total" class="font-headline-md text-headline-md text-primary">0h</div>
                         </div>
                         <div class="bg-surface-container-low border border-outline-variant rounded p-4">
                             <div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Total de
                                 Milhas</div>
-                            <div class="font-headline-md text-headline-md text-secondary">128</div>
+                            <div id="stat-miles-total" class="font-headline-md text-headline-md text-secondary">0</div>
                         </div>
                     </div>
                 </aside>
