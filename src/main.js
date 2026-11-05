@@ -2,16 +2,83 @@ import { invokeTauri } from './ipc.js';
 import { initTasks } from './tasks.js';
 import { renderDashboardProgress } from './progress.js';
 
+const TIMER_STORAGE_KEY = 'nostak_active_timer';
+const DEFAULT_TITLE = 'Nostak - Navegando pelo Foco Profundo';
+
 let timerInterval = null;
 let focusMinutes = 25;
 let breakMinutes = 5;
 let currentPhase = 'idle'; // 'idle' | 'focus' | 'break' | 'paused'
 let secondsRemaining = focusMinutes * 60;
+let targetEndTimestamp = null;
+
+/**
+ * Toca um sino náutico suave sintetizado via Web Audio API (sem arquivos externos).
+ */
+function playNauticalBell(type = 'focus-end') {
+    try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+
+        const notes = type === 'focus-end' ? [528, 792] : [660, 528];
+        notes.forEach((freq, idx) => {
+            const startTime = ctx.currentTime + idx * 0.35;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, startTime);
+
+            gain.gain.setValueAtTime(0.001, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.22, startTime + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.4);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(startTime);
+            osc.stop(startTime + 1.45);
+        });
+    } catch (e) {
+        console.warn('[Nostak] Áudio indisponível:', e);
+    }
+}
+
+function saveTimerSessionState() {
+    if (currentPhase === 'idle') {
+        sessionStorage.removeItem(TIMER_STORAGE_KEY);
+        return;
+    }
+    sessionStorage.setItem(
+        TIMER_STORAGE_KEY,
+        JSON.stringify({
+            currentPhase,
+            secondsRemaining,
+            targetEndTimestamp,
+            focusMinutes,
+            breakMinutes
+        })
+    );
+}
 
 function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateDocumentTitle() {
+    const timeStr = formatTime(secondsRemaining);
+    if (currentPhase === 'focus') {
+        document.title = `[${timeStr}] Em Alto Mar • Nostak`;
+    } else if (currentPhase === 'break') {
+        document.title = `[${timeStr}] Porto Seguro • Nostak`;
+    } else if (currentPhase === 'paused') {
+        document.title = `[Pausado] Porto Seguro • Nostak`;
+    } else {
+        document.title = DEFAULT_TITLE;
+    }
 }
 
 function updateTimerUI() {
@@ -31,6 +98,7 @@ function updateTimerUI() {
             pausedDisplay.classList.add('opacity-60');
         }
     }
+    updateDocumentTitle();
 }
 
 function updatePresetButtonsUI() {
@@ -66,8 +134,80 @@ async function setTimerPreset(focoMin, pausaMin) {
     }
 }
 
-async function startVoyage() {
+function applyPhaseVisualState(phase) {
     const container = document.getElementById('timer-container');
+    const badge = document.getElementById('status-badge');
+    const title = document.getElementById('paused-phase-title');
+    const resumeBtn = document.getElementById('btn-resume-voyage');
+
+    if (phase === 'focus') {
+        if (container) {
+            container.className = 'state-active bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
+        }
+        if (badge) {
+            badge.textContent = 'Em Alto Mar';
+            badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2.5 py-1 border border-primary/50 bg-primary/10 rounded-sm';
+        }
+    } else if (phase === 'break') {
+        if (container) {
+            container.className = 'state-paused bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
+        }
+        if (badge) {
+            badge.textContent = 'Porto Seguro (Descanso)';
+            badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
+        }
+        if (title) title.textContent = 'Descanso em Porto Seguro • Sites Liberados';
+        if (resumeBtn) resumeBtn.textContent = 'Pular Descanso';
+    } else if (phase === 'paused') {
+        if (container) {
+            container.className = 'state-paused bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
+        }
+        if (badge) {
+            badge.textContent = 'Porto Seguro (Pausa)';
+            badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
+        }
+        if (title) title.textContent = 'Ancorado em Porto Seguro';
+        if (resumeBtn) resumeBtn.textContent = 'Retomar Viagem';
+    } else {
+        if (container) {
+            container.className = 'state-idle bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
+        }
+        if (badge) {
+            badge.textContent = 'Aguardando';
+            badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
+        }
+    }
+}
+
+function startCountdownLoop() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        if (targetEndTimestamp) {
+            const diff = Math.max(0, Math.round((targetEndTimestamp - Date.now()) / 1000));
+            secondsRemaining = diff;
+        } else if (secondsRemaining > 0) {
+            secondsRemaining--;
+        }
+
+        if (secondsRemaining > 0) {
+            updateTimerUI();
+            saveTimerSessionState();
+        } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            targetEndTimestamp = null;
+            if (currentPhase === 'focus') {
+                playNauticalBell('focus-end');
+                startBreakSession();
+            } else if (currentPhase === 'break') {
+                playNauticalBell('break-end');
+                finishBreakSession();
+            }
+        }
+    }, 1000);
+}
+
+async function startVoyage() {
     const badge = document.getElementById('status-badge');
 
     try {
@@ -75,33 +215,16 @@ async function startVoyage() {
         const resposta = await invokeTauri('zarpar_jornada', { sites: [] });
         console.log("[Nostak]", resposta);
 
-        if (currentPhase === 'idle') {
+        if (currentPhase === 'idle' || currentPhase === 'break') {
             secondsRemaining = focusMinutes * 60;
         }
         currentPhase = 'focus';
+        targetEndTimestamp = Date.now() + secondsRemaining * 1000;
 
-        if (container) {
-            container.className = 'state-active bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
-        }
-
-        if (badge) {
-            badge.textContent = 'Em Alto Mar';
-            badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2.5 py-1 border border-primary/50 bg-primary/10 rounded-sm';
-        }
-
+        applyPhaseVisualState('focus');
         updateTimerUI();
-
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            if (secondsRemaining > 0) {
-                secondsRemaining--;
-                updateTimerUI();
-            } else {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                startBreakSession();
-            }
-        }, 1000);
+        saveTimerSessionState();
+        startCountdownLoop();
 
     } catch (erro) {
         console.error("[Nostak Error]", erro);
@@ -115,13 +238,9 @@ async function startVoyage() {
 }
 
 async function startBreakSession() {
-    const container = document.getElementById('timer-container');
-    const badge = document.getElementById('status-badge');
-    const title = document.getElementById('paused-phase-title');
-    const resumeBtn = document.getElementById('btn-resume-voyage');
-
     currentPhase = 'break';
     secondsRemaining = breakMinutes * 60;
+    targetEndTimestamp = Date.now() + secondsRemaining * 1000;
 
     // Desbloqueia os sites para o descanso e registra a sessão de foco concluída
     try {
@@ -136,52 +255,22 @@ async function startBreakSession() {
         console.error("[Nostak] Erro ao finalizar foco e registrar sessão:", e);
     }
 
-    if (container) {
-        container.className = 'state-paused bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
-    }
-
-    if (badge) {
-        badge.textContent = 'Porto Seguro (Descanso)';
-        badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
-    }
-
-    if (title) {
-        title.textContent = 'Descanso em Porto Seguro • Sites Liberados';
-    }
-
-    if (resumeBtn) {
-        resumeBtn.textContent = 'Pular Descanso';
-    }
-
+    applyPhaseVisualState('break');
     updateTimerUI();
-
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        if (secondsRemaining > 0) {
-            secondsRemaining--;
-            updateTimerUI();
-        } else {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            finishBreakSession();
-        }
-    }, 1000);
+    saveTimerSessionState();
+    startCountdownLoop();
 }
 
 function finishBreakSession() {
     const badge = document.getElementById('status-badge');
-    resetVoyage();
-    if (badge) {
-        badge.textContent = 'Viagem Concluída';
-    }
+    resetVoyage().then(() => {
+        if (badge) {
+            badge.textContent = 'Viagem Concluída';
+        }
+    });
 }
 
 async function pauseVoyage() {
-    const container = document.getElementById('timer-container');
-    const badge = document.getElementById('status-badge');
-    const title = document.getElementById('paused-phase-title');
-    const resumeBtn = document.getElementById('btn-resume-voyage');
-
     try {
         await invokeTauri('ancorar_porto_seguro');
 
@@ -189,26 +278,12 @@ async function pauseVoyage() {
             clearInterval(timerInterval);
             timerInterval = null;
         }
+        targetEndTimestamp = null;
         currentPhase = 'paused';
 
-        if (container) {
-            container.className = 'state-paused bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
-        }
-
-        if (badge) {
-            badge.textContent = 'Porto Seguro (Pausa)';
-            badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
-        }
-
-        if (title) {
-            title.textContent = 'Ancorado em Porto Seguro';
-        }
-
-        if (resumeBtn) {
-            resumeBtn.textContent = 'Retomar Viagem';
-        }
-
+        applyPhaseVisualState('paused');
         updateTimerUI();
+        saveTimerSessionState();
     } catch (erro) {
         console.error("[Nostak Error]", erro);
     }
@@ -229,7 +304,9 @@ async function failVoyage() {
             clearInterval(timerInterval);
             timerInterval = null;
         }
+        targetEndTimestamp = null;
         currentPhase = 'idle';
+        saveTimerSessionState();
 
         if (container) {
             container.className = 'state-failed bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
@@ -239,15 +316,13 @@ async function failVoyage() {
             badge.textContent = 'Interrompido';
             badge.className = 'font-label-md text-label-md text-error uppercase tracking-widest px-2.5 py-1 border border-error/50 bg-error-container/20 rounded-sm';
         }
+        updateDocumentTitle();
     } catch (erro) {
         console.error("[Nostak Error]", erro);
     }
 }
 
 async function resetVoyage() {
-    const container = document.getElementById('timer-container');
-    const badge = document.getElementById('status-badge');
-
     try {
         await invokeTauri('ancorar_porto_seguro');
 
@@ -255,29 +330,59 @@ async function resetVoyage() {
             clearInterval(timerInterval);
             timerInterval = null;
         }
-
+        targetEndTimestamp = null;
         currentPhase = 'idle';
         secondsRemaining = focusMinutes * 60;
+        saveTimerSessionState();
+
+        applyPhaseVisualState('idle');
         updateTimerUI();
-
-        if (container) {
-            container.className = 'state-idle bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
-        }
-
-        if (badge) {
-            badge.textContent = 'Aguardando';
-            badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
-        }
     } catch (erro) {
         console.error("[Nostak Error]", erro);
     }
 }
 
+function tryRestoreActiveTimerSession() {
+    const raw = sessionStorage.getItem(TIMER_STORAGE_KEY);
+    if (!raw) return false;
+
+    try {
+        const saved = JSON.parse(raw);
+        if (!saved || !saved.currentPhase || saved.currentPhase === 'idle') return false;
+
+        focusMinutes = saved.focusMinutes || focusMinutes;
+        breakMinutes = saved.breakMinutes || breakMinutes;
+        currentPhase = saved.currentPhase;
+
+        if ((currentPhase === 'focus' || currentPhase === 'break') && saved.targetEndTimestamp) {
+            targetEndTimestamp = saved.targetEndTimestamp;
+            secondsRemaining = Math.max(0, Math.round((targetEndTimestamp - Date.now()) / 1000));
+            applyPhaseVisualState(currentPhase);
+            updatePresetButtonsUI();
+            updateTimerUI();
+            startCountdownLoop();
+            return true;
+        }
+
+        if (currentPhase === 'paused') {
+            secondsRemaining = saved.secondsRemaining || focusMinutes * 60;
+            applyPhaseVisualState('paused');
+            updatePresetButtonsUI();
+            updateTimerUI();
+            return true;
+        }
+    } catch (e) {
+        console.warn('[Nostak] Falha ao restaurar sessão do timer:', e);
+    }
+    return false;
+}
+
 async function initAppConfig() {
+    const restored = tryRestoreActiveTimerSession();
     try {
         const config = await invokeTauri('obter_configuracoes');
         if (config) {
-            if (config.tempo_foco_minutos) {
+            if (!restored && config.tempo_foco_minutos) {
                 focusMinutes = config.tempo_foco_minutos;
                 breakMinutes = config.tempo_pausa_minutos || 5;
                 secondsRemaining = focusMinutes * 60;
