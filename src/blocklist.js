@@ -1,4 +1,5 @@
 import { invokeTauri } from './ipc.js';
+import { nostakAlert } from './components.js';
 
 export function renderConfiguracoes(config) {
     if (!config) return;
@@ -112,7 +113,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderConfiguracoes(configAtualizada);
                 }
             } catch (err) {
-                alert('Não foi possível adicionar a Sereia: ' + err);
+                await nostakAlert({
+                    title: 'Lista de Bloqueio',
+                    message: 'Não foi possível adicionar a Sereia: ' + err,
+                    type: 'error'
+                });
             }
         });
     }
@@ -133,7 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderConfiguracoes(configAtualizada);
                 }
             } catch (err) {
-                alert('Não foi possível remover a Sereia: ' + err);
+                await nostakAlert({
+                    title: 'Lista de Bloqueio',
+                    message: 'Não foi possível remover a Sereia: ' + err,
+                    type: 'error'
+                });
             }
         });
     }

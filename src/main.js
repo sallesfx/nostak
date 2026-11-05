@@ -1,7 +1,7 @@
 import { invokeTauri, playNauticalBell } from './ipc.js';
 import { initTasks, renderTasksState } from './tasks.js';
 import { renderDashboardProgress } from './progress.js';
-import { openModalDialog, closeModalDialog, bindModalKeyboardTrap } from './components.js';
+import { openModalDialog, closeModalDialog, bindModalKeyboardTrap, nostakAlert } from './components.js';
 
 const TIMER_STORAGE_KEY = 'nostak_active_timer';
 const DEFAULT_TITLE = 'Nostak - Navegando pelo Foco Profundo';
@@ -221,7 +221,11 @@ async function startVoyage() {
 
     } catch (erro) {
         console.error("[Nostak Error]", erro);
-        alert("Atenção Navegador:\nNão foi possível erguer as velas e bloquear os sites.\n\nDetalhes: " + erro);
+        await nostakAlert({
+            title: 'Atenção Navegador',
+            message: 'Não foi possível erguer as velas e bloquear os sites.\n\nDetalhes: ' + erro,
+            type: 'error'
+        });
 
         if (badge) {
             badge.textContent = 'Erro de Permissão';

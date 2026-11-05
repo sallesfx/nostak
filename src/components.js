@@ -76,7 +76,7 @@ export function bindModalKeyboardTrap(modalEl, onCloseCallback = null) {
         }
 
         if (e.key === 'Tab') {
-            const focusables = Array.from(modalEl.querySelectorAll(FOCUSABLE_SELECTOR));
+            const focusables = Array.from(modalEl.querySelectorAll(FOCUSABLE_SELECTOR)).filter(el => !el.classList.contains('hidden') && el.offsetParent !== null);
             if (focusables.length === 0) return;
 
             const first = focusables[0];
@@ -96,6 +96,147 @@ export function bindModalKeyboardTrap(modalEl, onCloseCallback = null) {
         }
     });
 }
+
+let feedbackModalEl = null;
+let feedbackResolver = null;
+
+function ensureFeedbackDialogMounted() {
+    if (feedbackModalEl && document.body.contains(feedbackModalEl)) return feedbackModalEl;
+    let modal = document.getElementById('modal-nostak-dialog');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modal-nostak-dialog';
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('aria-labelledby', 'nostak-dialog-title');
+        modal.setAttribute('aria-describedby', 'nostak-dialog-message');
+        modal.setAttribute('aria-hidden', 'true');
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/75 hidden';
+        modal.innerHTML = `
+            <div class="bg-surface-container border border-outline-variant rounded-md p-6 sm:p-7 max-w-md w-full mx-4 relative shadow-2xl">
+                <div class="flex items-start gap-3.5 mb-5">
+                    <span id="nostak-dialog-icon" class="material-symbols-outlined text-2xl shrink-0 text-primary mt-0.5" aria-hidden="true">help</span>
+                    <div class="flex-grow">
+                        <h3 id="nostak-dialog-title" class="font-headline-sm text-headline-sm text-on-surface font-bold">Confirmação</h3>
+                        <p id="nostak-dialog-message" class="text-on-surface-variant font-body-md text-sm mt-1.5 whitespace-pre-line leading-relaxed"></p>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant">
+                    <button type="button" id="nostak-dialog-btn-cancel" class="px-4 py-2 rounded-sm border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline text-xs uppercase tracking-wider font-label-md transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="button" id="nostak-dialog-btn-confirm" class="px-5 py-2 rounded-sm bg-primary-container text-on-primary font-bold text-xs uppercase tracking-widest hover:bg-tertiary transition-colors">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        const handleResolve = (val) => {
+            closeModalDialog(modal);
+            if (feedbackResolver) {
+                const cb = feedbackResolver;
+                feedbackResolver = null;
+                cb(val);
+            }
+        };
+
+        modal.querySelector('#nostak-dialog-btn-cancel')?.addEventListener('click', () => handleResolve(false));
+        modal.querySelector('#nostak-dialog-btn-confirm')?.addEventListener('click', () => handleResolve(true));
+
+        bindModalKeyboardTrap(modal, () => handleResolve(false));
+    }
+    feedbackModalEl = modal;
+    return feedbackModalEl;
+}
+
+export function nostakConfirm({
+    title = 'Confirmação',
+    message = '',
+    confirmText = 'Confirmar',
+    cancelText = 'Cancelar',
+    isDestructive = false
+} = {}) {
+    const modal = ensureFeedbackDialogMounted();
+    const titleEl = modal.querySelector('#nostak-dialog-title');
+    const msgEl = modal.querySelector('#nostak-dialog-message');
+    const iconEl = modal.querySelector('#nostak-dialog-icon');
+    const btnCancel = modal.querySelector('#nostak-dialog-btn-cancel');
+    const btnConfirm = modal.querySelector('#nostak-dialog-btn-confirm');
+
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.textContent = message;
+    if (btnCancel) {
+        btnCancel.textContent = cancelText;
+        btnCancel.classList.remove('hidden');
+    }
+    if (btnConfirm) {
+        btnConfirm.textContent = confirmText;
+        if (isDestructive) {
+            btnConfirm.className = 'px-5 py-2 rounded-sm bg-error/20 text-error border border-error/50 font-bold text-xs uppercase tracking-widest hover:bg-error hover:text-on-primary transition-colors';
+            if (iconEl) {
+                iconEl.textContent = 'warning';
+                iconEl.className = 'material-symbols-outlined text-2xl shrink-0 text-error mt-0.5';
+            }
+        } else {
+            btnConfirm.className = 'px-5 py-2 rounded-sm bg-primary-container text-on-primary font-bold text-xs uppercase tracking-widest hover:bg-tertiary transition-colors';
+            if (iconEl) {
+                iconEl.textContent = 'help';
+                iconEl.className = 'material-symbols-outlined text-2xl shrink-0 text-primary mt-0.5';
+            }
+        }
+    }
+
+    return new Promise((resolve) => {
+        feedbackResolver = resolve;
+        openModalDialog(modal, '#nostak-dialog-btn-cancel');
+    });
+}
+
+export function nostakAlert({
+    title = 'Atenção',
+    message = '',
+    confirmText = 'Entendido',
+    type = 'info'
+} = {}) {
+    const modal = ensureFeedbackDialogMounted();
+    const titleEl = modal.querySelector('#nostak-dialog-title');
+    const msgEl = modal.querySelector('#nostak-dialog-message');
+    const iconEl = modal.querySelector('#nostak-dialog-icon');
+    const btnCancel = modal.querySelector('#nostak-dialog-btn-cancel');
+    const btnConfirm = modal.querySelector('#nostak-dialog-btn-confirm');
+
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.textContent = message;
+    if (btnCancel) btnCancel.classList.add('hidden');
+
+    if (btnConfirm) {
+        btnConfirm.textContent = confirmText;
+        btnConfirm.className = 'px-5 py-2 rounded-sm bg-primary-container text-on-primary font-bold text-xs uppercase tracking-widest hover:bg-tertiary transition-colors';
+    }
+
+    if (iconEl) {
+        if (type === 'error') {
+            iconEl.textContent = 'error';
+            iconEl.className = 'material-symbols-outlined text-2xl shrink-0 text-error mt-0.5';
+        } else if (type === 'success') {
+            iconEl.textContent = 'check_circle';
+            iconEl.className = 'material-symbols-outlined text-2xl shrink-0 text-secondary mt-0.5';
+        } else {
+            iconEl.textContent = 'info';
+            iconEl.className = 'material-symbols-outlined text-2xl shrink-0 text-primary mt-0.5';
+        }
+    }
+
+    return new Promise((resolve) => {
+        feedbackResolver = () => resolve();
+        openModalDialog(modal, '#nostak-dialog-btn-confirm');
+    });
+}
+
+window.nostakConfirm = nostakConfirm;
+window.nostakAlert = nostakAlert;
 
 /**
  * Abre o Modal Global de Configurações a partir de qualquer página
@@ -268,7 +409,13 @@ function ensureSettingsModalMounted() {
     });
 
     document.getElementById('btn-reset-progress')?.addEventListener('click', async () => {
-        const confirmed = window.confirm('Deseja realmente zerar todas as milhas náuticas e conquistas registradas na sua jornada?');
+        const confirmed = await nostakConfirm({
+            title: 'Zerar Progresso Náutico',
+            message: 'Deseja realmente zerar todas as milhas náuticas e conquistas registradas na sua jornada?\nEsta manobra é definitiva e não pode ser revertida.',
+            confirmText: 'Zerar Progresso',
+            cancelText: 'Manter Dados',
+            isDestructive: true
+        });
         if (!confirmed) return;
 
         try {

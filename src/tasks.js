@@ -1,4 +1,5 @@
 import { invokeTauri } from './ipc.js';
+import { nostakAlert } from './components.js';
 
 function escapeHtml(str) {
     const div = document.createElement('div');
@@ -269,7 +270,11 @@ export function initTasks(initialConfig = {}) {
                 }
             } catch (err) {
                 console.error('[Nostak] Erro ao adicionar tarefa:', err);
-                alert('Não foi possível adicionar a tarefa: ' + err);
+                await nostakAlert({
+                    title: 'Diário do Navegador',
+                    message: 'Não foi possível registrar a manobra: ' + err,
+                    type: 'error'
+                });
             }
         });
     }
@@ -309,7 +314,11 @@ export function initTasks(initialConfig = {}) {
                 }
             } catch (err) {
                 console.error('[Nostak] Erro ao salvar template:', err);
-                alert('Atenção: ' + err);
+                await nostakAlert({
+                    title: 'Templates de Rota',
+                    message: String(err).replace(/^Error:\s*/, ''),
+                    type: 'error'
+                });
             }
         });
     }
