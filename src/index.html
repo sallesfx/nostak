@@ -25,12 +25,12 @@
                 <!-- Center Section: Dynamic Journey Timer -->
                 <div class="lg:col-span-8 flex flex-col gap-8">
                     <!-- Timer Card Container -->
-                    <div class="state-idle bg-surface-container-low border border-outline-variant flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500"
+                    <div class="state-idle bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500"
                         id="timer-container">
                         <!-- Status Badge -->
                         <div class="absolute top-4 left-4 z-20">
                             <span
-                                class="font-label-md text-label-md text-primary uppercase tracking-widest px-2 py-1 border border-primary bg-surface-container-low/80 backdrop-blur-sm"
+                                class="font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm"
                                 id="status-badge">Aguardando</span>
                         </div>
                         <!-- 1. Idle State Content -->
@@ -38,26 +38,26 @@
                             <div
                                 class="mb-2 text-on-surface-variant font-label-md text-label-md uppercase tracking-[0.2em]">
                                 Foco Ininterrupto</div>
-                            <div id="timer-display-idle" class="font-display-lg text-display-lg text-primary mb-6 tabular-nums">25:00</div>
+                            <div id="timer-display-idle" class="font-display-lg text-[4rem] leading-none text-primary mb-6 tabular-nums">25:00</div>
                             <!-- Presets Náuticos e Botão Personalizar -->
                             <div class="flex items-center gap-2 mb-10 flex-wrap justify-center">
-                                <button class="btn-preset px-4 py-1.5 border border-primary bg-primary/10 text-primary text-xs font-label-md transition-all font-bold" data-foco="25" data-pausa="5">
+                                <button class="btn-preset px-4 py-1.5 rounded-sm border border-primary bg-primary/10 text-primary text-xs font-label-md transition-all font-bold" data-foco="25" data-pausa="5">
                                     25m / 5m
                                 </button>
-                                <button class="btn-preset px-4 py-1.5 border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all" data-foco="45" data-pausa="10">
+                                <button class="btn-preset px-4 py-1.5 rounded-sm border border-outline-variant text-on-surface-variant hover:border-secondary hover:text-secondary text-xs font-label-md transition-all" data-foco="45" data-pausa="10">
                                     45m / 10m
                                 </button>
-                                <button class="btn-preset px-4 py-1.5 border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all" data-foco="60" data-pausa="15">
+                                <button class="btn-preset px-4 py-1.5 rounded-sm border border-outline-variant text-on-surface-variant hover:border-secondary hover:text-secondary text-xs font-label-md transition-all" data-foco="60" data-pausa="15">
                                     60m / 15m
                                 </button>
-                                <button id="btn-open-custom-timer" class="px-3 py-1.5 border border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all flex items-center gap-1.5">
+                                <button id="btn-open-custom-timer" class="px-3 py-1.5 rounded-sm border border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all flex items-center gap-1.5">
                                     <span class="material-symbols-outlined text-[14px]">tune</span>
                                     <span>Personalizar</span>
                                 </button>
                             </div>
                             <div class="flex gap-4">
                                 <button
-                                    class="bg-primary text-on-primary px-12 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-primary-fixed-dim transition-colors"
+                                    class="bg-primary-container text-on-primary px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-tertiary transition-colors"
                                     onclick="startVoyage()">
                                     Zarpar
                                 </button>
@@ -65,12 +65,12 @@
                         </div>
 
                         <!-- Modal de Personalização do Temporizador -->
-                        <div id="modal-custom-timer" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
-                            <div class="bg-surface-container-low border border-outline-variant p-6 sm:p-8 max-w-md w-full mx-4 relative shadow-2xl">
+                        <div id="modal-custom-timer" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden">
+                            <div class="bg-surface-container border border-outline-variant rounded-md p-6 sm:p-8 max-w-md w-full mx-4 relative">
                                 <div class="flex items-center justify-between border-b border-outline-variant pb-3 mb-6">
                                     <div class="flex items-center gap-2 text-primary">
                                         <span class="material-symbols-outlined text-lg">explore</span>
-                                        <h3 class="font-headline-sm text-sm uppercase tracking-widest font-bold">Calibrar Rota de Foco</h3>
+                                        <h3 class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Calibrar Rota de Foco</h3>
                                     </div>
                                     <button id="btn-close-custom-timer" class="text-on-surface-variant hover:text-primary transition-colors">
                                         <span class="material-symbols-outlined text-xl">close</span>
@@ -83,12 +83,12 @@
                                             Tempo em Alto Mar (Foco)
                                         </label>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" id="btn-focus-minus" class="w-10 h-10 border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">-</button>
+                                            <button type="button" id="btn-focus-minus" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">-</button>
                                             <div class="relative flex-1">
-                                                <input type="number" id="input-custom-focus" min="1" max="180" value="25" class="w-full bg-surface-container border border-outline-variant px-4 py-2 text-center text-primary font-display-md text-xl font-bold focus:border-primary focus:outline-none tabular-nums">
+                                                <input type="number" id="input-custom-focus" min="1" max="180" value="25" class="w-full bg-surface-container-low rounded-sm border border-outline-variant px-4 py-2 text-center text-primary font-display-md text-xl font-bold focus:border-primary focus:outline-none tabular-nums">
                                                 <span class="absolute right-3 top-2.5 text-xs text-on-surface-variant uppercase pointer-events-none">min</span>
                                             </div>
-                                            <button type="button" id="btn-focus-plus" class="w-10 h-10 border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">+</button>
+                                            <button type="button" id="btn-focus-plus" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">+</button>
                                         </div>
                                     </div>
 
@@ -97,20 +97,20 @@
                                             Porto de Descanso (Pausa)
                                         </label>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" id="btn-break-minus" class="w-10 h-10 border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">-</button>
+                                            <button type="button" id="btn-break-minus" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-secondary hover:text-secondary flex items-center justify-center font-bold text-lg transition-colors">-</button>
                                             <div class="relative flex-1">
-                                                <input type="number" id="input-custom-break" min="1" max="60" value="5" class="w-full bg-surface-container border border-outline-variant px-4 py-2 text-center text-on-surface font-display-md text-xl font-bold focus:border-primary focus:outline-none tabular-nums">
+                                                <input type="number" id="input-custom-break" min="1" max="60" value="5" class="w-full bg-surface-container-low rounded-sm border border-outline-variant px-4 py-2 text-center text-secondary font-display-md text-xl font-bold focus:border-secondary focus:outline-none tabular-nums">
                                                 <span class="absolute right-3 top-2.5 text-xs text-on-surface-variant uppercase pointer-events-none">min</span>
                                             </div>
-                                            <button type="button" id="btn-break-plus" class="w-10 h-10 border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">+</button>
+                                            <button type="button" id="btn-break-plus" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-secondary hover:text-secondary flex items-center justify-center font-bold text-lg transition-colors">+</button>
                                         </div>
                                     </div>
 
                                     <div class="flex gap-3 pt-4 border-t border-outline-variant">
-                                        <button type="button" id="btn-cancel-custom-timer" class="flex-1 py-2.5 border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline text-xs uppercase tracking-wider font-label-md transition-colors">
+                                        <button type="button" id="btn-cancel-custom-timer" class="flex-1 py-2.5 rounded-sm border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline text-xs uppercase tracking-wider font-label-md transition-colors">
                                             Cancelar
                                         </button>
-                                        <button type="submit" class="flex-1 py-2.5 bg-primary text-on-primary font-bold text-xs uppercase tracking-widest hover:bg-primary-fixed-dim transition-colors">
+                                        <button type="submit" class="flex-1 py-2.5 rounded-sm bg-primary-container text-on-primary font-bold text-xs uppercase tracking-widest hover:bg-tertiary transition-colors">
                                             Definir Rota
                                         </button>
                                     </div>
@@ -120,12 +120,12 @@
                         <!-- 2. Active Navigation State (ANIMATION_16) -->
                         <div
                             class="state-content state-content-active flex-col items-center z-10 w-full h-full relative">
-                            <div class="absolute inset-0 opacity-40 pointer-events-none">
+                            <div class="absolute inset-0 opacity-45 pointer-events-none">
                                 <svg class="w-full h-full" viewbox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
                                     <defs>
                                         <lineargradient id="waveGrad" x1="0%" x2="0%" y1="0%" y2="100%">
-                                            <stop offset="0%" style="stop-color:#203a5b;stop-opacity:1"></stop>
-                                            <stop offset="100%" style="stop-color:#00142b;stop-opacity:1"></stop>
+                                            <stop offset="0%" style="stop-color:#02505f;stop-opacity:0.85"></stop>
+                                            <stop offset="100%" style="stop-color:#0f1419;stop-opacity:1"></stop>
                                         </lineargradient>
                                     </defs>
                                     <path d="M0 160 Q 50 140 100 160 T 200 160 T 300 160 T 400 160 V 200 H 0 Z"
@@ -142,11 +142,11 @@
                                             <animatetransform additive="sum" attributename="transform" dur="4s"
                                                 repeatcount="indefinite" type="rotate" values="-2,0,0; 2,0,0; -2,0,0">
                                             </animatetransform>
-                                            <path d="M-40 0 L40 0 L30 15 L-30 15 Z" fill="#003366" stroke="#adc7ff"
+                                            <path d="M-40 0 L40 0 L30 15 L-30 15 Z" fill="#2c1600" stroke="#f2be8c"
                                                 stroke-width="2"></path>
-                                            <line stroke="#adc7ff" stroke-width="2" x1="0" x2="0" y1="0" y2="-40">
+                                            <line stroke="#f2be8c" stroke-width="2" x1="0" x2="0" y1="0" y2="-40">
                                             </line>
-                                            <path d="M0 -40 Q 30 -20 0 0 Z" fill="#adc7ff" opacity="0.8">
+                                            <path d="M0 -40 Q 30 -20 0 0 Z" fill="#f2be8c" opacity="0.85">
                                                 <animate attributename="d" dur="3s" repeatcount="indefinite"
                                                     values="M0 -40 Q 30 -20 0 0 Z; M0 -40 Q 40 -20 0 0 Z; M0 -40 Q 30 -20 0 0 Z">
                                                 </animate>
@@ -157,18 +157,18 @@
                             </div>
                             <div class="relative z-20 flex flex-col items-center pt-24">
                                 <div
-                                    class="mb-2 text-on-surface-variant font-label-md text-label-md uppercase tracking-[0.2em]">
+                                    class="mb-2 text-secondary font-label-md text-label-md uppercase tracking-[0.2em]">
                                     Em Alto Mar</div>
-                                <div class="font-display-lg text-display-lg text-primary mb-8 tabular-nums"
+                                <div class="font-display-lg text-[4rem] leading-none text-primary mb-8 tabular-nums"
                                     id="timer-display-active">25:00</div>
                                 <div class="flex gap-4">
                                     <button
-                                        class="border border-outline text-on-surface px-8 py-3 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-surface-variant transition-colors"
+                                        class="border border-secondary/50 text-secondary px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-secondary-container/30 transition-colors"
                                         onclick="pauseVoyage()">
                                         Porto Seguro
                                     </button>
                                     <button
-                                        class="border border-error text-error px-8 py-3 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-error/10 transition-colors"
+                                        class="border border-error/70 text-error px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-error/10 transition-colors"
                                         onclick="failVoyage()">
                                         Abandonar Navio
                                     </button>
@@ -178,41 +178,41 @@
                         <!-- 3. Paused State (ANIMATION_18) -->
                         <div
                             class="state-content state-content-paused flex-col items-center z-10 w-full h-full relative">
-                            <div class="absolute inset-0 opacity-40 pointer-events-none">
+                            <div class="absolute inset-0 opacity-45 pointer-events-none">
                                 <svg class="w-full h-full" viewbox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0 170 Q 200 165 400 170 V 200 H 0 Z" fill="#203a5b" opacity="0.5"></path>
+                                    <path d="M0 170 Q 200 165 400 170 V 200 H 0 Z" fill="#02505f" opacity="0.5"></path>
                                     <g transform="translate(200, 175)">
-                                        <path d="M-60 0 Q 0 -40 60 0 Z" fill="#003366" stroke="#adc7ff"
+                                        <path d="M-60 0 Q 0 -40 60 0 Z" fill="#1b2025" stroke="#94d0e1"
                                             stroke-width="2"></path>
-                                        <line stroke="#adc7ff" stroke-width="2" x1="0" x2="0" y1="0" y2="-30"></line>
-                                        <path d="M0 -30 Q 15 -40 30 -30" fill="none" stroke="#adc7ff" stroke-width="2">
+                                        <line stroke="#f2be8c" stroke-width="2" x1="0" x2="0" y1="0" y2="-30"></line>
+                                        <path d="M0 -30 Q 15 -40 30 -30" fill="none" stroke="#f2be8c" stroke-width="2">
                                         </path>
-                                        <path d="M0 -30 Q -15 -40 -30 -30" fill="none" stroke="#adc7ff"
+                                        <path d="M0 -30 Q -15 -40 -30 -30" fill="none" stroke="#f2be8c"
                                             stroke-width="2"></path>
                                     </g>
                                     <g transform="translate(140, 165) rotate(-5)">
-                                        <path d="M-20 0 L20 0 L15 8 L-15 8 Z" fill="#003366" opacity="0.7"
-                                            stroke="#adc7ff" stroke-width="1"></path>
-                                        <line stroke="#adc7ff" stroke-width="1" x1="0" x2="0" y1="0" y2="-15"></line>
+                                        <path d="M-20 0 L20 0 L15 8 L-15 8 Z" fill="#2c1600" opacity="0.8"
+                                            stroke="#f2be8c" stroke-width="1"></path>
+                                        <line stroke="#f2be8c" stroke-width="1" x1="0" x2="0" y1="0" y2="-15"></line>
                                     </g>
                                 </svg>
                             </div>
                             <div class="relative z-20 flex flex-col items-center pt-24">
                                 <div
                                     id="paused-phase-title"
-                                    class="mb-2 text-on-surface-variant font-label-md text-label-md uppercase tracking-[0.2em]">
+                                    class="mb-2 text-secondary font-label-md text-label-md uppercase tracking-[0.2em]">
                                     Ancorado em Porto Seguro</div>
-                                <div id="timer-display-paused" class="font-display-lg text-display-lg text-primary mb-8 tabular-nums opacity-60">
+                                <div id="timer-display-paused" class="font-display-lg text-[4rem] leading-none text-primary mb-8 tabular-nums opacity-60">
                                     Pausado</div>
                                 <div class="flex gap-4">
                                     <button
                                         id="btn-resume-voyage"
-                                        class="bg-primary text-on-primary px-12 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-primary-fixed-dim transition-colors"
+                                        class="bg-primary-container text-on-primary px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-tertiary transition-colors"
                                         onclick="startVoyage()">
                                         Retomar Viagem
                                     </button>
                                     <button
-                                        class="border border-outline text-on-surface px-8 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-surface-variant transition-colors"
+                                        class="border border-outline-variant text-on-surface px-8 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:border-secondary hover:text-secondary transition-colors"
                                         onclick="resetVoyage()">
                                         Encerrar
                                     </button>
@@ -239,14 +239,14 @@
                                                 fill="freeze" type="rotate" values="0; 15"></animatetransform>
                                             <animate attributename="opacity" dur="4s" fill="freeze" values="1; 0">
                                             </animate>
-                                            <path d="M-40 0 L40 0 L30 15 L-30 15 Z" fill="#003366" stroke="#ffb4ab"
+                                            <path d="M-40 0 L40 0 L30 15 L-30 15 Z" fill="#1b2025" stroke="#ffb4ab"
                                                 stroke-width="2"></path>
                                             <line stroke="#ffb4ab" stroke-width="2" x1="0" x2="0" y1="0" y2="-40">
                                             </line>
                                             <path d="M0 -40 Q 10 -20 0 0 Z" fill="#ffb4ab" opacity="0.4"></path>
                                         </g>
                                     </g>
-                                    <path d="M0 160 Q 200 130 400 160 V 200 H 0 Z" fill="#00142b"></path>
+                                    <path d="M0 160 Q 200 130 400 160 V 200 H 0 Z" fill="#0f1419"></path>
                                 </svg>
                             </div>
                             <div class="relative z-20 flex flex-col items-center pt-24">
@@ -254,7 +254,7 @@
                                 <p class="text-on-surface-variant font-body-md text-body-md mb-8">O monstro da distração
                                     reivindicou seu navio.</p>
                                 <button
-                                    class="border border-outline text-on-surface px-12 py-4 font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-surface-variant transition-colors"
+                                    class="border border-outline-variant text-on-surface px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:border-primary hover:text-primary transition-colors"
                                     onclick="resetVoyage()">
                                     Novo Navio
                                 </button>
@@ -262,51 +262,51 @@
                         </div>
                     </div>
                     <!-- Navigator's Log (Diário de Bordo / Checklist) -->
-                    <section class="bg-surface-container-low border border-outline-variant p-8">
+                    <section class="bg-surface-container-low border border-outline-variant rounded p-8">
                         <div class="flex items-center justify-between mb-6 border-b border-outline-variant pb-4">
                             <h3 class="font-headline-md text-headline-md text-on-surface">Diário do Navegador</h3>
                             <button
-                                class="text-primary font-label-md text-label-md flex items-center gap-2 hover:underline">
-                                <span class="material-symbols-outlined">add</span> Nova Tarefa
+                                class="text-primary font-label-md text-label-md flex items-center gap-1.5 hover:text-tertiary transition-colors uppercase tracking-wider">
+                                <span class="material-symbols-outlined text-lg">add</span> Nova Tarefa
                             </button>
                         </div>
-                        <div class="flex flex-col gap-4">
+                        <div class="flex flex-col gap-3">
                             <label
-                                class="group flex items-center gap-4 p-4 border border-outline-variant hover:bg-surface-container cursor-pointer transition-colors">
+                                class="group flex items-center gap-4 p-4 rounded-sm border border-outline-variant hover:border-outline hover:bg-surface-container cursor-pointer transition-colors">
                                 <input checked=""
-                                    class="w-5 h-5 bg-transparent border-outline text-primary focus:ring-0 rounded-none"
+                                    class="w-4 h-4 bg-transparent border-outline text-primary-container focus:ring-0 rounded-sm"
                                     type="checkbox" />
                                 <span
                                     class="flex-grow font-body-md text-body-md text-on-surface-variant line-through">Mapear
                                     rota de águas profundas</span>
-                                <span class="material-symbols-outlined text-primary">check_circle</span>
+                                <span class="material-symbols-outlined text-primary text-lg">check_circle</span>
                             </label>
                             <label
-                                class="group flex items-center gap-4 p-4 border border-outline-variant hover:bg-surface-container cursor-pointer transition-colors">
+                                class="group flex items-center gap-4 p-4 rounded-sm border border-outline-variant hover:border-outline hover:bg-surface-container cursor-pointer transition-colors">
                                 <input
-                                    class="w-5 h-5 bg-transparent border-outline text-primary focus:ring-0 rounded-none"
+                                    class="w-4 h-4 bg-transparent border-outline text-primary-container focus:ring-0 rounded-sm"
                                     type="checkbox" />
                                 <span class="flex-grow font-body-md text-body-md text-on-surface">Limpar convés de
                                     distrações digitais</span>
-                                <span class="text-on-surface-variant font-caption text-caption uppercase">Urgente</span>
+                                <span class="text-primary bg-primary/10 border border-primary/30 px-2 py-0.5 rounded-sm font-label-sm text-label-sm uppercase">Urgente</span>
                             </label>
                             <label
-                                class="group flex items-center gap-4 p-4 border border-outline-variant hover:bg-surface-container cursor-pointer transition-colors">
+                                class="group flex items-center gap-4 p-4 rounded-sm border border-outline-variant hover:border-outline hover:bg-surface-container cursor-pointer transition-colors">
                                 <input
-                                    class="w-5 h-5 bg-transparent border-outline text-primary focus:ring-0 rounded-none"
+                                    class="w-4 h-4 bg-transparent border-outline text-primary-container focus:ring-0 rounded-sm"
                                     type="checkbox" />
                                 <span class="flex-grow font-body-md text-body-md text-on-surface">Calibrar sextante de
                                     produtividade</span>
-                                <span class="text-on-surface-variant font-caption text-caption uppercase">Rotina</span>
+                                <span class="text-secondary bg-secondary-container/30 border border-secondary/30 px-2 py-0.5 rounded-sm font-label-sm text-label-sm uppercase">Rotina</span>
                             </label>
                             <label
-                                class="group flex items-center gap-4 p-4 border border-outline-variant hover:bg-surface-container cursor-pointer transition-colors">
+                                class="group flex items-center gap-4 p-4 rounded-sm border border-outline-variant hover:border-outline hover:bg-surface-container cursor-pointer transition-colors">
                                 <input
-                                    class="w-5 h-5 bg-transparent border-outline text-primary focus:ring-0 rounded-none"
+                                    class="w-4 h-4 bg-transparent border-outline text-primary-container focus:ring-0 rounded-sm"
                                     type="checkbox" />
                                 <span class="flex-grow font-body-md text-body-md text-on-surface">Navegar por 45 min sem
                                     interrupção</span>
-                                <span class="text-on-surface-variant font-caption text-caption uppercase">Foco</span>
+                                <span class="text-tertiary bg-tertiary/10 border border-tertiary/30 px-2 py-0.5 rounded-sm font-label-sm text-label-sm uppercase">Foco</span>
                             </label>
                         </div>
                     </section>
@@ -314,7 +314,7 @@
                 <!-- Right Side: Voyage Progress -->
                 <aside class="lg:col-span-4 flex flex-col gap-6">
                     <!-- Progress Panel -->
-                    <div class="bg-surface-container-low border border-outline-variant p-6">
+                    <div class="bg-surface-container-low border border-outline-variant rounded p-6">
                         <h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-6">
                             Status da Viagem</h4>
                         <div class="flex flex-col gap-8">
@@ -324,7 +324,7 @@
                                     <span class="font-body-md text-body-md text-on-surface">Combustível Mental</span>
                                     <span class="font-label-md text-label-md text-primary">65%</span>
                                 </div>
-                                <div class="h-1 bg-surface-container-highest w-full">
+                                <div class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden">
                                     <div class="h-full bg-primary w-[65%]"></div>
                                 </div>
                             </div>
@@ -332,26 +332,26 @@
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
                                     <span class="font-body-md text-body-md text-on-surface">Distância Percorrida</span>
-                                    <span class="font-label-md text-label-md text-primary">12nm</span>
+                                    <span class="font-label-md text-label-md text-secondary">12nm</span>
                                 </div>
-                                <div class="h-1 bg-surface-container-highest w-full">
-                                    <div class="h-full bg-primary w-[40%]"></div>
+                                <div class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden">
+                                    <div class="h-full bg-secondary w-[40%]"></div>
                                 </div>
                             </div>
                             <!-- Metric 3 -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
                                     <span class="font-body-md text-body-md text-on-surface">Vento de Popa</span>
-                                    <span class="font-label-md text-label-md text-primary">Estável</span>
+                                    <span class="font-label-md text-label-md text-tertiary">Estável</span>
                                 </div>
-                                <div class="h-1 bg-surface-container-highest w-full">
-                                    <div class="h-full bg-primary w-[85%]"></div>
+                                <div class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden">
+                                    <div class="h-full bg-tertiary w-[85%]"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Atmospheric Map Placeholder -->
-                    <div class="bg-surface-container-low border border-outline-variant flex flex-col overflow-hidden">
+                    <div class="bg-surface-container-low border border-outline-variant rounded flex flex-col overflow-hidden">
                         <div class="p-6 border-b border-outline-variant">
                             <h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">
                                 Região de Navegação</h4>
@@ -362,26 +362,26 @@
                                 style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBs2MHvLQvFoGcgWEC6p2KgHXWeWCANaI9t5fKGW8zjwMpL4e2JMVaonFt253JWaq8q1-Xv7gg14tR45vLeSoUTZXhyOXaT1TFv_wXm_odgEufc7x_BZb3vrxSrPvwrPHkuv57Sm3aqf4I6zCqP7SamBhswsRZhcUrkqtveIvPw1Z6VwSiBRpomfKcS4qO9XS6dk1inMss4HzyAOCnjfyUgYaTVOft2qCDr1ZkYHYghr9Fvyt18Rvo')">
                             </div>
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-4 h-4 bg-primary animate-ping opacity-75"></div>
-                                <div class="w-2 h-2 bg-primary absolute"></div>
+                                <div class="w-4 h-4 bg-secondary animate-ping opacity-75 rounded-full"></div>
+                                <div class="w-2 h-2 bg-primary absolute rounded-full"></div>
                             </div>
                         </div>
                         <div
-                            class="p-4 bg-surface-container text-center font-caption text-caption text-on-surface-variant">
-                            COORDENADAS: 45°N 12°W
+                            class="p-4 bg-surface-container text-center font-label-sm text-label-sm text-secondary tracking-widest">
+                            COORDENADAS: 37°N 25°E • MAR EGEU
                         </div>
                     </div>
                     <!-- Stats Quick View -->
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-surface-container-low border border-outline-variant p-4">
-                            <div class="font-caption text-caption text-on-surface-variant uppercase mb-1">Média Semanal
+                        <div class="bg-surface-container-low border border-outline-variant rounded p-4">
+                            <div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Média Semanal
                             </div>
-                            <div class="font-headline-md text-headline-md text-on-surface">4.2h</div>
+                            <div class="font-headline-md text-headline-md text-primary">4.2h</div>
                         </div>
-                        <div class="bg-surface-container-low border border-outline-variant p-4">
-                            <div class="font-caption text-caption text-on-surface-variant uppercase mb-1">Total de
+                        <div class="bg-surface-container-low border border-outline-variant rounded p-4">
+                            <div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Total de
                                 Milhas</div>
-                            <div class="font-headline-md text-headline-md text-on-surface">128</div>
+                            <div class="font-headline-md text-headline-md text-secondary">128</div>
                         </div>
                     </div>
                 </aside>

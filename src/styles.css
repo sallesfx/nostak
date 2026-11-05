@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Geist:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -7,22 +7,22 @@
     user-select: none;
 }
 
-/* Custom scrollbar for minimalist aesthetic */
+/* Custom scrollbar for Aegean Minimalist Focus aesthetic */
 ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #060e20;
+    background: #0a0f14;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #414754;
+    background: #50453b;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #8b90a0;
+    background: #9c8e82;
 }
 
 /* Eliminate browser default focus rings for flat aesthetic */
@@ -31,35 +31,36 @@
 }
 
 .flat-border {
-    border: 1px solid #414754;
+    border: 1px solid #50453b;
 }
 
 .active-edge {
-    border-left: 2px solid #adc7ff;
+    border-left: 2px solid #f2be8c;
 }
 
-/* Map Grid Pattern */
+/* Map Grid Pattern — Warm bronze/slate cartography dots */
 .map-grid {
-    background-image: radial-gradient(#414754 1px, transparent 1px);
+    background-image: radial-gradient(#50453b 1px, transparent 1px);
     background-size: 24px 24px;
 }
 
-/* Custom Toggle Switch */
+/* Custom Toggle Switch — Warm Brass / Aegean Slate */
 .toggle-input:checked + .toggle-track {
-    background-color: #4a8eff; /* primary-container */
+    background-color: #d4a373; /* primary-container */
+    border-color: #f2be8c;
 }
 
 .toggle-input:checked + .toggle-track .toggle-thumb {
     transform: translateX(20px);
-    background-color: #00285b; /* on-primary-container */
+    background-color: #2c1600; /* on-primary-fixed */
 }
 
 .toggle-track {
-    transition: background-color 0.15s ease-in-out;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 
 .toggle-thumb {
-    transition: transform 0.15s ease-in-out;
+    transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
 }
 
 /* Timer Animation States */

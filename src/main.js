@@ -89,12 +89,12 @@ async function startVoyage() {
         currentPhase = 'focus';
 
         if (container) {
-            container.className = 'state-active bg-surface-container-low border border-outline-variant flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
+            container.className = 'state-active bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
         }
 
         if (badge) {
             badge.textContent = 'Em Alto Mar';
-            badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2 py-1 border border-primary bg-surface-container-low/80 backdrop-blur-sm';
+            badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2.5 py-1 border border-primary/50 bg-primary/10 rounded-sm';
         }
 
         updateTimerUI();
@@ -117,7 +117,7 @@ async function startVoyage() {
 
         if (badge) {
             badge.textContent = 'Erro de Permissão';
-            badge.className = 'font-label-md text-label-md text-error uppercase tracking-widest px-2 py-1 border border-error bg-surface-container-low/80 backdrop-blur-sm';
+            badge.className = 'font-label-md text-label-md text-error uppercase tracking-widest px-2.5 py-1 border border-error/50 bg-error-container/20 rounded-sm';
         }
     }
 }
@@ -139,12 +139,12 @@ async function startBreakSession() {
     }
 
     if (container) {
-        container.className = 'state-paused bg-surface-container-low border border-outline-variant flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
+        container.className = 'state-paused bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
     }
 
     if (badge) {
         badge.textContent = 'Porto Seguro (Descanso)';
-        badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2 py-1 border border-primary bg-surface-container-low/80 backdrop-blur-sm';
+        badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
     }
 
     if (title) {
@@ -194,12 +194,12 @@ async function pauseVoyage() {
         currentPhase = 'paused';
 
         if (container) {
-            container.className = 'state-paused bg-surface-container-low border border-outline-variant flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
+            container.className = 'state-paused bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
         }
 
         if (badge) {
             badge.textContent = 'Porto Seguro (Pausa)';
-            badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2 py-1 border border-primary bg-surface-container-low/80 backdrop-blur-sm';
+            badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
         }
 
         if (title) {
@@ -230,12 +230,12 @@ async function failVoyage() {
         currentPhase = 'idle';
 
         if (container) {
-            container.className = 'state-failed bg-surface-container-low border border-outline-variant flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
+            container.className = 'state-failed bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
         }
 
         if (badge) {
             badge.textContent = 'Interrompido';
-            badge.className = 'font-label-md text-label-md text-error uppercase tracking-widest px-2 py-1 border border-error bg-surface-container-low/80 backdrop-blur-sm';
+            badge.className = 'font-label-md text-label-md text-error uppercase tracking-widest px-2.5 py-1 border border-error/50 bg-error-container/20 rounded-sm';
         }
     } catch (erro) {
         console.error("[Nostak Error]", erro);
@@ -259,12 +259,12 @@ async function resetVoyage() {
         updateTimerUI();
 
         if (container) {
-            container.className = 'state-idle bg-surface-container-low border border-outline-variant flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
+            container.className = 'state-idle bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
         }
 
         if (badge) {
             badge.textContent = 'Aguardando';
-            badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2 py-1 border border-primary bg-surface-container-low/80 backdrop-blur-sm';
+            badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
         }
     } catch (erro) {
         console.error("[Nostak Error]", erro);
