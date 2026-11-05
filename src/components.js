@@ -145,6 +145,10 @@ function ensureFeedbackDialogMounted() {
         modal.querySelector('#nostak-dialog-btn-cancel')?.addEventListener('click', () => handleResolve(false));
         modal.querySelector('#nostak-dialog-btn-confirm')?.addEventListener('click', () => handleResolve(true));
 
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) handleResolve(false);
+        });
+
         bindModalKeyboardTrap(modal, () => handleResolve(false));
     }
     feedbackModalEl = modal;
