@@ -1,5 +1,5 @@
 import { invokeTauri, playNauticalBell } from './ipc.js';
-import { initTasks } from './tasks.js';
+import { initTasks, renderTasksState } from './tasks.js';
 import { renderDashboardProgress } from './progress.js';
 
 const TIMER_STORAGE_KEY = 'nostak_active_timer';
@@ -183,8 +183,11 @@ async function completeFocusPhase() {
         const configAtualizada = await invokeTauri('registrar_sessao_concluida', {
             minutosFoco: focusMinutes
         });
-        if (configAtualizada && configAtualizada.progresso) {
-            renderDashboardProgress(configAtualizada.progresso);
+        if (configAtualizada) {
+            if (configAtualizada.progresso) {
+                renderDashboardProgress(configAtualizada.progresso);
+            }
+            renderTasksState(configAtualizada);
         }
     } catch (e) {
         console.error("[Nostak] Erro ao finalizar foco e registrar sessão:", e);
@@ -376,14 +379,14 @@ async function initAppConfig() {
         const config = await invokeTauri('obter_configuracoes');
         if (config) {
             applyConfigToTimer(config, restored);
-            initTasks(config.tarefas || []);
+            initTasks(config);
         } else {
-            initTasks([]);
+            initTasks({});
             renderDashboardProgress({});
         }
     } catch (e) {
         console.error("[Nostak] Erro ao carregar configurações:", e);
-        initTasks([]);
+        initTasks({});
         renderDashboardProgress({});
     }
 }

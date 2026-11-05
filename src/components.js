@@ -236,7 +236,7 @@ export class NostakHeader extends HTMLElement {
         this.innerHTML = `
             <header class="w-full h-16 top-0 sticky bg-surface-container-low border-b border-outline-variant z-50 flex items-center justify-between px-4 md:px-8 transition-colors">
                 <a href="index.html" class="flex items-center gap-3 group">
-                    <span class="material-symbols-outlined text-primary text-2xl group-hover:rotate-12 transition-transform duration-300">sailing</span>
+                    <img src="./logo_nostak.svg" alt="Logo Nostak" class="w-9 h-9 rounded-md border border-outline-variant/60 shrink-0 group-hover:scale-105 transition-transform duration-300" />
                     <span class="font-headline-md text-headline-md font-bold text-primary tracking-wide">Nostak</span>
                 </a>
                 <div class="flex items-center gap-4">
@@ -288,9 +288,12 @@ export class NostakSidebar extends HTMLElement {
 
         this.innerHTML = `
             <aside class="hidden md:flex flex-col h-[calc(100vh-4rem)] w-64 sticky top-16 left-0 bg-surface-container border-r border-outline-variant p-4 shrink-0 overflow-y-auto">
-                <div class="mb-6 px-4 pt-2">
-                    <h2 class="font-headline-md text-headline-md text-primary">Nostak</h2>
-                    <p class="text-on-surface-variant font-label-sm text-label-sm mt-0.5 uppercase tracking-wider opacity-80">Navegando pelo Foco</p>
+                <div class="mb-6 px-4 pt-2 flex items-center gap-3">
+                    <img src="./logo_nostak.svg" alt="Logo Nostak" class="w-10 h-10 rounded-md border border-outline-variant/60 shrink-0" />
+                    <div>
+                        <h2 class="font-headline-md text-headline-md text-primary leading-none">Nostak</h2>
+                        <p class="text-on-surface-variant font-label-sm text-label-sm mt-1 uppercase tracking-wider opacity-80">Navegando pelo Foco</p>
+                    </div>
                 </div>
                 <nav class="flex-grow flex flex-col gap-1">
                     <a class="${linkClasses('jornada')}" href="jornada.html">
@@ -308,11 +311,11 @@ export class NostakSidebar extends HTMLElement {
                         <span class="material-symbols-outlined text-[20px]">tune</span> Configurações
                     </button>
                     <div class="pt-3 mt-1 border-t border-outline-variant/60 flex items-center justify-center gap-6">
-                        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="#" title="Site Oficial">
+                        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="https://nostak.app/" target="_blank" rel="noopener noreferrer" title="Site Oficial — nostak.app">
                             <span class="material-symbols-outlined text-[18px]">language</span>
                             <span>Site</span>
                         </a>
-                        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="#" title="Instagram">
+                        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="https://www.instagram.com/sallesfx" target="_blank" rel="noopener noreferrer" title="Instagram — @sallesfx">
                             <span class="material-symbols-outlined text-[18px]">photo_camera</span>
                             <span>Instagram</span>
                         </a>
