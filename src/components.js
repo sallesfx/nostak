@@ -118,11 +118,11 @@ function ensureSettingsModalMounted() {
                     <div class="grid grid-cols-2 gap-4">
                         <div class="p-3 bg-surface-container-low border border-outline-variant rounded-sm">
                             <label class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5">Foco em Alto Mar</label>
-                            <input type="number" id="settings-input-focus" min="1" max="180" value="25" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-primary font-display-md text-lg font-bold focus:border-primary focus:outline-none tabular-nums">
+                            <input type="number" id="settings-input-focus" min="1" max="180" value="25" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-primary font-display-md text-lg font-bold focus:border-primary tabular-nums">
                         </div>
                         <div class="p-3 bg-surface-container-low border border-outline-variant rounded-sm">
                             <label class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5">Pausa em Porto</label>
-                            <input type="number" id="settings-input-break" min="1" max="60" value="5" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-secondary font-display-md text-lg font-bold focus:border-secondary focus:outline-none tabular-nums">
+                            <input type="number" id="settings-input-break" min="1" max="60" value="5" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-secondary font-display-md text-lg font-bold focus:border-secondary tabular-nums">
                         </div>
                     </div>
                 </div>
