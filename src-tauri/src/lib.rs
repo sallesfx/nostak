@@ -97,11 +97,26 @@ fn resetar_progresso() -> Result<config::Config, String> {
 }
 
 #[command]
-fn adicionar_tarefa(texto: String, categoria: String) -> Result<config::Config, String> {
+fn adicionar_tarefa(
+    texto: String,
+    categoria: String,
+    sessoes_estimadas: Option<u64>,
+) -> Result<config::Config, String> {
     let mut config = config::Config::load_or_create()
         .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.adicionar_tarefa(texto, categoria)
+    config
+        .adicionar_tarefa(texto, categoria, sessoes_estimadas.unwrap_or(1))
         .ok_or_else(|| "O texto da tarefa não pode estar vazio.".to_string())?;
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
+fn selecionar_tarefa_ativa(id: Option<u64>) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.selecionar_tarefa_ativa(id);
     config.save()
         .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
     Ok(config)
@@ -122,6 +137,40 @@ fn remover_tarefa(id: u64) -> Result<config::Config, String> {
     let mut config = config::Config::load_or_create()
         .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
     config.remover_tarefa(id);
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
+fn aplicar_template(nome_template: String, substituir: bool) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    if !config.aplicar_template(&nome_template, substituir) {
+        return Err(format!("Template '{}' não encontrado.", nome_template));
+    }
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
+fn salvar_template(nome: String) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    if !config.salvar_template_de_tarefas_atuais(nome) {
+        return Err("Informe um nome válido e tenha ao menos uma tarefa na lista para salvar o template.".to_string());
+    }
+    config.save()
+        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    Ok(config)
+}
+
+#[command]
+fn remover_template(nome: String) -> Result<config::Config, String> {
+    let mut config = config::Config::load_or_create()
+        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
+    config.remover_template(&nome);
     config.save()
         .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
     Ok(config)
@@ -179,8 +228,12 @@ pub fn run() {
             atualizar_preferencias,
             resetar_progresso,
             adicionar_tarefa,
+            selecionar_tarefa_ativa,
             alternar_tarefa,
             remover_tarefa,
+            aplicar_template,
+            salvar_template,
+            remover_template,
             registrar_sessao_concluida,
             registrar_sessao_interrompida
         ])

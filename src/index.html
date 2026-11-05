@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Nostak - Navegando pelo Foco Profundo</title>
+    <link rel="icon" type="image/svg+xml" href="./logo_nostak.svg" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="./theme.js"></script>
     <link rel="stylesheet" href="./styles.css" />
@@ -38,9 +39,15 @@
                             <div
                                 class="mb-2 text-on-surface-variant font-label-md text-label-md uppercase tracking-[0.2em]">
                                 Foco Ininterrupto</div>
-                            <div id="timer-display-idle" class="font-display-lg text-[4rem] leading-none text-primary mb-6 tabular-nums">25:00</div>
+                            <div id="timer-display-idle" class="font-display-lg text-[4rem] leading-none text-primary mb-4 tabular-nums">25:00</div>
+                            <!-- Tarefa Ativa Vinculada ao Timer -->
+                            <div id="active-task-banner-idle" class="mb-6 px-4 py-1.5 rounded-sm border border-outline-variant bg-surface-container/60 text-xs font-label-md text-on-surface-variant flex items-center gap-2 max-w-md">
+                                <span class="material-symbols-outlined text-sm text-secondary">anchor</span>
+                                <span id="active-task-text-idle" class="truncate">Nenhuma tarefa atrelada • Selecione no Diário abaixo</span>
+                                <span id="active-task-sessions-idle" class="hidden px-1.5 py-0.5 rounded-sm bg-primary/15 text-primary border border-primary/30 text-[10px] font-bold uppercase shrink-0">0/1</span>
+                            </div>
                             <!-- Presets Náuticos e Botão Personalizar -->
-                            <div class="flex items-center gap-2 mb-10 flex-wrap justify-center">
+                            <div class="flex items-center gap-2 mb-8 flex-wrap justify-center">
                                 <button class="btn-preset px-4 py-1.5 rounded-sm border border-primary bg-primary/10 text-primary text-xs font-label-md transition-all font-bold" data-foco="25" data-pausa="5">
                                     25m / 5m
                                 </button>
@@ -155,12 +162,17 @@
                                     </g>
                                 </svg>
                             </div>
-                            <div class="relative z-20 flex flex-col items-center pt-24">
+                            <div class="relative z-20 flex flex-col items-center pt-20">
                                 <div
                                     class="mb-2 text-secondary font-label-md text-label-md uppercase tracking-[0.2em]">
                                     Em Alto Mar</div>
-                                <div class="font-display-lg text-[4rem] leading-none text-primary mb-8 tabular-nums"
+                                <div class="font-display-lg text-[4rem] leading-none text-primary mb-4 tabular-nums"
                                     id="timer-display-active">25:00</div>
+                                <div id="active-task-banner-active" class="mb-6 px-4 py-1.5 rounded-sm border border-primary/40 bg-surface-container/80 text-xs font-label-md text-on-surface flex items-center gap-2 max-w-md">
+                                    <span class="material-symbols-outlined text-sm text-primary">sailing</span>
+                                    <span id="active-task-text-active" class="truncate">Navegando em Foco Livre</span>
+                                    <span id="active-task-sessions-active" class="hidden px-1.5 py-0.5 rounded-sm bg-primary/15 text-primary border border-primary/30 text-[10px] font-bold uppercase shrink-0">0/1</span>
+                                </div>
                                 <div class="flex gap-4">
                                     <button
                                         class="border border-secondary/50 text-secondary px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-secondary-container/30 transition-colors"
@@ -263,14 +275,64 @@
                     </div>
                     <!-- Navigator's Log (Diário de Bordo / Checklist) -->
                     <section class="bg-surface-container-low border border-outline-variant rounded p-8">
-                        <div class="flex items-center justify-between mb-6 border-b border-outline-variant pb-4">
-                            <h3 class="font-headline-md text-headline-md text-on-surface">Diário do Navegador</h3>
-                            <button
-                                id="btn-toggle-add-task"
-                                type="button"
-                                class="text-primary font-label-md text-label-md flex items-center gap-1.5 hover:text-tertiary transition-colors uppercase tracking-wider">
-                                <span class="material-symbols-outlined text-lg">add</span> Nova Tarefa
-                            </button>
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-outline-variant pb-4">
+                            <div>
+                                <h3 class="font-headline-md text-headline-md text-on-surface">Diário do Navegador</h3>
+                                <p class="font-label-sm text-xs text-on-surface-variant mt-0.5">Atrele tarefas ao temporizador e acompanhe as sessões de foco</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button
+                                    id="btn-toggle-save-template"
+                                    type="button"
+                                    title="Salvar tarefas atuais como um novo Template"
+                                    class="text-secondary font-label-md text-xs flex items-center gap-1 hover:text-primary transition-colors uppercase tracking-wider px-2.5 py-1.5 border border-secondary/30 rounded-sm bg-secondary-container/10">
+                                    <span class="material-symbols-outlined text-sm">bookmark_add</span> Salvar Template
+                                </button>
+                                <button
+                                    id="btn-toggle-add-task"
+                                    type="button"
+                                    class="text-primary font-label-md text-label-md flex items-center gap-1.5 hover:text-tertiary transition-colors uppercase tracking-wider">
+                                    <span class="material-symbols-outlined text-lg">add</span> Nova Tarefa
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Barra de Templates de Tarefas (Rotas de Estudo) -->
+                        <div class="mb-6 p-3.5 bg-surface-container/60 border border-outline-variant rounded-sm">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                                <div class="flex items-center gap-1.5 text-on-surface-variant font-label-sm text-xs uppercase tracking-wider">
+                                    <span class="material-symbols-outlined text-sm text-secondary">route</span>
+                                    <span>Templates de Rota (Carregar Tarefas Padrão):</span>
+                                </div>
+                            </div>
+                            <div id="templates-list" class="flex flex-wrap items-center gap-2">
+                                <!-- Preenchido via tasks.js (ex: Alemão, Matemática) -->
+                            </div>
+                            <!-- Formulário Inline para Salvar Template -->
+                            <form id="form-save-template" class="hidden mt-3 pt-3 border-t border-outline-variant flex flex-col sm:flex-row gap-2">
+                                <input
+                                    id="input-template-name"
+                                    type="text"
+                                    placeholder="Nome do template (ex: Alemão, Matemática, Concurso)..."
+                                    class="flex-grow bg-surface-container-low border border-outline-variant rounded-sm px-3 py-1.5 text-xs text-on-surface placeholder:text-on-surface-variant/50 focus:border-secondary focus:outline-none transition-colors"
+                                    required
+                                />
+                                <div class="flex gap-2">
+                                    <button
+                                        id="btn-cancel-save-template"
+                                        type="button"
+                                        class="px-3 py-1.5 rounded-sm border border-outline-variant text-on-surface-variant hover:text-on-surface text-xs uppercase tracking-wider font-label-md transition-colors"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        class="px-4 py-1.5 rounded-sm bg-secondary-container text-secondary border border-secondary/40 hover:bg-secondary hover:text-on-primary text-xs uppercase tracking-wider font-label-md font-bold transition-colors"
+                                    >
+                                        Salvar Rota
+                                    </button>
+                                </div>
+                            </form>
                         </div>
 
                         <!-- Formulário Inline para Adicionar Tarefa -->
@@ -284,8 +346,20 @@
                                     required
                                 />
                                 <select
+                                    id="select-task-sessions"
+                                    title="Quantidade de sessões Pomodoro para esta tarefa"
+                                    class="bg-surface-container-low border border-outline-variant rounded-sm px-3 py-2.5 text-xs font-label-md uppercase tracking-wider text-primary focus:border-primary focus:outline-none transition-colors sm:w-36"
+                                >
+                                    <option value="1">1 Sessão</option>
+                                    <option value="2">2 Sessões</option>
+                                    <option value="3">3 Sessões</option>
+                                    <option value="4">4 Sessões</option>
+                                    <option value="5">5 Sessões</option>
+                                    <option value="6">6 Sessões</option>
+                                </select>
+                                <select
                                     id="select-task-category"
-                                    class="bg-surface-container-low border border-outline-variant rounded-sm px-3.5 py-2.5 text-xs font-label-md uppercase tracking-wider text-on-surface focus:border-primary focus:outline-none transition-colors sm:w-36"
+                                    class="bg-surface-container-low border border-outline-variant rounded-sm px-3.5 py-2.5 text-xs font-label-md uppercase tracking-wider text-on-surface focus:border-primary focus:outline-none transition-colors sm:w-32"
                                 >
                                     <option value="Rotina">Rotina</option>
                                     <option value="Urgente">Urgente</option>
