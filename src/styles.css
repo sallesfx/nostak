@@ -162,11 +162,13 @@ select option {
 .mb-2 { margin-bottom: 0.5rem; }
 .mb-2\.5 { margin-bottom: 0.625rem; }
 .mb-4 { margin-bottom: 1rem; }
+.mb-5 { margin-bottom: 1.25rem; }
 .mb-6 { margin-bottom: 1.5rem; }
 .mb-8 { margin-bottom: 2rem; }
 .ml-auto { margin-left: auto; }
 .mt-0\.5 { margin-top: 0.125rem; }
 .mt-1 { margin-top: 0.25rem; }
+.mt-1\.5 { margin-top: 0.375rem; }
 .mt-2 { margin-top: 0.5rem; }
 .mt-3 { margin-top: 0.75rem; }
 .mt-auto { margin-top: auto; }
@@ -210,9 +212,11 @@ select option {
 .animate-pulse { animation: tw-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 .bg-background { background-color: #0f1419; }
 .bg-black\/70 { background-color: rgba(0, 0, 0, 0.7); }
+.bg-black\/75 { background-color: rgba(0, 0, 0, 0.75); }
 .bg-center { background-position: center; }
 .bg-cover { background-size: cover; }
 .bg-error-container\/20 { background-color: rgba(147, 0, 10, 0.2); }
+.bg-error\/20 { background-color: rgba(255, 180, 171, 0.2); }
 .bg-gradient-to-l { background-image: linear-gradient(to left, var(--tw-gradient-stops)); }
 .bg-on-surface-variant { background-color: #d4c4b7; }
 .bg-primary { background-color: #f2be8c; }
@@ -252,6 +256,7 @@ select option {
 .gap-1\.5 { gap: 0.375rem; }
 .gap-2 { gap: 0.5rem; }
 .gap-3 { gap: 0.75rem; }
+.gap-3\.5 { gap: 0.875rem; }
 .gap-4 { gap: 1rem; }
 .gap-6 { gap: 1.5rem; }
 .gap-8 { gap: 2rem; }
@@ -404,6 +409,7 @@ select option {
 .hover\:border-outline:hover { border-color: #9c8e82; }
 .hover\:border-primary:hover { border-color: #f2be8c; }
 .hover\:border-secondary:hover { border-color: #94d0e1; }
+.hover\:bg-error:hover { background-color: #ffb4ab; }
 .hover\:bg-error\/10:hover { background-color: rgba(255, 180, 171, 0.1); }
 .hover\:bg-secondary:hover { background-color: #94d0e1; }
 .hover\:bg-secondary-container\/30:hover { background-color: rgba(2, 80, 95, 0.3); }
@@ -425,6 +431,7 @@ select option {
 .focus\:border-secondary:focus { border-color: #94d0e1; }
 
 @media (min-width: 640px) {
+  .sm\:p-7 { padding: 1.75rem; }
   .sm\:p-8 { padding: 2rem; }
   .sm\:flex-nowrap { flex-wrap: nowrap; }
   .sm\:flex-row { flex-direction: row; }

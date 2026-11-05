@@ -1,4 +1,5 @@
 import { invokeTauri } from './ipc.js';
+import { nostakAlert } from './components.js';
 
 export function renderConfiguracoes(config) {
     if (!config) return;
@@ -43,8 +44,8 @@ export function renderConfiguracoes(config) {
                         <span class="material-symbols-outlined text-secondary text-xl">block</span>
                         <span class="font-body-md text-sm text-on-surface truncate">${site}</span>
                     </div>
-                    <button class="btn-remove-site text-on-surface-variant hover:text-error hover:bg-error/10 p-1.5 transition-colors rounded-sm" data-site="${site}" title="Remover Sereia">
-                        <span class="material-symbols-outlined text-lg">close</span>
+                    <button class="btn-remove-site text-on-surface-variant hover:text-error hover:bg-error/10 p-1.5 transition-colors rounded-sm" data-site="${site}" title="Remover Sereia" aria-label="Remover sereia ${site} da lista de bloqueio">
+                        <span class="material-symbols-outlined text-lg" aria-hidden="true">close</span>
                     </button>
                 `;
                 listContainer.appendChild(item);
@@ -112,7 +113,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderConfiguracoes(configAtualizada);
                 }
             } catch (err) {
-                alert('Não foi possível adicionar a Sereia: ' + err);
+                await nostakAlert({
+                    title: 'Lista de Bloqueio',
+                    message: 'Não foi possível adicionar a Sereia: ' + err,
+                    type: 'error'
+                });
             }
         });
     }
@@ -133,7 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderConfiguracoes(configAtualizada);
                 }
             } catch (err) {
-                alert('Não foi possível remover a Sereia: ' + err);
+                await nostakAlert({
+                    title: 'Lista de Bloqueio',
+                    message: 'Não foi possível remover a Sereia: ' + err,
+                    type: 'error'
+                });
             }
         });
     }

@@ -1,4 +1,5 @@
 import { invokeTauri } from './ipc.js';
+import { nostakAlert } from './components.js';
 
 function escapeHtml(str) {
     const div = document.createElement('div');
@@ -103,13 +104,14 @@ export function renderTarefas(tarefas = [], tarefaAtivaId = null) {
                 type="button"
                 data-focus-id="${tarefa.id}"
                 title="${isActive ? 'Tarefa atrelada ao Temporizador' : 'Atrelar esta tarefa ao Temporizador'}"
+                aria-label="${isActive ? 'Tarefa no Leme: ' + escapeHtml(tarefa.texto) : 'Atrelar tarefa ao Temporizador: ' + escapeHtml(tarefa.texto)}"
                 class="btn-focus-task px-2.5 py-1 rounded-sm font-label-sm text-[11px] uppercase tracking-wider flex items-center gap-1 transition-colors shrink-0 ${
                     isActive
                         ? 'bg-primary text-on-primary font-bold'
                         : 'border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
                 }"
                >
-                 <span class="material-symbols-outlined text-xs">${isActive ? 'anchor' : 'play_arrow'}</span>
+                 <span class="material-symbols-outlined text-xs" aria-hidden="true">${isActive ? 'anchor' : 'play_arrow'}</span>
                  <span>${isActive ? 'No Leme' : 'Atrelar'}</span>
                </button>`
             : '';
@@ -145,8 +147,9 @@ export function renderTarefas(tarefas = [], tarefaAtivaId = null) {
                     data-remove-id="${tarefa.id}"
                     class="btn-remove-task text-on-surface-variant/60 hover:text-error hover:bg-error/10 p-1 rounded-sm transition-colors shrink-0"
                     title="Remover tarefa"
+                    aria-label="Remover tarefa: ${escapeHtml(tarefa.texto)}"
                 >
-                    <span class="material-symbols-outlined text-base">close</span>
+                    <span class="material-symbols-outlined text-base" aria-hidden="true">close</span>
                 </button>
             </div>
         `;
@@ -190,9 +193,10 @@ export function renderTemplates(templates = []) {
                 type="button"
                 data-remove-template="${escapeHtml(tpl.nome)}"
                 title="Excluir template ${escapeHtml(tpl.nome)}"
+                aria-label="Excluir template ${escapeHtml(tpl.nome)}"
                 class="btn-remove-template px-1.5 py-1 text-on-surface-variant/50 hover:text-error hover:bg-error/10 border-l border-outline-variant transition-colors"
             >
-                <span class="material-symbols-outlined text-xs">close</span>
+                <span class="material-symbols-outlined text-xs" aria-hidden="true">close</span>
             </button>
         `;
 
@@ -269,7 +273,11 @@ export function initTasks(initialConfig = {}) {
                 }
             } catch (err) {
                 console.error('[Nostak] Erro ao adicionar tarefa:', err);
-                alert('Não foi possível adicionar a tarefa: ' + err);
+                await nostakAlert({
+                    title: 'Diário do Navegador',
+                    message: 'Não foi possível registrar a manobra: ' + err,
+                    type: 'error'
+                });
             }
         });
     }
@@ -309,7 +317,11 @@ export function initTasks(initialConfig = {}) {
                 }
             } catch (err) {
                 console.error('[Nostak] Erro ao salvar template:', err);
-                alert('Atenção: ' + err);
+                await nostakAlert({
+                    title: 'Templates de Rota',
+                    message: String(err).replace(/^Error:\s*/, ''),
+                    type: 'error'
+                });
             }
         });
     }
