@@ -21,6 +21,10 @@ pub struct Progresso {
     pub sereias_silenciadas: u64,
 }
 
+fn default_true() -> bool {
+    true
+}
+
 pub fn default_tarefas() -> Vec<Tarefa> {
     vec![
         Tarefa {
@@ -54,6 +58,10 @@ pub fn default_tarefas() -> Vec<Tarefa> {
 pub struct Config {
     pub tempo_foco_minutos: u64,
     pub tempo_pausa_minutos: u64,
+    #[serde(default = "default_true")]
+    pub som_ativo: bool,
+    #[serde(default = "default_true")]
+    pub auto_iniciar_descanso: bool,
     pub categorias_ativas: Vec<String>,
     pub sites_personalizados: Vec<String>,
     pub categorias: HashMap<String, Vec<String>>,
@@ -112,6 +120,8 @@ impl Default for Config {
         Self {
             tempo_foco_minutos: 25,
             tempo_pausa_minutos: 5,
+            som_ativo: true,
+            auto_iniciar_descanso: true,
             categorias_ativas: vec![
                 "redes_sociais".to_string(),
                 "streaming_e_videos".to_string(),
@@ -185,6 +195,15 @@ impl Config {
     pub fn atualizar_tempos(&mut self, foco: u64, pausa: u64) {
         self.tempo_foco_minutos = foco;
         self.tempo_pausa_minutos = pausa;
+    }
+
+    pub fn atualizar_preferencias(&mut self, som_ativo: bool, auto_iniciar_descanso: bool) {
+        self.som_ativo = som_ativo;
+        self.auto_iniciar_descanso = auto_iniciar_descanso;
+    }
+
+    pub fn resetar_progresso(&mut self) {
+        self.progresso = Progresso::default();
     }
 
     pub fn adicionar_tarefa(&mut self, texto: String, categoria: String) -> Option<Tarefa> {
@@ -319,5 +338,23 @@ mod tests {
 
         cfg.registrar_sessao_interrompida();
         assert_eq!(cfg.progresso.sessoes_interrompidas, 1);
+    }
+
+    #[test]
+    fn test_preferencias_e_reset_progresso() {
+        let mut cfg = Config::default();
+        assert!(cfg.som_ativo);
+        assert!(cfg.auto_iniciar_descanso);
+
+        cfg.atualizar_preferencias(false, false);
+        assert!(!cfg.som_ativo);
+        assert!(!cfg.auto_iniciar_descanso);
+
+        cfg.registrar_sessao_concluida(60);
+        assert_eq!(cfg.progresso.total_minutos_foco, 60);
+
+        cfg.resetar_progresso();
+        assert_eq!(cfg.progresso.total_minutos_foco, 0);
+        assert_eq!(cfg.progresso.sessoes_concluidas, 0);
     }
 }

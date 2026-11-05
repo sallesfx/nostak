@@ -1,5 +1,7 @@
-tempo_foco_minutos = 1
+tempo_foco_minutos = 25
 tempo_pausa_minutos = 5
+som_ativo = true
+auto_iniciar_descanso = true
 categorias_ativas = [
     "redes_sociais",
     "streaming_e_videos",
@@ -59,8 +61,8 @@ categoria = "Foco"
 concluida = false
 
 [progresso]
-total_minutos_foco = 1
-sessoes_concluidas = 1
-sessoes_interrompidas = 1
-maior_sessao_minutos = 1
-sereias_silenciadas = 10
+total_minutos_foco = 0
+sessoes_concluidas = 0
+sessoes_interrompidas = 0
+maior_sessao_minutos = 0
+sereias_silenciadas = 0
