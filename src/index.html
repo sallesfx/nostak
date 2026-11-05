@@ -72,15 +72,15 @@
                         </div>
 
                         <!-- Modal de Personalização do Temporizador -->
-                        <div id="modal-custom-timer" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden">
+                        <div id="modal-custom-timer" role="dialog" aria-modal="true" aria-labelledby="custom-timer-dialog-title" aria-hidden="true" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden">
                             <div class="bg-surface-container border border-outline-variant rounded-md p-6 sm:p-8 max-w-md w-full mx-4 relative">
                                 <div class="flex items-center justify-between border-b border-outline-variant pb-3 mb-6">
                                     <div class="flex items-center gap-2 text-primary">
-                                        <span class="material-symbols-outlined text-lg">explore</span>
-                                        <h3 class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Calibrar Rota de Foco</h3>
+                                        <span class="material-symbols-outlined text-lg" aria-hidden="true">explore</span>
+                                        <h3 id="custom-timer-dialog-title" class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Calibrar Rota de Foco</h3>
                                     </div>
-                                    <button id="btn-close-custom-timer" class="text-on-surface-variant hover:text-primary transition-colors">
-                                        <span class="material-symbols-outlined text-xl">close</span>
+                                    <button type="button" id="btn-close-custom-timer" aria-label="Fechar modal de calibração" class="text-on-surface-variant hover:text-primary transition-colors">
+                                        <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
                                     </button>
                                 </div>
 
