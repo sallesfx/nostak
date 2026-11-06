@@ -103,11 +103,12 @@ export function renderTarefas(tarefas = [], tarefaAtivaId = null) {
             ? `<button
                 type="button"
                 data-focus-id="${tarefa.id}"
+                aria-pressed="${isActive ? 'true' : 'false'}"
                 title="${isActive ? 'Tarefa atrelada ao Temporizador' : 'Atrelar esta tarefa ao Temporizador'}"
                 aria-label="${isActive ? 'Tarefa no Leme: ' + escapeHtml(tarefa.texto) : 'Atrelar tarefa ao Temporizador: ' + escapeHtml(tarefa.texto)}"
                 class="btn-focus-task px-2.5 py-1 rounded-sm font-label-sm text-[11px] uppercase tracking-wider flex items-center gap-1 transition-colors shrink-0 ${
                     isActive
-                        ? 'bg-primary text-on-primary font-bold'
+                        ? 'bg-primary text-on-primary font-bold cursor-default'
                         : 'border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
                 }"
                >
@@ -237,9 +238,11 @@ export function initTasks(initialConfig = {}) {
             const isHidden = formAddTask.classList.contains('hidden');
             if (isHidden) {
                 formAddTask.classList.remove('hidden');
+                btnToggleAdd.setAttribute('aria-expanded', 'true');
                 if (inputTitle) inputTitle.focus();
             } else {
                 formAddTask.classList.add('hidden');
+                btnToggleAdd.setAttribute('aria-expanded', 'false');
             }
         });
     }
@@ -247,7 +250,9 @@ export function initTasks(initialConfig = {}) {
     if (btnCancelTask && formAddTask) {
         btnCancelTask.addEventListener('click', () => {
             formAddTask.classList.add('hidden');
+            btnToggleAdd?.setAttribute('aria-expanded', 'false');
             if (inputTitle) inputTitle.value = '';
+            btnToggleAdd?.focus();
         });
     }
 
@@ -268,6 +273,8 @@ export function initTasks(initialConfig = {}) {
                 inputTitle.value = '';
                 if (selectSessions) selectSessions.value = '1';
                 formAddTask.classList.add('hidden');
+                btnToggleAdd?.setAttribute('aria-expanded', 'false');
+                btnToggleAdd?.focus();
                 if (configAtualizada) {
                     renderTasksState(configAtualizada);
                 }
@@ -288,9 +295,11 @@ export function initTasks(initialConfig = {}) {
             const isHidden = formSaveTemplate.classList.contains('hidden');
             if (isHidden) {
                 formSaveTemplate.classList.remove('hidden');
+                btnToggleSaveTemplate.setAttribute('aria-expanded', 'true');
                 if (inputTemplateName) inputTemplateName.focus();
             } else {
                 formSaveTemplate.classList.add('hidden');
+                btnToggleSaveTemplate.setAttribute('aria-expanded', 'false');
             }
         });
     }
@@ -298,7 +307,9 @@ export function initTasks(initialConfig = {}) {
     if (btnCancelSaveTemplate && formSaveTemplate) {
         btnCancelSaveTemplate.addEventListener('click', () => {
             formSaveTemplate.classList.add('hidden');
+            btnToggleSaveTemplate?.setAttribute('aria-expanded', 'false');
             if (inputTemplateName) inputTemplateName.value = '';
+            btnToggleSaveTemplate?.focus();
         });
     }
 
@@ -312,6 +323,8 @@ export function initTasks(initialConfig = {}) {
                 const configAtualizada = await invokeTauri('salvar_template', { nome });
                 inputTemplateName.value = '';
                 formSaveTemplate.classList.add('hidden');
+                btnToggleSaveTemplate?.setAttribute('aria-expanded', 'false');
+                btnToggleSaveTemplate?.focus();
                 if (configAtualizada) {
                     renderTasksState(configAtualizada);
                 }
@@ -384,6 +397,9 @@ export function initTasks(initialConfig = {}) {
         listContainer.addEventListener('click', async (e) => {
             const btnFocus = e.target.closest('.btn-focus-task');
             if (btnFocus) {
+                if (btnFocus.getAttribute('aria-pressed') === 'true') {
+                    return; // Já está no leme, evita chamada IPC redundante
+                }
                 const id = parseInt(btnFocus.getAttribute('data-focus-id'), 10);
                 try {
                     const configAtualizada = await invokeTauri('selecionar_tarefa_ativa', { id });
