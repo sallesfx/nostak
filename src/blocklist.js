@@ -12,6 +12,7 @@ function sanitizeDomain(raw) {
         .split('/')[0]
         .split('?')[0]
         .split('#')[0]
+        .replace(/\.+$/, '') // Remove pontos finais à direita digitados por engano
         .trim();
 }
 
@@ -27,7 +28,8 @@ function validateDomain(raw) {
     if (clean.includes(' ')) {
         return 'O domínio não pode conter espaços.';
     }
-    const domainRegex = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/i;
+    // Exige TLD final alfabético com pelo menos 2 caracteres (ex: .com, .br, .tech, .globo)
+    const domainRegex = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;
     if (!domainRegex.test(clean)) {
         return 'Informe um domínio válido (ex.: reddit.com, anime.tv ou gshow.globo.com).';
     }
