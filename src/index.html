@@ -51,22 +51,24 @@
                             </div>
                             <!-- Presets Náuticos e Botão Personalizar -->
                             <div class="flex items-center gap-2 mb-8 flex-wrap justify-center">
-                                <button class="btn-preset px-4 py-1.5 rounded-sm border border-primary bg-primary/10 text-primary text-xs font-label-md transition-all font-bold" data-foco="25" data-pausa="5">
+                                <button type="button" class="btn-preset px-4 py-1.5 rounded-sm border border-primary bg-primary/10 text-primary text-xs font-label-md transition-all font-bold" data-foco="25" data-pausa="5">
                                     25m / 5m
                                 </button>
-                                <button class="btn-preset px-4 py-1.5 rounded-sm border border-outline-variant text-on-surface-variant hover:border-secondary hover:text-secondary text-xs font-label-md transition-all" data-foco="45" data-pausa="10">
+                                <button type="button" class="btn-preset px-4 py-1.5 rounded-sm border border-outline-variant text-on-surface-variant hover:border-secondary hover:text-secondary text-xs font-label-md transition-all" data-foco="45" data-pausa="10">
                                     45m / 10m
                                 </button>
-                                <button class="btn-preset px-4 py-1.5 rounded-sm border border-outline-variant text-on-surface-variant hover:border-secondary hover:text-secondary text-xs font-label-md transition-all" data-foco="60" data-pausa="15">
+                                <button type="button" class="btn-preset px-4 py-1.5 rounded-sm border border-outline-variant text-on-surface-variant hover:border-secondary hover:text-secondary text-xs font-label-md transition-all" data-foco="60" data-pausa="15">
                                     60m / 15m
                                 </button>
-                                <button id="btn-open-custom-timer" class="px-3 py-1.5 rounded-sm border border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all flex items-center gap-1.5">
+                                <button type="button" id="btn-open-custom-timer" class="px-3 py-1.5 rounded-sm border border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all flex items-center gap-1.5">
                                     <span class="material-symbols-outlined text-[14px]">tune</span>
                                     <span>Personalizar</span>
                                 </button>
                             </div>
                             <div class="flex gap-4">
                                 <button
+                                    type="button"
+                                    id="btn-start-voyage"
                                     class="bg-primary-container text-on-primary px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-tertiary transition-colors"
                                     onclick="startVoyage()">
                                     Zarpar
@@ -178,11 +180,13 @@
                                 </div>
                                 <div class="flex gap-4">
                                     <button
+                                        type="button"
                                         class="border border-secondary/50 text-secondary px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-secondary-container/30 transition-colors"
                                         onclick="pauseVoyage()">
                                         Porto Seguro
                                     </button>
                                     <button
+                                        type="button"
                                         class="border border-error/70 text-error px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-error/10 transition-colors"
                                         onclick="failVoyage()">
                                         Abandonar Navio
@@ -221,12 +225,14 @@
                                     Pausado</div>
                                 <div class="flex gap-4">
                                     <button
+                                        type="button"
                                         id="btn-resume-voyage"
                                         class="bg-primary-container text-on-primary px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-tertiary transition-colors"
                                         onclick="startVoyage()">
                                         Retomar Viagem
                                     </button>
                                     <button
+                                        type="button"
                                         class="border border-outline-variant text-on-surface px-8 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:border-secondary hover:text-secondary transition-colors"
                                         onclick="resetVoyage()">
                                         Encerrar
@@ -242,38 +248,39 @@
                                     <g transform="translate(200, 160)">
                                         <path d="M-60 0 Q -80 -40 -40 -60 T 0 -80 T 40 -60 T 60 0" fill="none"
                                             stroke="#ffb4ab" stroke-dasharray="5,5" stroke-width="2">
-                                            <animatetransform attributename="transform" dur="10s" from="0"
-                                                repeatcount="indefinite" to="360" type="rotate"></animatetransform>
-                                        </path>
+                                        <animatetransform attributename="transform" dur="10s" from="0"
+                                            repeatcount="indefinite" to="360" type="rotate"></animatetransform>
+                                    </path>
+                                </g>
+                                <g transform="translate(200, 150)">
+                                    <g>
+                                        <animatetransform attributename="transform" dur="4s" fill="freeze"
+                                            type="translate" values="0,0; 0,40"></animatetransform>
+                                        <animatetransform additive="sum" attributename="transform" dur="4s"
+                                            fill="freeze" type="rotate" values="0; 15"></animatetransform>
+                                        <animate attributename="opacity" dur="4s" fill="freeze" values="1; 0">
+                                        </animate>
+                                        <path d="M-40 0 L40 0 L30 15 L-30 15 Z" fill="#1b2025" stroke="#ffb4ab"
+                                            stroke-width="2"></path>
+                                        <line stroke="#ffb4ab" stroke-width="2" x1="0" x2="0" y1="0" y2="-40">
+                                        </line>
+                                        <path d="M0 -40 Q 10 -20 0 0 Z" fill="#ffb4ab" opacity="0.4"></path>
                                     </g>
-                                    <g transform="translate(200, 150)">
-                                        <g>
-                                            <animatetransform attributename="transform" dur="4s" fill="freeze"
-                                                type="translate" values="0,0; 0,40"></animatetransform>
-                                            <animatetransform additive="sum" attributename="transform" dur="4s"
-                                                fill="freeze" type="rotate" values="0; 15"></animatetransform>
-                                            <animate attributename="opacity" dur="4s" fill="freeze" values="1; 0">
-                                            </animate>
-                                            <path d="M-40 0 L40 0 L30 15 L-30 15 Z" fill="#1b2025" stroke="#ffb4ab"
-                                                stroke-width="2"></path>
-                                            <line stroke="#ffb4ab" stroke-width="2" x1="0" x2="0" y1="0" y2="-40">
-                                            </line>
-                                            <path d="M0 -40 Q 10 -20 0 0 Z" fill="#ffb4ab" opacity="0.4"></path>
-                                        </g>
-                                    </g>
-                                    <path d="M0 160 Q 200 130 400 160 V 200 H 0 Z" fill="#0f1419"></path>
-                                </svg>
-                            </div>
-                            <div class="relative z-20 flex flex-col items-center pt-24">
-                                <h3 class="font-headline-md text-headline-md text-error mb-2">Jornada Interrompida</h3>
-                                <p class="text-on-surface-variant font-body-md text-body-md mb-8">O monstro da distração
-                                    reivindicou seu navio.</p>
-                                <button
-                                    class="border border-outline-variant text-on-surface px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:border-primary hover:text-primary transition-colors"
-                                    onclick="resetVoyage()">
-                                    Novo Navio
-                                </button>
-                            </div>
+                                </g>
+                                <path d="M0 160 Q 200 130 400 160 V 200 H 0 Z" fill="#0f1419"></path>
+                            </svg>
+                        </div>
+                        <div class="relative z-20 flex flex-col items-center pt-24">
+                            <h3 class="font-headline-md text-headline-md text-error mb-2">Jornada Interrompida</h3>
+                            <p class="text-on-surface-variant font-body-md text-body-md mb-8">O monstro da distração
+                                reivindicou seu navio.</p>
+                            <button
+                                type="button"
+                                class="border border-outline-variant text-on-surface px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:border-primary hover:text-primary transition-colors"
+                                onclick="resetVoyage()">
+                                Novo Navio
+                            </button>
+                        </div>
                         </div>
                     </div>
                     <!-- Navigator's Log (Diário de Bordo / Checklist) -->
