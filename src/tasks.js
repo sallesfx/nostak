@@ -238,9 +238,11 @@ export function initTasks(initialConfig = {}) {
             const isHidden = formAddTask.classList.contains('hidden');
             if (isHidden) {
                 formAddTask.classList.remove('hidden');
+                btnToggleAdd.setAttribute('aria-expanded', 'true');
                 if (inputTitle) inputTitle.focus();
             } else {
                 formAddTask.classList.add('hidden');
+                btnToggleAdd.setAttribute('aria-expanded', 'false');
             }
         });
     }
@@ -248,7 +250,9 @@ export function initTasks(initialConfig = {}) {
     if (btnCancelTask && formAddTask) {
         btnCancelTask.addEventListener('click', () => {
             formAddTask.classList.add('hidden');
+            btnToggleAdd?.setAttribute('aria-expanded', 'false');
             if (inputTitle) inputTitle.value = '';
+            btnToggleAdd?.focus();
         });
     }
 
@@ -269,6 +273,8 @@ export function initTasks(initialConfig = {}) {
                 inputTitle.value = '';
                 if (selectSessions) selectSessions.value = '1';
                 formAddTask.classList.add('hidden');
+                btnToggleAdd?.setAttribute('aria-expanded', 'false');
+                btnToggleAdd?.focus();
                 if (configAtualizada) {
                     renderTasksState(configAtualizada);
                 }
@@ -289,9 +295,11 @@ export function initTasks(initialConfig = {}) {
             const isHidden = formSaveTemplate.classList.contains('hidden');
             if (isHidden) {
                 formSaveTemplate.classList.remove('hidden');
+                btnToggleSaveTemplate.setAttribute('aria-expanded', 'true');
                 if (inputTemplateName) inputTemplateName.focus();
             } else {
                 formSaveTemplate.classList.add('hidden');
+                btnToggleSaveTemplate.setAttribute('aria-expanded', 'false');
             }
         });
     }
@@ -299,7 +307,9 @@ export function initTasks(initialConfig = {}) {
     if (btnCancelSaveTemplate && formSaveTemplate) {
         btnCancelSaveTemplate.addEventListener('click', () => {
             formSaveTemplate.classList.add('hidden');
+            btnToggleSaveTemplate?.setAttribute('aria-expanded', 'false');
             if (inputTemplateName) inputTemplateName.value = '';
+            btnToggleSaveTemplate?.focus();
         });
     }
 
@@ -313,6 +323,8 @@ export function initTasks(initialConfig = {}) {
                 const configAtualizada = await invokeTauri('salvar_template', { nome });
                 inputTemplateName.value = '';
                 formSaveTemplate.classList.add('hidden');
+                btnToggleSaveTemplate?.setAttribute('aria-expanded', 'false');
+                btnToggleSaveTemplate?.focus();
                 if (configAtualizada) {
                     renderTasksState(configAtualizada);
                 }
