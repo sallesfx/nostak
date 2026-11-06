@@ -76,8 +76,23 @@ export function bindModalKeyboardTrap(modalEl, onCloseCallback = null) {
         }
 
         if (e.key === 'Tab') {
-            const focusables = Array.from(modalEl.querySelectorAll(FOCUSABLE_SELECTOR)).filter(el => !el.classList.contains('hidden') && el.offsetParent !== null);
-            if (focusables.length === 0) return;
+            const focusables = Array.from(modalEl.querySelectorAll(FOCUSABLE_SELECTOR)).filter(el => {
+                if (el.classList.contains('hidden')) return false;
+                if (el.getAttribute('aria-hidden') === 'true') return false;
+                if (el.style.display === 'none') return false;
+                return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+            });
+
+            if (focusables.length === 0) {
+                e.preventDefault();
+                return;
+            }
+
+            if (focusables.length === 1) {
+                e.preventDefault();
+                focusables[0].focus();
+                return;
+            }
 
             const first = focusables[0];
             const last = focusables[focusables.length - 1];
