@@ -35,19 +35,24 @@ export function renderDashboardProgress(progresso = {}) {
 
     const fuelLabel = document.getElementById('metric-fuel-label');
     const fuelBar = document.getElementById('metric-fuel-bar');
+    const fuelProgressbar = document.getElementById('progressbar-fuel');
     if (fuelLabel) fuelLabel.textContent = `${fuelPercent}%`;
     if (fuelBar) fuelBar.style.width = `${fuelPercent}%`;
+    if (fuelProgressbar) fuelProgressbar.setAttribute('aria-valuenow', String(fuelPercent));
 
     // 2. Distância Percorrida (meta de ciclo de 120nm por setor)
     const distLabel = document.getElementById('metric-distance-label');
     const distBar = document.getElementById('metric-distance-bar');
+    const distProgressbar = document.getElementById('progressbar-distance');
     const sectorProgress = totalMinutos === 0 ? 0 : Math.min(100, Math.round(((totalMinutos % 120) || 120) / 120 * 100));
     if (distLabel) distLabel.textContent = `${totalMinutos}nm`;
     if (distBar) distBar.style.width = `${sectorProgress}%`;
+    if (distProgressbar) distProgressbar.setAttribute('aria-valuenow', String(sectorProgress));
 
     // 3. Vento de Popa (estabilidade de foco)
     const windLabel = document.getElementById('metric-wind-label');
     const windBar = document.getElementById('metric-wind-bar');
+    const windProgressbar = document.getElementById('progressbar-wind');
     let windText = 'Calmo';
     let windWidth = 50;
 
@@ -65,6 +70,7 @@ export function renderDashboardProgress(progresso = {}) {
     }
     if (windLabel) windLabel.textContent = windText;
     if (windBar) windBar.style.width = `${windWidth}%`;
+    if (windProgressbar) windProgressbar.setAttribute('aria-valuenow', String(windWidth));
 
     // 4. Cards de Estatísticas Rápidas (Horas Foco & Total de Milhas)
     const statHours = document.getElementById('stat-hours-total');
@@ -121,31 +127,37 @@ export function renderJourneyPage(progresso = {}) {
     // 3. Conquista 1: Âncora de Aço (Meta: sessão ininterrupta de 90 min)
     const anchorBadge = document.getElementById('mastery-anchor-badge');
     const anchorBar = document.getElementById('mastery-anchor-bar');
+    const anchorProgressbar = document.getElementById('progressbar-mastery-anchor');
     const anchorMeta = document.getElementById('mastery-anchor-meta');
     const anchorPct = Math.min(100, Math.round((maiorSessao / 90) * 100));
     const anchorLvl = maiorSessao >= 90 ? 'COMPLETO' : `NÍVEL ${Math.min(4, Math.floor(maiorSessao / 20) + (maiorSessao > 0 ? 1 : 0))}`;
     if (anchorBadge) anchorBadge.textContent = anchorLvl;
     if (anchorBar) anchorBar.style.width = `${anchorPct}%`;
+    if (anchorProgressbar) anchorProgressbar.setAttribute('aria-valuenow', String(maiorSessao));
     if (anchorMeta) anchorMeta.textContent = `Recorde atual: ${maiorSessao} / 90 min`;
 
     // 4. Conquista 2: Visão de Horizonte (Meta: 50 sereias silenciadas)
     const horizonBadge = document.getElementById('mastery-horizon-badge');
     const horizonBar = document.getElementById('mastery-horizon-bar');
+    const horizonProgressbar = document.getElementById('progressbar-mastery-horizon');
     const horizonMeta = document.getElementById('mastery-horizon-meta');
     const horizonPct = Math.min(100, Math.round((sereias / 50) * 100));
     const horizonLvl = sereias >= 50 ? 'COMPLETO' : `NÍVEL ${Math.min(4, Math.floor(sereias / 12) + (sereias > 0 ? 1 : 0))}`;
     if (horizonBadge) horizonBadge.textContent = horizonLvl;
     if (horizonBar) horizonBar.style.width = `${horizonPct}%`;
+    if (horizonProgressbar) horizonProgressbar.setAttribute('aria-valuenow', String(sereias));
     if (horizonMeta) horizonMeta.textContent = `${sereias} / 50 distrações bloqueadas`;
 
     // 5. Conquista 3: Navegador Mestre (Meta: 10 viagens concluídas)
     const masterBadge = document.getElementById('mastery-master-badge');
     const masterBar = document.getElementById('mastery-master-bar');
+    const masterProgressbar = document.getElementById('progressbar-mastery-master');
     const masterMeta = document.getElementById('mastery-master-meta');
     const masterPct = Math.min(100, Math.round((concluidas / 10) * 100));
     const masterLvl = concluidas >= 10 ? 'COMPLETO' : `NÍVEL ${Math.min(4, Math.floor(concluidas / 2) + (concluidas > 0 ? 1 : 0))}`;
     if (masterBadge) masterBadge.textContent = masterLvl;
     if (masterBar) masterBar.style.width = `${masterPct}%`;
+    if (masterProgressbar) masterProgressbar.setAttribute('aria-valuenow', String(concluidas));
     if (masterMeta) masterMeta.textContent = `${concluidas} / 10 viagens concluídas`;
 }
 
