@@ -23,24 +23,41 @@ export function playNauticalBell(type = 'focus-end') {
         if (!AudioCtx) return;
         const ctx = new AudioCtx();
 
-        const notes = type === 'focus-end' ? [528, 792] : [660, 528];
+        let notes;
+        let waveType = 'sine';
+        let stepDelay = 0.35;
+        let decayTime = 1.4;
+        let gainPeak = 0.22;
+
+        if (type === 'focus-end') {
+            notes = [528, 792]; // Acorde ascendente suave (Dó5 -> Sol5)
+        } else if (type === 'voyage-failed') {
+            notes = [440, 349, 261]; // Tríade menor descendente (Lá4 -> Fá4 -> Dó4 - aviso náutico)
+            waveType = 'triangle';
+            stepDelay = 0.22;
+            decayTime = 0.9;
+            gainPeak = 0.26;
+        } else {
+            notes = [660, 528]; // Pausa concluída / retorno ao foco (Mi5 -> Dó5)
+        }
+
         notes.forEach((freq, idx) => {
-            const startTime = ctx.currentTime + idx * 0.35;
+            const startTime = ctx.currentTime + idx * stepDelay;
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
 
-            osc.type = 'sine';
+            osc.type = waveType;
             osc.frequency.setValueAtTime(freq, startTime);
 
             gain.gain.setValueAtTime(0.001, startTime);
-            gain.gain.exponentialRampToValueAtTime(0.22, startTime + 0.03);
-            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 1.4);
+            gain.gain.exponentialRampToValueAtTime(gainPeak, startTime + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + decayTime);
 
             osc.connect(gain);
             gain.connect(ctx.destination);
 
             osc.start(startTime);
-            osc.stop(startTime + 1.45);
+            osc.stop(startTime + decayTime + 0.05);
         });
     } catch (e) {
         console.warn('[Nostak] Áudio indisponível:', e);
