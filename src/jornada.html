@@ -37,17 +37,17 @@
                     </div>
                 </div>
                 <!-- Stylized Map Path -->
-                <div class="flex-grow flex items-center justify-center relative">
-                    <svg class="w-full max-w-2xl h-32" fill="none" viewBox="0 0 800 100" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0 50C100 50 150 20 250 20C350 20 450 80 550 80C650 80 700 50 800 50" opacity="0.7" stroke="#94d0e1" stroke-dasharray="8 8" stroke-width="2"></path>
-                        <circle cx="90" cy="42" fill="#94d0e1" r="4" opacity="0.6"></circle>
-                        <circle cx="250" cy="20" fill="#94d0e1" r="5" opacity="0.8"></circle>
-                        <circle cx="400" cy="50" fill="#94d0e1" r="5" opacity="0.8"></circle>
-                        <circle cx="550" cy="80" fill="#94d0e1" r="5" opacity="0.8"></circle>
-                        <circle cx="750" cy="50" fill="#e0c39e" r="6" opacity="0.9"></circle>
-                        <circle id="journey-map-circle" cx="90" cy="42" fill="#f2be8c" r="6"></circle>
-                        <rect id="journey-map-marker" class="animate-pulse" fill="#f2be8c" height="16" width="16" x="82" y="34" rx="2"></rect>
-                        <text id="journey-map-label" fill="#ffdcbd" font-family="Geist, Inter, sans-serif" font-size="11" font-weight="600" letter-spacing="0.06em" x="105" y="57">VOCÊ</text>
+                <div class="flex-grow flex items-center justify-center relative" role="region" aria-label="Mapa da Rota de Navegação">
+                    <svg class="w-full max-w-2xl h-32" fill="none" viewBox="0 0 800 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa estilizado da rota marítima. Posição atual sincronizada com o setor ativo.">
+                        <path d="M0 50C100 50 150 20 250 20C350 20 450 80 550 80C650 80 700 50 800 50" opacity="0.7" stroke="#94d0e1" stroke-dasharray="8 8" stroke-width="2" aria-hidden="true"></path>
+                        <circle cx="90" cy="42" fill="#94d0e1" r="4" opacity="0.6" aria-hidden="true"></circle>
+                        <circle cx="250" cy="20" fill="#94d0e1" r="5" opacity="0.8" aria-hidden="true"></circle>
+                        <circle cx="400" cy="50" fill="#94d0e1" r="5" opacity="0.8" aria-hidden="true"></circle>
+                        <circle cx="550" cy="80" fill="#94d0e1" r="5" opacity="0.8" aria-hidden="true"></circle>
+                        <circle cx="750" cy="50" fill="#e0c39e" r="6" opacity="0.9" aria-hidden="true"></circle>
+                        <circle id="journey-map-circle" cx="90" cy="42" fill="#f2be8c" r="6" aria-hidden="true"></circle>
+                        <rect id="journey-map-marker" class="animate-pulse" fill="#f2be8c" height="16" width="16" x="82" y="34" rx="2" aria-hidden="true"></rect>
+                        <text id="journey-map-label" fill="#ffdcbd" font-family="Geist, Inter, sans-serif" font-size="11" font-weight="600" letter-spacing="0.06em" x="105" y="57" aria-hidden="true">VOCÊ</text>
                     </svg>
                 </div>
             </div>
