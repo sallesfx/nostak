@@ -181,12 +181,14 @@
                                 <div class="flex gap-4">
                                     <button
                                         type="button"
+                                        id="btn-pause-voyage"
                                         class="border border-secondary/50 text-secondary px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-secondary-container/30 transition-colors"
                                         onclick="pauseVoyage()">
                                         Porto Seguro
                                     </button>
                                     <button
                                         type="button"
+                                        id="btn-fail-voyage"
                                         class="border border-error/70 text-error px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-error/10 transition-colors"
                                         onclick="failVoyage()">
                                         Abandonar Navio
@@ -233,6 +235,7 @@
                                     </button>
                                     <button
                                         type="button"
+                                        id="btn-abort-paused-voyage"
                                         class="border border-outline-variant text-on-surface px-8 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:border-secondary hover:text-secondary transition-colors"
                                         onclick="resetVoyage()">
                                         Encerrar
@@ -276,6 +279,7 @@
                                 reivindicou seu navio.</p>
                             <button
                                 type="button"
+                                id="btn-restart-voyage"
                                 class="border border-outline-variant text-on-surface px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:border-primary hover:text-primary transition-colors"
                                 onclick="resetVoyage()">
                                 Novo Navio
