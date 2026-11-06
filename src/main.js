@@ -15,9 +15,10 @@ let currentPhase = 'idle'; // 'idle' | 'focus' | 'break' | 'paused'
 let secondsRemaining = focusMinutes * 60;
 let targetEndTimestamp = null;
 
-function announceStatus(message) {
+function announceStatus(message, priority = 'polite') {
     const el = document.getElementById('a11y-announcer');
     if (el) {
+        el.setAttribute('aria-live', priority);
         el.textContent = '';
         // Breve timeout para disparar evento de acessibilidade do leitor de tela
         setTimeout(() => {
@@ -320,8 +321,11 @@ async function failVoyage() {
             badge.textContent = 'Interrompido';
             badge.className = 'font-label-md text-label-md text-error uppercase tracking-widest px-2.5 py-1 border border-error/50 bg-error-container/20 rounded-sm';
         }
+        if (somAtivo) {
+            playNauticalBell('voyage-failed');
+        }
         updateDocumentTitle();
-        announceStatus('Jornada interrompida. Distração registrada e bloqueios suspensos.');
+        announceStatus('Alerta: Jornada interrompida. Distração registrada e bloqueios suspensos.', 'assertive');
     } catch (erro) {
         console.error("[Nostak Error]", erro);
     }
