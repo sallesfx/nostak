@@ -172,11 +172,15 @@ function startCountdownLoop() {
 
         if (secondsRemaining > 0) {
             updateTimerUI();
-            saveTimerSessionState();
+            // Salva na storage apenas a cada 15 segundos para aliviar I/O síncrono da thread principal
+            if (secondsRemaining % 15 === 0) {
+                saveTimerSessionState();
+            }
         } else {
             clearInterval(timerInterval);
             timerInterval = null;
             targetEndTimestamp = null;
+            saveTimerSessionState();
             if (currentPhase === 'focus') {
                 if (somAtivo) playNauticalBell('focus-end');
                 completeFocusPhase();
