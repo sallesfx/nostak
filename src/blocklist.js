@@ -50,7 +50,10 @@ export function renderConfiguracoes(config) {
         const statusLabel = card.querySelector('.category-status');
         const isAtiva = ativas.includes(catId);
 
-        if (input) input.checked = isAtiva;
+        if (input) {
+            input.checked = isAtiva;
+            input.setAttribute('aria-checked', String(isAtiva));
+        }
         if (statusLabel) {
             statusLabel.textContent = isAtiva ? 'Ativado' : 'Desativado';
             statusLabel.classList.toggle('text-on-surface-variant', !isAtiva);
@@ -113,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = e.target.closest('[data-category]');
             const catId = card.getAttribute('data-category');
             const ativa = e.target.checked;
+            e.target.setAttribute('aria-checked', String(ativa));
             const statusLabel = card.querySelector('.category-status');
 
             if (statusLabel) {
@@ -129,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 console.error(`[Nostak] Erro ao alternar categoria ${catId}:`, err);
                 e.target.checked = !ativa;
+                e.target.setAttribute('aria-checked', String(!ativa));
             }
         });
     });

@@ -261,8 +261,14 @@ export async function openSettingsModal() {
             const focusInput = document.getElementById('settings-input-focus');
             const breakInput = document.getElementById('settings-input-break');
 
-            if (soundInput) soundInput.checked = config.som_ativo !== false;
-            if (autoBreakInput) autoBreakInput.checked = config.auto_iniciar_descanso !== false;
+            if (soundInput) {
+                soundInput.checked = config.som_ativo !== false;
+                soundInput.setAttribute('aria-checked', String(soundInput.checked));
+            }
+            if (autoBreakInput) {
+                autoBreakInput.checked = config.auto_iniciar_descanso !== false;
+                autoBreakInput.setAttribute('aria-checked', String(autoBreakInput.checked));
+            }
             if (focusInput) focusInput.value = config.tempo_foco_minutos || 25;
             if (breakInput) breakInput.value = config.tempo_pausa_minutos || 5;
         }
@@ -321,7 +327,7 @@ function ensureSettingsModalMounted() {
                             <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Tocar badalada suave ao concluir ciclos de foco e descanso.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input id="settings-toggle-sound" aria-labelledby="settings-title-sound" class="sr-only toggle-input" type="checkbox" checked>
+                            <input id="settings-toggle-sound" aria-labelledby="settings-title-sound" role="switch" aria-checked="true" class="sr-only toggle-input" type="checkbox" checked>
                             <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                                 <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                             </div>
@@ -334,7 +340,7 @@ function ensureSettingsModalMounted() {
                             <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Iniciar a contagem de Porto Seguro automaticamente ao finalizar o foco.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input id="settings-toggle-autobreak" aria-labelledby="settings-title-autobreak" class="sr-only toggle-input" type="checkbox" checked>
+                            <input id="settings-toggle-autobreak" aria-labelledby="settings-title-autobreak" role="switch" aria-checked="true" class="sr-only toggle-input" type="checkbox" checked>
                             <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
                                 <div class="absolute left-1 top-1 w-4 h-4 bg-on-surface-variant rounded-sm toggle-thumb"></div>
                             </div>
@@ -401,6 +407,14 @@ function ensureSettingsModalMounted() {
 
     document.getElementById('btn-test-bell')?.addEventListener('click', () => {
         playNauticalBell('focus-end');
+    });
+
+    document.getElementById('settings-toggle-sound')?.addEventListener('change', (e) => {
+        e.target.setAttribute('aria-checked', String(e.target.checked));
+    });
+
+    document.getElementById('settings-toggle-autobreak')?.addEventListener('change', (e) => {
+        e.target.setAttribute('aria-checked', String(e.target.checked));
     });
 
     document.getElementById('btn-emergency-unblock')?.addEventListener('click', async () => {
