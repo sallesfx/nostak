@@ -27,6 +27,15 @@ function announceStatus(message, priority = 'polite') {
     }
 }
 
+function focusElementSafe(elementId) {
+    requestAnimationFrame(() => {
+        const el = document.getElementById(elementId);
+        if (el && typeof el.focus === 'function') {
+            el.focus();
+        }
+    });
+}
+
 function saveTimerSessionState() {
     if (currentPhase === 'idle') {
         sessionStorage.removeItem(TIMER_STORAGE_KEY);
@@ -237,6 +246,7 @@ async function startVoyage() {
         saveTimerSessionState();
         startCountdownLoop();
         announceStatus(`Iniciando travessia em Alto Mar. Temporizador de foco ativo por ${focusMinutes} minutos.`);
+        focusElementSafe('btn-pause-voyage');
 
     } catch (erro) {
         console.error("[Nostak Error]", erro);
@@ -289,6 +299,7 @@ async function pauseVoyage() {
         updateTimerUI();
         saveTimerSessionState();
         announceStatus('Embarcação ancorada em Porto Seguro. Temporizador pausado.');
+        focusElementSafe('btn-resume-voyage');
     } catch (erro) {
         console.error("[Nostak Error]", erro);
     }
@@ -326,6 +337,7 @@ async function failVoyage() {
         }
         updateDocumentTitle();
         announceStatus('Alerta: Jornada interrompida. Distração registrada e bloqueios suspensos.', 'assertive');
+        focusElementSafe('btn-restart-voyage');
     } catch (erro) {
         console.error("[Nostak Error]", erro);
     }
@@ -346,7 +358,8 @@ async function resetVoyage() {
 
         applyPhaseVisualState('idle');
         updateTimerUI();
-        announceStatus('Temporizador redefinido. Aguardando novo ciclo de navegação.');
+        announceStatus('Temporizador redefinido. Embarcação pronta no porto.');
+        focusElementSafe('btn-start-voyage');
     } catch (erro) {
         console.error("[Nostak Error]", erro);
     }
