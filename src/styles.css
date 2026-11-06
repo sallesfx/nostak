@@ -189,6 +189,7 @@ select option {
 .border-tertiary\/30 { border-color: rgba(224, 195, 158, 0.3); }
 .border-transparent { border-color: transparent; }
 .border-dashed { border-style: dashed; }
+.border-error { border-color: #ffb4ab; }
 .border-error\/50 { border-color: rgba(255, 180, 171, 0.5); }
 .border-error\/70 { border-color: rgba(255, 180, 171, 0.7); }
 .border-outline { border-color: #9c8e82; }
@@ -204,7 +205,6 @@ select option {
 .border-secondary\/50 { border-color: rgba(148, 208, 225, 0.5); }
 .-bottom-10 { bottom: -2.5rem; }
 .-right-10 { right: -2.5rem; }
-.-translate-y-1\/2 { transform: translateY(-50%); }
 .absolute { position: absolute; }
 .animate-ping { animation: tw-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
 .animate-pulse { animation: tw-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
@@ -322,7 +322,6 @@ select option {
 .to-transparent { --tw-gradient-to: transparent; }
 .top-0 { top: 0px; }
 .top-1 { top: 0.25rem; }
-.top-1\/2 { top: 50%; }
 .top-16 { top: 4rem; }
 .top-2\.5 { top: 0.625rem; }
 .top-4 { top: 1rem; }

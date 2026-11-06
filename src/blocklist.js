@@ -1,6 +1,42 @@
 import { invokeTauri } from './ipc.js';
 import { nostakAlert } from './components.js';
 
+let currentSites = [];
+
+function sanitizeDomain(raw) {
+    if (!raw) return '';
+    return raw
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//i, '')
+        .split('/')[0]
+        .split('?')[0]
+        .split('#')[0]
+        .trim();
+}
+
+function validateDomain(raw) {
+    const trimmed = (raw || '').trim();
+    if (!trimmed) {
+        return 'Informe o domínio do site que deseja silenciar.';
+    }
+    const clean = sanitizeDomain(trimmed);
+    if (!clean) {
+        return 'Endereço de domínio inválido.';
+    }
+    if (clean.includes(' ')) {
+        return 'O domínio não pode conter espaços.';
+    }
+    const domainRegex = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/i;
+    if (!domainRegex.test(clean)) {
+        return 'Informe um domínio válido (ex.: reddit.com, anime.tv ou gshow.globo.com).';
+    }
+    if (currentSites.includes(clean)) {
+        return `O domínio "${clean}" já está silenciado na lista de Sereias.`;
+    }
+    return null;
+}
+
 export function renderConfiguracoes(config) {
     if (!config) return;
 
@@ -22,6 +58,7 @@ export function renderConfiguracoes(config) {
 
     // Atualiza as sereias personalizadas
     const sites = config.sites_personalizados || [];
+    currentSites = sites.map(s => s.toLowerCase());
     const countBadge = document.getElementById('custom-sites-count');
     const listContainer = document.getElementById('custom-sites-list');
     const emptyState = document.getElementById('custom-sites-empty');
@@ -94,30 +131,76 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Adicionar novo site
+    // Adicionar novo site com validação inline silenciosa
     const formAdd = document.getElementById('form-add-sereia');
     const inputSite = document.getElementById('input-new-sereia');
+    const errorMsg = document.getElementById('sereia-error-msg');
+
+    const showError = (msg) => {
+        if (!errorMsg || !inputSite) return;
+        errorMsg.textContent = msg;
+        errorMsg.classList.remove('hidden');
+        inputSite.setAttribute('aria-invalid', 'true');
+        inputSite.classList.add('border-error');
+        inputSite.classList.remove('border-outline-variant');
+    };
+
+    const clearError = () => {
+        if (!errorMsg || !inputSite) return;
+        errorMsg.textContent = '';
+        errorMsg.classList.add('hidden');
+        inputSite.setAttribute('aria-invalid', 'false');
+        inputSite.classList.remove('border-error');
+        inputSite.classList.add('border-outline-variant');
+    };
+
+    if (inputSite) {
+        // Limpa erro silenciosamente na digitação
+        inputSite.addEventListener('input', () => {
+            if (inputSite.getAttribute('aria-invalid') === 'true') {
+                clearError();
+            }
+        });
+
+        // Validação não-bloqueante no blur
+        inputSite.addEventListener('blur', () => {
+            const val = inputSite.value.trim();
+            if (val) {
+                const erro = validateDomain(val);
+                if (erro) {
+                    showError(erro);
+                } else {
+                    clearError();
+                }
+            } else {
+                clearError();
+            }
+        });
+    }
+
     if (formAdd && inputSite) {
         formAdd.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const rawSite = inputSite.value.trim().toLowerCase();
-            if (!rawSite) return;
+            const val = inputSite.value.trim();
+            const erro = validateDomain(val);
 
-            const cleanSite = rawSite.replace(/^https?:\/\//, '').split('/')[0].trim();
-            if (!cleanSite) return;
+            if (erro) {
+                showError(erro);
+                inputSite.focus();
+                return;
+            }
 
+            const cleanSite = sanitizeDomain(val);
             try {
                 const configAtualizada = await invokeTauri('adicionar_sereia', { site: cleanSite });
                 inputSite.value = '';
+                clearError();
                 if (configAtualizada) {
                     renderConfiguracoes(configAtualizada);
                 }
             } catch (err) {
-                await nostakAlert({
-                    title: 'Lista de Bloqueio',
-                    message: 'Não foi possível adicionar a Sereia: ' + err,
-                    type: 'error'
-                });
+                showError('Não foi possível adicionar o domínio: ' + err);
+                inputSite.focus();
             }
         });
     }

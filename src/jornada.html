@@ -83,39 +83,63 @@
                 <!-- Mastery Card 1 -->
                 <div class="bg-surface-container-low border border-outline-variant rounded p-5 hover:bg-surface-container transition-colors cursor-default group" style="transition: 0.15s ease-out;">
                     <div class="flex justify-between items-start mb-4">
-                        <span class="material-symbols-outlined text-primary" data-icon="anchor">anchor</span>
+                        <span class="material-symbols-outlined text-primary" data-icon="anchor" aria-hidden="true">anchor</span>
                         <span id="mastery-anchor-badge" class="text-label-sm font-label-sm bg-primary/15 text-primary border border-primary/30 rounded-sm px-2 py-0.5 uppercase">NÍVEL 0</span>
                     </div>
-                    <h4 class="font-headline-sm text-headline-sm text-on-surface mb-1">Âncora de Aço</h4>
+                    <h4 id="mastery-anchor-title" class="font-headline-sm text-headline-sm text-on-surface mb-1">Âncora de Aço</h4>
                     <p class="text-body-sm font-body-sm text-on-surface-variant">Capacidade de manter o foco por até 90 minutos ininterruptos.</p>
                     <p id="mastery-anchor-meta" class="text-label-sm font-label-sm text-primary/80 mt-3 uppercase">Recorde atual: 0 / 90 min</p>
-                    <div class="mt-2 w-full h-1 bg-surface-variant rounded-full overflow-hidden">
+                    <div
+                        id="progressbar-mastery-anchor"
+                        role="progressbar"
+                        aria-labelledby="mastery-anchor-title"
+                        aria-valuenow="0"
+                        aria-valuemin="0"
+                        aria-valuemax="90"
+                        class="mt-2 w-full h-1 bg-surface-variant rounded-full overflow-hidden"
+                    >
                         <div id="mastery-anchor-bar" class="h-full bg-primary w-0 transition-all duration-500"></div>
                     </div>
                 </div>
                 <!-- Mastery Card 2 -->
                 <div class="bg-surface-container-low border border-outline-variant rounded p-5 hover:bg-surface-container transition-colors cursor-default group" style="transition: 0.15s ease-out;">
                     <div class="flex justify-between items-start mb-4">
-                        <span class="material-symbols-outlined text-secondary" data-icon="visibility_off">visibility_off</span>
+                        <span class="material-symbols-outlined text-secondary" data-icon="visibility_off" aria-hidden="true">visibility_off</span>
                         <span id="mastery-horizon-badge" class="text-label-sm font-label-sm bg-secondary-container/40 text-secondary border border-secondary/30 rounded-sm px-2 py-0.5 uppercase">NÍVEL 0</span>
                     </div>
-                    <h4 class="font-headline-sm text-headline-sm text-on-surface mb-1">Visão de Horizonte</h4>
+                    <h4 id="mastery-horizon-title" class="font-headline-sm text-headline-sm text-on-surface mb-1">Visão de Horizonte</h4>
                     <p class="text-body-sm font-body-sm text-on-surface-variant">Bloquear distrações digitais durante travessias concluídas.</p>
                     <p id="mastery-horizon-meta" class="text-label-sm font-label-sm text-secondary/80 mt-3 uppercase">0 / 50 distrações bloqueadas</p>
-                    <div class="mt-2 w-full h-1 bg-surface-variant rounded-full overflow-hidden">
+                    <div
+                        id="progressbar-mastery-horizon"
+                        role="progressbar"
+                        aria-labelledby="mastery-horizon-title"
+                        aria-valuenow="0"
+                        aria-valuemin="0"
+                        aria-valuemax="50"
+                        class="mt-2 w-full h-1 bg-surface-variant rounded-full overflow-hidden"
+                    >
                         <div id="mastery-horizon-bar" class="h-full bg-secondary w-0 transition-all duration-500"></div>
                     </div>
                 </div>
                 <!-- Mastery Card 3 -->
                 <div class="bg-surface-container-low border border-outline-variant rounded p-5 hover:bg-surface-container transition-colors cursor-default group" style="transition: 0.15s ease-out;">
                     <div class="flex justify-between items-start mb-4">
-                        <span class="material-symbols-outlined text-tertiary" data-icon="explore">explore</span>
+                        <span class="material-symbols-outlined text-tertiary" data-icon="explore" aria-hidden="true">explore</span>
                         <span id="mastery-master-badge" class="text-label-sm font-label-sm bg-tertiary/15 text-tertiary border border-tertiary/30 rounded-sm px-2 py-0.5 uppercase font-bold">NÍVEL 0</span>
                     </div>
-                    <h4 class="font-headline-sm text-headline-sm text-on-surface mb-1">Navegador Mestre</h4>
+                    <h4 id="mastery-master-title" class="font-headline-sm text-headline-sm text-on-surface mb-1">Navegador Mestre</h4>
                     <p class="text-body-sm font-body-sm text-on-surface-variant">Consistência de jornadas concluídas até o porto seguro.</p>
                     <p id="mastery-master-meta" class="text-label-sm font-label-sm text-tertiary/80 mt-3 uppercase">0 / 10 viagens concluídas</p>
-                    <div class="mt-2 w-full h-1 bg-surface-variant rounded-full overflow-hidden">
+                    <div
+                        id="progressbar-mastery-master"
+                        role="progressbar"
+                        aria-labelledby="mastery-master-title"
+                        aria-valuenow="0"
+                        aria-valuemin="0"
+                        aria-valuemax="10"
+                        class="mt-2 w-full h-1 bg-surface-variant rounded-full overflow-hidden"
+                    >
                         <div id="mastery-master-bar" class="h-full bg-tertiary w-0 transition-all duration-500"></div>
                     </div>
                 </div>

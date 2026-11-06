@@ -413,30 +413,54 @@
                             <!-- Metric 1 -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
-                                    <span class="font-body-md text-body-md text-on-surface">Combustível Mental</span>
+                                    <span id="label-metric-fuel" class="font-body-md text-body-md text-on-surface">Combustível Mental</span>
                                     <span id="metric-fuel-label" class="font-label-md text-label-md text-primary">100%</span>
                                 </div>
-                                <div class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden">
+                                <div
+                                    id="progressbar-fuel"
+                                    role="progressbar"
+                                    aria-labelledby="label-metric-fuel"
+                                    aria-valuenow="100"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                    class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden"
+                                >
                                     <div id="metric-fuel-bar" class="h-full bg-primary w-full transition-all duration-500"></div>
                                 </div>
                             </div>
                             <!-- Metric 2 -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
-                                    <span class="font-body-md text-body-md text-on-surface">Distância Percorrida</span>
+                                    <span id="label-metric-distance" class="font-body-md text-body-md text-on-surface">Distância Percorrida</span>
                                     <span id="metric-distance-label" class="font-label-md text-label-md text-secondary">0nm</span>
                                 </div>
-                                <div class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden">
+                                <div
+                                    id="progressbar-distance"
+                                    role="progressbar"
+                                    aria-labelledby="label-metric-distance"
+                                    aria-valuenow="0"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                    class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden"
+                                >
                                     <div id="metric-distance-bar" class="h-full bg-secondary w-0 transition-all duration-500"></div>
                                 </div>
                             </div>
                             <!-- Metric 3 -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
-                                    <span class="font-body-md text-body-md text-on-surface">Vento de Popa</span>
+                                    <span id="label-metric-wind" class="font-body-md text-body-md text-on-surface">Vento de Popa</span>
                                     <span id="metric-wind-label" class="font-label-md text-label-md text-tertiary">Calmo</span>
                                 </div>
-                                <div class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden">
+                                <div
+                                    id="progressbar-wind"
+                                    role="progressbar"
+                                    aria-labelledby="label-metric-wind"
+                                    aria-valuenow="50"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                    class="h-1 bg-surface-container-highest w-full rounded-full overflow-hidden"
+                                >
                                     <div id="metric-wind-bar" class="h-full bg-tertiary w-[50%] transition-all duration-500"></div>
                                 </div>
                             </div>
