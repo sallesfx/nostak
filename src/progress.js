@@ -38,7 +38,10 @@ export function renderDashboardProgress(progresso = {}) {
     const fuelProgressbar = document.getElementById('progressbar-fuel');
     if (fuelLabel) fuelLabel.textContent = `${fuelPercent}%`;
     if (fuelBar) fuelBar.style.width = `${fuelPercent}%`;
-    if (fuelProgressbar) fuelProgressbar.setAttribute('aria-valuenow', String(fuelPercent));
+    if (fuelProgressbar) {
+        fuelProgressbar.setAttribute('aria-valuenow', String(fuelPercent));
+        fuelProgressbar.setAttribute('aria-valuetext', `${fuelPercent}% de combustível mental`);
+    }
 
     // 2. Distância Percorrida (meta de ciclo de 120nm por setor)
     const distLabel = document.getElementById('metric-distance-label');
@@ -47,7 +50,10 @@ export function renderDashboardProgress(progresso = {}) {
     const sectorProgress = totalMinutos === 0 ? 0 : Math.min(100, Math.round(((totalMinutos % 120) || 120) / 120 * 100));
     if (distLabel) distLabel.textContent = `${totalMinutos}nm`;
     if (distBar) distBar.style.width = `${sectorProgress}%`;
-    if (distProgressbar) distProgressbar.setAttribute('aria-valuenow', String(sectorProgress));
+    if (distProgressbar) {
+        distProgressbar.setAttribute('aria-valuenow', String(sectorProgress));
+        distProgressbar.setAttribute('aria-valuetext', `${totalMinutos} milhas náuticas percorridas`);
+    }
 
     // 3. Vento de Popa (estabilidade de foco)
     const windLabel = document.getElementById('metric-wind-label');
@@ -70,7 +76,10 @@ export function renderDashboardProgress(progresso = {}) {
     }
     if (windLabel) windLabel.textContent = windText;
     if (windBar) windBar.style.width = `${windWidth}%`;
-    if (windProgressbar) windProgressbar.setAttribute('aria-valuenow', String(windWidth));
+    if (windProgressbar) {
+        windProgressbar.setAttribute('aria-valuenow', String(windWidth));
+        windProgressbar.setAttribute('aria-valuetext', `Vento ${windText}`);
+    }
 
     // 4. Cards de Estatísticas Rápidas (Horas Foco & Total de Milhas)
     const statHours = document.getElementById('stat-hours-total');
@@ -133,7 +142,11 @@ export function renderJourneyPage(progresso = {}) {
     const anchorLvl = maiorSessao >= 90 ? 'COMPLETO' : `NÍVEL ${Math.min(4, Math.floor(maiorSessao / 20) + (maiorSessao > 0 ? 1 : 0))}`;
     if (anchorBadge) anchorBadge.textContent = anchorLvl;
     if (anchorBar) anchorBar.style.width = `${anchorPct}%`;
-    if (anchorProgressbar) anchorProgressbar.setAttribute('aria-valuenow', String(maiorSessao));
+    if (anchorProgressbar) {
+        const val = Math.min(90, maiorSessao);
+        anchorProgressbar.setAttribute('aria-valuenow', String(val));
+        anchorProgressbar.setAttribute('aria-valuetext', `${maiorSessao} de 90 minutos ininterruptos`);
+    }
     if (anchorMeta) anchorMeta.textContent = `Recorde atual: ${maiorSessao} / 90 min`;
 
     // 4. Conquista 2: Visão de Horizonte (Meta: 50 sereias silenciadas)
@@ -145,7 +158,11 @@ export function renderJourneyPage(progresso = {}) {
     const horizonLvl = sereias >= 50 ? 'COMPLETO' : `NÍVEL ${Math.min(4, Math.floor(sereias / 12) + (sereias > 0 ? 1 : 0))}`;
     if (horizonBadge) horizonBadge.textContent = horizonLvl;
     if (horizonBar) horizonBar.style.width = `${horizonPct}%`;
-    if (horizonProgressbar) horizonProgressbar.setAttribute('aria-valuenow', String(sereias));
+    if (horizonProgressbar) {
+        const val = Math.min(50, sereias);
+        horizonProgressbar.setAttribute('aria-valuenow', String(val));
+        horizonProgressbar.setAttribute('aria-valuetext', `${sereias} de 50 distrações bloqueadas`);
+    }
     if (horizonMeta) horizonMeta.textContent = `${sereias} / 50 distrações bloqueadas`;
 
     // 5. Conquista 3: Navegador Mestre (Meta: 10 viagens concluídas)
@@ -157,7 +174,11 @@ export function renderJourneyPage(progresso = {}) {
     const masterLvl = concluidas >= 10 ? 'COMPLETO' : `NÍVEL ${Math.min(4, Math.floor(concluidas / 2) + (concluidas > 0 ? 1 : 0))}`;
     if (masterBadge) masterBadge.textContent = masterLvl;
     if (masterBar) masterBar.style.width = `${masterPct}%`;
-    if (masterProgressbar) masterProgressbar.setAttribute('aria-valuenow', String(concluidas));
+    if (masterProgressbar) {
+        const val = Math.min(10, concluidas);
+        masterProgressbar.setAttribute('aria-valuenow', String(val));
+        masterProgressbar.setAttribute('aria-valuetext', `${concluidas} de 10 viagens concluídas`);
+    }
     if (masterMeta) masterMeta.textContent = `${concluidas} / 10 viagens concluídas`;
 }
 
