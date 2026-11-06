@@ -145,7 +145,7 @@ export function renderTarefas(tarefas = [], tarefaAtivaId = null) {
                 <button
                     type="button"
                     data-remove-id="${tarefa.id}"
-                    class="btn-remove-task text-on-surface-variant/60 hover:text-error hover:bg-error/10 p-1 rounded-sm transition-colors shrink-0"
+                    class="btn-remove-task text-on-surface-variant/60 hover:text-error hover:bg-error/10 w-7 h-7 flex items-center justify-center rounded-sm transition-colors shrink-0"
                     title="Remover tarefa"
                     aria-label="Remover tarefa: ${escapeHtml(tarefa.texto)}"
                 >
@@ -183,7 +183,7 @@ export function renderTemplates(templates = []) {
                 type="button"
                 data-apply-template="${escapeHtml(tpl.nome)}"
                 title="Carregar ${totalTasks} tarefa(s) (${totalSessions} sessões Pomodoro)"
-                class="btn-apply-template px-3 py-1 text-xs font-label-md text-on-surface hover:text-secondary flex items-center gap-1.5 transition-colors"
+                class="btn-apply-template px-3 h-7 text-xs font-label-md text-on-surface hover:text-secondary flex items-center gap-1.5 transition-colors"
             >
                 <span class="material-symbols-outlined text-xs text-primary">auto_awesome</span>
                 <span class="font-bold">${escapeHtml(tpl.nome)}</span>
@@ -194,7 +194,7 @@ export function renderTemplates(templates = []) {
                 data-remove-template="${escapeHtml(tpl.nome)}"
                 title="Excluir template ${escapeHtml(tpl.nome)}"
                 aria-label="Excluir template ${escapeHtml(tpl.nome)}"
-                class="btn-remove-template px-1.5 py-1 text-on-surface-variant/50 hover:text-error hover:bg-error/10 border-l border-outline-variant transition-colors"
+                class="btn-remove-template w-7 h-7 flex items-center justify-center text-on-surface-variant/50 hover:text-error hover:bg-error/10 border-l border-outline-variant transition-colors shrink-0"
             >
                 <span class="material-symbols-outlined text-xs" aria-hidden="true">close</span>
             </button>

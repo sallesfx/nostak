@@ -145,6 +145,10 @@ function ensureFeedbackDialogMounted() {
         modal.querySelector('#nostak-dialog-btn-cancel')?.addEventListener('click', () => handleResolve(false));
         modal.querySelector('#nostak-dialog-btn-confirm')?.addEventListener('click', () => handleResolve(true));
 
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) handleResolve(false);
+        });
+
         bindModalKeyboardTrap(modal, () => handleResolve(false));
     }
     feedbackModalEl = modal;
@@ -312,7 +316,7 @@ function ensureSettingsModalMounted() {
                         <div class="pr-4">
                             <div class="font-body-md text-sm text-on-surface flex items-center gap-2">
                                 <span id="settings-title-sound">Sino Náutico (Alerta Sonoro)</span>
-                                <button type="button" id="btn-test-bell" class="text-xs font-label-sm text-primary hover:text-tertiary underline uppercase tracking-wider">Testar</button>
+                                <button type="button" id="btn-test-bell" class="text-[11px] font-label-sm text-primary hover:text-on-primary hover:bg-primary/20 px-2.5 py-1 rounded-sm border border-primary/30 uppercase tracking-wider transition-colors">Testar</button>
                             </div>
                             <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Tocar badalada suave ao concluir ciclos de foco e descanso.</p>
                         </div>
