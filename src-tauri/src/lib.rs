@@ -25,8 +25,7 @@ fn zarpar_jornada(sites: Vec<String>, state: tauri::State<AppState>) -> Result<S
 
 #[command]
 fn ancorar_porto_seguro() -> Result<String, String> {
-    hosts_manager::unblock_domains()
-        .map_err(|e| format!("Falha ao baixar âncora: {}", e))?;
+    hosts_manager::unblock_domains().map_err(|e| format!("Falha ao baixar âncora: {}", e))?;
 
     Ok("Navio ancorado em Porto Seguro. Bloqueios removidos.".into())
 }
@@ -37,7 +36,11 @@ fn obter_configuracoes(state: tauri::State<AppState>) -> Result<config::Config, 
 }
 
 #[command]
-fn alternar_categoria(categoria: String, ativa: bool, state: tauri::State<AppState>) -> Result<config::Config, String> {
+fn alternar_categoria(
+    categoria: String,
+    ativa: bool,
+    state: tauri::State<AppState>,
+) -> Result<config::Config, String> {
     state.mutate(|cfg| {
         cfg.alternar_categoria(&categoria, ativa);
     })
@@ -59,14 +62,22 @@ fn remover_sereia(site: String, state: tauri::State<AppState>) -> Result<config:
 }
 
 #[command]
-fn atualizar_tempos(tempo_foco_minutos: u64, tempo_pausa_minutos: u64, state: tauri::State<AppState>) -> Result<config::Config, String> {
+fn atualizar_tempos(
+    tempo_foco_minutos: u64,
+    tempo_pausa_minutos: u64,
+    state: tauri::State<AppState>,
+) -> Result<config::Config, String> {
     state.mutate(|cfg| {
         cfg.atualizar_tempos(tempo_foco_minutos, tempo_pausa_minutos);
     })
 }
 
 #[command]
-fn atualizar_preferencias(som_ativo: bool, auto_iniciar_descanso: bool, state: tauri::State<AppState>) -> Result<config::Config, String> {
+fn atualizar_preferencias(
+    som_ativo: bool,
+    auto_iniciar_descanso: bool,
+    state: tauri::State<AppState>,
+) -> Result<config::Config, String> {
     state.mutate(|cfg| {
         cfg.atualizar_preferencias(som_ativo, auto_iniciar_descanso);
     })
@@ -94,14 +105,21 @@ fn adicionar_tarefa(
 }
 
 #[command]
-fn selecionar_tarefa_ativa(id: Option<u64>, state: tauri::State<AppState>) -> Result<config::Config, String> {
+fn selecionar_tarefa_ativa(
+    id: Option<u64>,
+    state: tauri::State<AppState>,
+) -> Result<config::Config, String> {
     state.mutate(|cfg| {
         cfg.selecionar_tarefa_ativa(id);
     })
 }
 
 #[command]
-fn alternar_tarefa(id: u64, concluida: bool, state: tauri::State<AppState>) -> Result<config::Config, String> {
+fn alternar_tarefa(
+    id: u64,
+    concluida: bool,
+    state: tauri::State<AppState>,
+) -> Result<config::Config, String> {
     state.mutate(|cfg| {
         cfg.alternar_tarefa(id, concluida);
     })
@@ -115,7 +133,11 @@ fn remover_tarefa(id: u64, state: tauri::State<AppState>) -> Result<config::Conf
 }
 
 #[command]
-fn aplicar_template(nome_template: String, substituir: bool, state: tauri::State<AppState>) -> Result<config::Config, String> {
+fn aplicar_template(
+    nome_template: String,
+    substituir: bool,
+    state: tauri::State<AppState>,
+) -> Result<config::Config, String> {
     let (config, _) = state.mutate_result(|cfg| {
         if cfg.aplicar_template(&nome_template, substituir) {
             Ok(())
@@ -146,7 +168,10 @@ fn remover_template(nome: String, state: tauri::State<AppState>) -> Result<confi
 }
 
 #[command]
-fn registrar_sessao_concluida(minutos_foco: u64, state: tauri::State<AppState>) -> Result<config::Config, String> {
+fn registrar_sessao_concluida(
+    minutos_foco: u64,
+    state: tauri::State<AppState>,
+) -> Result<config::Config, String> {
     state.mutate(|cfg| {
         cfg.registrar_sessao_concluida(minutos_foco);
     })
@@ -163,7 +188,9 @@ fn registrar_sessao_interrompida(state: tauri::State<AppState>) -> Result<config
 /// que bloqueios no arquivo hosts sejam sempre revertidos em caso de encerramento inesperado.
 pub fn register_signal_handlers() {
     let _ = ctrlc::set_handler(move || {
-        println!("[Nostak SRE] Sinal de encerramento (SIGINT/SIGTERM) detectado. Baixando âncoras...");
+        println!(
+            "[Nostak SRE] Sinal de encerramento (SIGINT/SIGTERM) detectado. Baixando âncoras..."
+        );
         if hosts_manager::has_active_blocks() {
             let _ = hosts_manager::unblock_domains();
         }
@@ -172,7 +199,10 @@ pub fn register_signal_handlers() {
 
     let default_panic = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |panic_info| {
-        eprintln!("[Nostak Crash] Pânico inesperado interceptado: {:?}", panic_info);
+        eprintln!(
+            "[Nostak Crash] Pânico inesperado interceptado: {:?}",
+            panic_info
+        );
         if hosts_manager::has_active_blocks() {
             let _ = hosts_manager::unblock_domains();
         }

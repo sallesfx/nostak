@@ -257,11 +257,13 @@ impl Config {
                 }
             }
             let default_config = Config::default();
-            let toml_string = toml::to_string_pretty(&default_config)
-                .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+            let toml_string = toml::to_string_pretty(&default_config).map_err(io::Error::other)?;
 
             fs::write(path, toml_string)?;
-            println!("[Nostak] Arquivo '{}' com categorias gerado!", path.display());
+            println!(
+                "[Nostak] Arquivo '{}' com categorias gerado!",
+                path.display()
+            );
             Ok(default_config)
         }
     }
@@ -273,8 +275,7 @@ impl Config {
 
     pub fn save_atomic_to<P: AsRef<Path>>(&self, path: P) -> Result<(), io::Error> {
         let path = path.as_ref();
-        let toml_string = toml::to_string_pretty(self)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+        let toml_string = toml::to_string_pretty(self).map_err(io::Error::other)?;
         let tmp_path = match path.file_name() {
             Some(fname) => {
                 let mut tmp_name = fname.to_os_string();
@@ -307,11 +308,7 @@ impl Config {
                 return;
             }
         }
-        self.tarefa_ativa_id = self
-            .tarefas
-            .iter()
-            .find(|t| !t.concluida)
-            .map(|t| t.id);
+        self.tarefa_ativa_id = self.tarefas.iter().find(|t| !t.concluida).map(|t| t.id);
     }
 
     pub fn alternar_categoria(&mut self, categoria: &str, ativa: bool) {
@@ -533,7 +530,9 @@ mod tests {
         let mut cfg = Config::default();
         cfg.adicionar_site_personalizado("reddit.com".to_string());
         assert!(cfg.sites_personalizados.contains(&"reddit.com".to_string()));
-        assert!(cfg.get_all_blocked_sites().contains(&"reddit.com".to_string()));
+        assert!(cfg
+            .get_all_blocked_sites()
+            .contains(&"reddit.com".to_string()));
 
         cfg.remover_site_personalizado("reddit.com");
         assert!(!cfg.sites_personalizados.contains(&"reddit.com".to_string()));
@@ -607,8 +606,10 @@ mod tests {
         let target_file = temp_dir.join("nostak_test_config_atomic.toml");
         let tmp_file = temp_dir.join("nostak_test_config_atomic.toml.tmp");
 
-        let mut cfg = Config::default();
-        cfg.tempo_foco_minutos = 42;
+        let cfg = Config {
+            tempo_foco_minutos: 42,
+            ..Default::default()
+        };
         assert!(cfg.save_atomic_to(&target_file).is_ok());
 
         assert!(target_file.exists());

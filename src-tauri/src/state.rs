@@ -1,6 +1,6 @@
+use crate::config::Config;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use crate::config::Config;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -50,7 +50,10 @@ impl AppState {
     }
 
     pub fn get_config(&self) -> Result<Config, String> {
-        let lock = self.config.lock().map_err(|e| format!("Poisoned lock: {}", e))?;
+        let lock = self
+            .config
+            .lock()
+            .map_err(|e| format!("Poisoned lock: {}", e))?;
         Ok(lock.clone())
     }
 
@@ -58,7 +61,10 @@ impl AppState {
     where
         F: FnOnce(&mut Config),
     {
-        let mut lock = self.config.lock().map_err(|e| format!("Poisoned lock: {}", e))?;
+        let mut lock = self
+            .config
+            .lock()
+            .map_err(|e| format!("Poisoned lock: {}", e))?;
         mutation(&mut lock);
         self.persist_internal(&lock)?;
         Ok(lock.clone())
@@ -69,7 +75,10 @@ impl AppState {
         F: FnOnce(&mut Config) -> Result<R, E>,
         E: ToString,
     {
-        let mut lock = self.config.lock().map_err(|e| format!("Poisoned lock: {}", e))?;
+        let mut lock = self
+            .config
+            .lock()
+            .map_err(|e| format!("Poisoned lock: {}", e))?;
         let res = mutation(&mut lock).map_err(|e| e.to_string())?;
         self.persist_internal(&lock)?;
         Ok((lock.clone(), res))
@@ -92,7 +101,11 @@ mod tests {
             let state_clone = state.clone();
             let handle = thread::spawn(move || {
                 let _ = state_clone.mutate(|cfg| {
-                    cfg.adicionar_tarefa(format!("Tarefa Concorrente {}", i), "Foco".to_string(), 1);
+                    cfg.adicionar_tarefa(
+                        format!("Tarefa Concorrente {}", i),
+                        "Foco".to_string(),
+                        1,
+                    );
                 });
             });
             handles.push(handle);

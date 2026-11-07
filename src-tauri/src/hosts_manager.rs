@@ -31,8 +31,8 @@ pub fn validate_and_normalize_domain(raw: &str) -> Result<(String, String), Stri
         .unwrap_or("")
         .to_lowercase();
 
-    let root = if clean.starts_with("www.") {
-        clean[4..].to_string()
+    let root = if let Some(stripped) = clean.strip_prefix("www.") {
+        stripped.to_string()
     } else {
         clean
     };
@@ -113,9 +113,8 @@ pub fn write_atomic_system_file(dest_path: &str, content: &str) -> io::Result<()
         }
     }
 
-    fs::rename(&temp_path, target).or_else(|e| {
+    fs::rename(&temp_path, target).inspect_err(|_| {
         let _ = fs::remove_file(&temp_path);
-        Err(e)
     })
 }
 
@@ -140,7 +139,10 @@ fn write_hosts_elevated(hosts_path: &str, new_content: &str) -> io::Result<()> {
     if !output.status.success() {
         return Err(io::Error::new(
             io::ErrorKind::PermissionDenied,
-            format!("pkexec falhou: {}", String::from_utf8_lossy(&output.stderr).trim()),
+            format!(
+                "pkexec falhou: {}",
+                String::from_utf8_lossy(&output.stderr).trim()
+            ),
         ));
     }
 
@@ -178,7 +180,9 @@ pub fn create_backup() -> io::Result<()> {
     let backup_path = format!("{}.nostak.bak", hosts_path);
 
     if let Ok(content) = fs::read_to_string(hosts_path) {
-        if !Path::new(&backup_path).exists() || (!content.contains(START_MARKER) && !content.is_empty()) {
+        if !Path::new(&backup_path).exists()
+            || (!content.contains(START_MARKER) && !content.is_empty())
+        {
             let _ = fs::write(&backup_path, content);
         }
     }
@@ -309,7 +313,10 @@ mod tests {
         );
         assert_eq!(
             validate_and_normalize_domain("sub.dominio.co.uk"),
-            Ok(("sub.dominio.co.uk".to_string(), "www.sub.dominio.co.uk".to_string()))
+            Ok((
+                "sub.dominio.co.uk".to_string(),
+                "www.sub.dominio.co.uk".to_string()
+            ))
         );
 
         // Bloqueio de CRLF Injection e Quebra de Linha
@@ -332,7 +339,10 @@ mod tests {
     #[test]
     fn test_write_atomic_system_file() {
         let temp_dir = std::env::temp_dir();
-        let target_path = temp_dir.join(format!("nostak_atomic_hosts_test_{}.txt", std::process::id()));
+        let target_path = temp_dir.join(format!(
+            "nostak_atomic_hosts_test_{}.txt",
+            std::process::id()
+        ));
         let dest_str = target_path.to_str().unwrap();
 
         let initial_content = "127.0.0.1 localhost\n::1 localhost\n";
