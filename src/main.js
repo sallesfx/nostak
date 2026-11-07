@@ -148,7 +148,7 @@ function applyPhaseVisualState(phase) {
             badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
         }
         if (title) title.textContent = 'Descanso em Porto Seguro • Sites Liberados';
-        if (resumeBtn) resumeBtn.textContent = 'Pular Descanso';
+        if (resumeBtn) resumeBtn.textContent = 'Encerrar Pausa e Focar';
     } else if (phase === 'paused') {
         if (container) {
             container.className = 'state-paused bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
@@ -336,7 +336,7 @@ async function failVoyage() {
             playNauticalBell('voyage-failed');
         }
         updateDocumentTitle();
-        announceStatus('Alerta: Jornada interrompida. Distração registrada e bloqueios suspensos.', 'assertive');
+        announceStatus('Aviso: Travessia interrompida. O mar oscilou, mas o leme segue com você. Bloqueios suspensos.', 'assertive');
         focusElementSafe('btn-restart-voyage');
     } catch (erro) {
         console.error("[Nostak Error]", erro);
@@ -358,7 +358,7 @@ async function resetVoyage() {
 
         applyPhaseVisualState('idle');
         updateTimerUI();
-        announceStatus('Temporizador redefinido. Embarcação pronta no porto.');
+        announceStatus('Temporizador pronto. Embarcação ancorada para uma nova rota.');
         focusElementSafe('btn-start-voyage');
     } catch (erro) {
         console.error("[Nostak Error]", erro);
