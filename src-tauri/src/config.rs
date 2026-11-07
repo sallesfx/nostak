@@ -256,6 +256,7 @@ impl Config {
         self.save_atomic_to(Self::get_config_path())
     }
 
+    #[allow(dead_code)]
     pub fn save(&self) -> Result<(), io::Error> {
         self.save_atomic()
     }
