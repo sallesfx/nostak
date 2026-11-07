@@ -189,7 +189,31 @@ pub fn create_backup() -> io::Result<()> {
     Ok(())
 }
 
-/// Adiciona uma lista de sites ao arquivo hosts apontando para 127.0.0.1
+/// Gera o bloco de texto para injeção no arquivo hosts, apontando domínios
+/// para 0.0.0.0 (IPv4) e ::1 (IPv6) de forma dual-stack resiliente ao Happy Eyeballs (RFC 8305).
+pub fn build_hosts_block(domains: &[&str]) -> String {
+    let mut domain_set = HashSet::new();
+    for domain in domains {
+        if let Ok((root, www)) = validate_and_normalize_domain(domain) {
+            domain_set.insert(root);
+            domain_set.insert(www);
+        }
+    }
+
+    let mut sorted_domains: Vec<_> = domain_set.into_iter().collect();
+    sorted_domains.sort();
+
+    let mut new_block = String::new();
+    new_block.push_str(&format!("{}\n", START_MARKER));
+    for domain in sorted_domains {
+        new_block.push_str(&format!("0.0.0.0 {}\n", domain));
+        new_block.push_str(&format!("::1 {}\n", domain));
+    }
+    new_block.push_str(END_MARKER);
+    new_block
+}
+
+/// Adiciona uma lista de sites ao arquivo hosts apontando para 0.0.0.0 (IPv4) e ::1 (IPv6)
 pub fn block_domains(domains: &[&str]) -> io::Result<()> {
     create_backup()?;
 
@@ -213,20 +237,7 @@ pub fn block_domains(domains: &[&str]) -> io::Result<()> {
         }
     }
 
-    let mut domain_set = HashSet::new();
-    for domain in domains {
-        if let Ok((root, www)) = validate_and_normalize_domain(domain) {
-            domain_set.insert(root);
-            domain_set.insert(www);
-        }
-    }
-
-    let mut new_block = String::new();
-    new_block.push_str(&format!("{}\n", START_MARKER));
-    for domain in domain_set {
-        new_block.push_str(&format!("127.0.0.1 {}\n", domain));
-    }
-    new_block.push_str(END_MARKER);
+    let new_block = build_hosts_block(domains);
 
     let mut full_text = base_lines.join("\n");
     if !full_text.ends_with('\n') {
@@ -361,5 +372,24 @@ mod tests {
 
         // Limpeza
         let _ = fs::remove_file(target_path);
+    }
+
+    #[test]
+    fn test_build_hosts_block_ipv4_and_ipv6() {
+        let block = build_hosts_block(&["https://youtube.com/watch", "reddit.com"]);
+
+        assert!(block.starts_with(START_MARKER));
+        assert!(block.ends_with(END_MARKER));
+
+        // Valida que ambos os domínios e seus www possuem 0.0.0.0 (IPv4) e ::1 (IPv6)
+        assert!(block.contains("0.0.0.0 youtube.com\n"));
+        assert!(block.contains("::1 youtube.com\n"));
+        assert!(block.contains("0.0.0.0 www.youtube.com\n"));
+        assert!(block.contains("::1 www.youtube.com\n"));
+
+        assert!(block.contains("0.0.0.0 reddit.com\n"));
+        assert!(block.contains("::1 reddit.com\n"));
+        assert!(block.contains("0.0.0.0 www.reddit.com\n"));
+        assert!(block.contains("::1 www.reddit.com\n"));
     }
 }
