@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::io;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 fn default_true() -> bool {
     true
@@ -205,6 +205,32 @@ impl Default for Config {
     }
 }
 
+/// Resolve o caminho canônico do arquivo de configuração do Nostak.
+/// Em modo debug/desenvolvimento, prioriza o config.toml local do workspace se existir.
+/// Em produção/distribuição, utiliza os diretórios canônicos do SO (XDG ~/.config no Linux, %APPDATA% no Windows).
+pub fn resolve_config_path(app: &tauri::AppHandle) -> Result<PathBuf, io::Error> {
+    use tauri::Manager;
+
+    #[cfg(debug_assertions)]
+    {
+        if Path::new("../config.toml").exists() {
+            return Ok(PathBuf::from("../config.toml"));
+        } else if Path::new("config.toml").exists() {
+            return Ok(PathBuf::from("config.toml"));
+        }
+    }
+
+    let config_dir = app
+        .path()
+        .app_config_dir()
+        .map_err(|e| io::Error::new(io::ErrorKind::NotFound, e.to_string()))?;
+
+    if !config_dir.exists() {
+        fs::create_dir_all(&config_dir)?;
+    }
+    Ok(config_dir.join("config.toml"))
+}
+
 impl Config {
     /// Prioriza o `config.toml` na raiz do projeto (mesmo quando executado a partir de `src-tauri/`).
     pub fn get_config_path() -> &'static str {
@@ -215,24 +241,34 @@ impl Config {
         }
     }
 
-    pub fn load_or_create() -> Result<Self, io::Error> {
-        let path = Self::get_config_path();
+    pub fn load_or_create_from_path<P: AsRef<Path>>(path: P) -> Result<Self, io::Error> {
+        let path = path.as_ref();
 
-        if Path::new(path).exists() {
+        if path.exists() {
             let content = fs::read_to_string(path)?;
             let mut config: Config = toml::from_str(&content)
                 .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
             config.garantir_tarefa_ativa_valida();
             Ok(config)
         } else {
+            if let Some(parent) = path.parent() {
+                if !parent.exists() {
+                    fs::create_dir_all(parent)?;
+                }
+            }
             let default_config = Config::default();
             let toml_string = toml::to_string_pretty(&default_config)
                 .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
 
             fs::write(path, toml_string)?;
-            println!("[Nostak] Arquivo '{}' com categorias gerado!", path);
+            println!("[Nostak] Arquivo '{}' com categorias gerado!", path.display());
             Ok(default_config)
         }
+    }
+
+    #[allow(dead_code)]
+    pub fn load_or_create() -> Result<Self, io::Error> {
+        Self::load_or_create_from_path(Path::new(Self::get_config_path()))
     }
 
     pub fn save_atomic_to<P: AsRef<Path>>(&self, path: P) -> Result<(), io::Error> {
@@ -582,5 +618,27 @@ mod tests {
         assert!(content.contains("tempo_foco_minutos = 42"));
 
         let _ = fs::remove_file(target_file);
+    }
+
+    #[test]
+    fn test_load_or_create_from_path() {
+        let temp_dir = std::env::temp_dir();
+        let test_subdir = temp_dir.join(format!("nostak_config_test_{}", std::process::id()));
+        let test_file = test_subdir.join("config.toml");
+
+        // 1. Cria em diretório novo que ainda não existe
+        let loaded = Config::load_or_create_from_path(&test_file);
+        assert!(loaded.is_ok());
+        assert!(test_file.exists());
+
+        // 2. Modifica e recarrega do caminho especificado
+        let mut cfg = loaded.unwrap();
+        cfg.tempo_foco_minutos = 55;
+        assert!(cfg.save_atomic_to(&test_file).is_ok());
+
+        let reloaded = Config::load_or_create_from_path(&test_file).unwrap();
+        assert_eq!(reloaded.tempo_foco_minutos, 55);
+
+        let _ = fs::remove_dir_all(test_subdir);
     }
 }
