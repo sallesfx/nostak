@@ -1,10 +1,11 @@
 use crate::config::Config;
 use std::path::PathBuf;
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, Mutex, RwLock};
 
 #[derive(Clone)]
 pub struct AppState {
     config: Arc<RwLock<Config>>,
+    io_lock: Arc<Mutex<()>>,
     custom_path: Option<PathBuf>,
     persist_on_mutate: bool,
 }
@@ -14,6 +15,7 @@ impl AppState {
     pub fn new(config: Config) -> Self {
         Self {
             config: Arc::new(RwLock::new(config)),
+            io_lock: Arc::new(Mutex::new(())),
             custom_path: None,
             persist_on_mutate: true,
         }
@@ -23,6 +25,7 @@ impl AppState {
     pub fn new_in_memory(config: Config) -> Self {
         Self {
             config: Arc::new(RwLock::new(config)),
+            io_lock: Arc::new(Mutex::new(())),
             custom_path: None,
             persist_on_mutate: false,
         }
@@ -31,6 +34,7 @@ impl AppState {
     pub fn new_with_path(config: Config, path: PathBuf) -> Self {
         Self {
             config: Arc::new(RwLock::new(config)),
+            io_lock: Arc::new(Mutex::new(())),
             custom_path: Some(path),
             persist_on_mutate: true,
         }
@@ -40,6 +44,12 @@ impl AppState {
         if !self.persist_on_mutate {
             return Ok(());
         }
+
+        // Serializa a persistência em disco sem reter a trava de leitura em memória (RwLock)
+        let _guard = self
+            .io_lock
+            .lock()
+            .map_err(|e| format!("Poisoned io_lock: {}", e))?;
 
         let res = match &self.custom_path {
             Some(path) => config.save_atomic_to(path),
@@ -61,13 +71,19 @@ impl AppState {
     where
         F: FnOnce(&mut Config),
     {
-        let mut lock = self
-            .config
-            .write()
-            .map_err(|e| format!("Poisoned lock: {}", e))?;
-        mutation(&mut lock);
-        self.persist_internal(&lock)?;
-        Ok(lock.clone())
+        // 1. Executa mutação atômica em memória e libera imediatamente o WriteGuard
+        let cloned_config = {
+            let mut lock = self
+                .config
+                .write()
+                .map_err(|e| format!("Poisoned lock: {}", e))?;
+            mutation(&mut lock);
+            lock.clone()
+        };
+
+        // 2. Persiste em disco fora da seção crítica do RwLock
+        self.persist_internal(&cloned_config)?;
+        Ok(cloned_config)
     }
 
     pub fn mutate_result<F, R, E>(&self, mutation: F) -> Result<(Config, R), String>
@@ -75,13 +91,19 @@ impl AppState {
         F: FnOnce(&mut Config) -> Result<R, E>,
         E: ToString,
     {
-        let mut lock = self
-            .config
-            .write()
-            .map_err(|e| format!("Poisoned lock: {}", e))?;
-        let res = mutation(&mut lock).map_err(|e| e.to_string())?;
-        self.persist_internal(&lock)?;
-        Ok((lock.clone(), res))
+        // 1. Executa mutação falível atômica em memória e libera imediatamente o WriteGuard
+        let (cloned_config, res) = {
+            let mut lock = self
+                .config
+                .write()
+                .map_err(|e| format!("Poisoned lock: {}", e))?;
+            let res = mutation(&mut lock).map_err(|e| e.to_string())?;
+            (lock.clone(), res)
+        };
+
+        // 2. Persiste em disco fora da seção crítica do RwLock
+        self.persist_internal(&cloned_config)?;
+        Ok((cloned_config, res))
     }
 }
 
