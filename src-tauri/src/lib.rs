@@ -45,8 +45,9 @@ fn alternar_categoria(categoria: String, ativa: bool, state: tauri::State<AppSta
 
 #[command]
 fn adicionar_sereia(site: String, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    let (root, _) = hosts_manager::validate_and_normalize_domain(&site)?;
     state.mutate(|cfg| {
-        cfg.adicionar_site_personalizado(site);
+        cfg.adicionar_site_personalizado(root);
     })
 }
 
