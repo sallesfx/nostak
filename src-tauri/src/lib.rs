@@ -3,7 +3,10 @@ mod hosts_manager;
 mod state;
 
 use state::AppState;
+use std::sync::Once;
 use tauri::command;
+
+static INIT_SIGNALS: Once = Once::new();
 
 #[command]
 fn zarpar_jornada(sites: Vec<String>, state: tauri::State<AppState>) -> Result<String, String> {
@@ -186,28 +189,31 @@ fn registrar_sessao_interrompida(state: tauri::State<AppState>) -> Result<config
 
 /// Registra tratadores de sinais do SO (SIGINT/SIGTERM) e pânico para garantir
 /// que bloqueios no arquivo hosts sejam sempre revertidos em caso de encerramento inesperado.
+/// Utiliza `std::sync::Once` para garantir execução run-once estritamente única e thread-safe.
 pub fn register_signal_handlers() {
-    let _ = ctrlc::set_handler(move || {
-        println!(
-            "[Nostak SRE] Sinal de encerramento (SIGINT/SIGTERM) detectado. Baixando âncoras..."
-        );
-        if hosts_manager::has_active_blocks() {
-            let _ = hosts_manager::unblock_domains();
-        }
-        std::process::exit(0);
-    });
+    INIT_SIGNALS.call_once(|| {
+        let _ = ctrlc::set_handler(move || {
+            println!(
+                "[Nostak SRE] Sinal de encerramento (SIGINT/SIGTERM) detectado. Baixando âncoras..."
+            );
+            if hosts_manager::has_active_blocks() {
+                let _ = hosts_manager::unblock_domains();
+            }
+            std::process::exit(0);
+        });
 
-    let default_panic = std::panic::take_hook();
-    std::panic::set_hook(Box::new(move |panic_info| {
-        eprintln!(
-            "[Nostak Crash] Pânico inesperado interceptado: {:?}",
-            panic_info
-        );
-        if hosts_manager::has_active_blocks() {
-            let _ = hosts_manager::unblock_domains();
-        }
-        default_panic(panic_info);
-    }));
+        let default_panic = std::panic::take_hook();
+        std::panic::set_hook(Box::new(move |panic_info| {
+            eprintln!(
+                "[Nostak Crash] Pânico inesperado interceptado: {:?}",
+                panic_info
+            );
+            if hosts_manager::has_active_blocks() {
+                let _ = hosts_manager::unblock_domains();
+            }
+            default_panic(panic_info);
+        }));
+    });
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
