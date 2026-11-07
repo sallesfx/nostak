@@ -1,13 +1,14 @@
 mod config;
 mod hosts_manager;
+mod state;
 
+use state::AppState;
 use tauri::command;
 
 #[command]
-fn zarpar_jornada(sites: Vec<String>) -> Result<String, String> {
+fn zarpar_jornada(sites: Vec<String>, state: tauri::State<AppState>) -> Result<String, String> {
     let sites_para_bloquear = if sites.is_empty() {
-        let config = config::Config::load_or_create()
-            .map_err(|e| format!("Falha ao carregar configurações: {}", e))?;
+        let config = state.get_config()?;
         config.get_all_blocked_sites()
     } else {
         sites
@@ -31,69 +32,50 @@ fn ancorar_porto_seguro() -> Result<String, String> {
 }
 
 #[command]
-fn obter_configuracoes() -> Result<config::Config, String> {
-    config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))
+fn obter_configuracoes(state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.get_config()
 }
 
 #[command]
-fn alternar_categoria(categoria: String, ativa: bool) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.alternar_categoria(&categoria, ativa);
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
+fn alternar_categoria(categoria: String, ativa: bool, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.alternar_categoria(&categoria, ativa);
+    })
 }
 
 #[command]
-fn adicionar_sereia(site: String) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.adicionar_site_personalizado(site);
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
+fn adicionar_sereia(site: String, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.adicionar_site_personalizado(site);
+    })
 }
 
 #[command]
-fn remover_sereia(site: String) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.remover_site_personalizado(&site);
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
+fn remover_sereia(site: String, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.remover_site_personalizado(&site);
+    })
 }
 
 #[command]
-fn atualizar_tempos(tempo_foco_minutos: u64, tempo_pausa_minutos: u64) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.atualizar_tempos(tempo_foco_minutos, tempo_pausa_minutos);
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
+fn atualizar_tempos(tempo_foco_minutos: u64, tempo_pausa_minutos: u64, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.atualizar_tempos(tempo_foco_minutos, tempo_pausa_minutos);
+    })
 }
 
 #[command]
-fn atualizar_preferencias(som_ativo: bool, auto_iniciar_descanso: bool) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.atualizar_preferencias(som_ativo, auto_iniciar_descanso);
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
+fn atualizar_preferencias(som_ativo: bool, auto_iniciar_descanso: bool, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.atualizar_preferencias(som_ativo, auto_iniciar_descanso);
+    })
 }
 
 #[command]
-fn resetar_progresso() -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.resetar_progresso();
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
+fn resetar_progresso(state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.resetar_progresso();
+    })
 }
 
 #[command]
@@ -101,104 +83,88 @@ fn adicionar_tarefa(
     texto: String,
     categoria: String,
     sessoes_estimadas: Option<u64>,
+    state: tauri::State<AppState>,
 ) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config
-        .adicionar_tarefa(texto, categoria, sessoes_estimadas.unwrap_or(1))
-        .ok_or_else(|| "O texto da tarefa não pode estar vazio.".to_string())?;
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+    let (config, _) = state.mutate_result(|cfg| {
+        cfg.adicionar_tarefa(texto, categoria, sessoes_estimadas.unwrap_or(1))
+            .ok_or_else(|| "O texto da tarefa não pode estar vazio.".to_string())
+    })?;
     Ok(config)
 }
 
 #[command]
-fn selecionar_tarefa_ativa(id: Option<u64>) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.selecionar_tarefa_ativa(id);
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+fn selecionar_tarefa_ativa(id: Option<u64>, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.selecionar_tarefa_ativa(id);
+    })
+}
+
+#[command]
+fn alternar_tarefa(id: u64, concluida: bool, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.alternar_tarefa(id, concluida);
+    })
+}
+
+#[command]
+fn remover_tarefa(id: u64, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.remover_tarefa(id);
+    })
+}
+
+#[command]
+fn aplicar_template(nome_template: String, substituir: bool, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    let (config, _) = state.mutate_result(|cfg| {
+        if cfg.aplicar_template(&nome_template, substituir) {
+            Ok(())
+        } else {
+            Err(format!("Template '{}' não encontrado.", nome_template))
+        }
+    })?;
     Ok(config)
 }
 
 #[command]
-fn alternar_tarefa(id: u64, concluida: bool) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.alternar_tarefa(id, concluida);
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
+fn salvar_template(nome: String, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    let (config, _) = state.mutate_result(|cfg| {
+        if cfg.salvar_template_de_tarefas_atuais(nome) {
+            Ok(())
+        } else {
+            Err("Informe um nome válido e tenha ao menos uma tarefa na lista para salvar o template.".to_string())
+        }
+    })?;
     Ok(config)
 }
 
 #[command]
-fn remover_tarefa(id: u64) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.remover_tarefa(id);
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
+fn remover_template(nome: String, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.remover_template(&nome);
+    })
 }
 
 #[command]
-fn aplicar_template(nome_template: String, substituir: bool) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    if !config.aplicar_template(&nome_template, substituir) {
-        return Err(format!("Template '{}' não encontrado.", nome_template));
-    }
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
+fn registrar_sessao_concluida(minutos_foco: u64, state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.registrar_sessao_concluida(minutos_foco);
+    })
 }
 
 #[command]
-fn salvar_template(nome: String) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    if !config.salvar_template_de_tarefas_atuais(nome) {
-        return Err("Informe um nome válido e tenha ao menos uma tarefa na lista para salvar o template.".to_string());
-    }
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
-}
-
-#[command]
-fn remover_template(nome: String) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.remover_template(&nome);
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
-}
-
-#[command]
-fn registrar_sessao_concluida(minutos_foco: u64) -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.registrar_sessao_concluida(minutos_foco);
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
-}
-
-#[command]
-fn registrar_sessao_interrompida() -> Result<config::Config, String> {
-    let mut config = config::Config::load_or_create()
-        .map_err(|e| format!("Falha ao ler configuração: {}", e))?;
-    config.registrar_sessao_interrompida();
-    config.save()
-        .map_err(|e| format!("Falha ao salvar configuração: {}", e))?;
-    Ok(config)
+fn registrar_sessao_interrompida(state: tauri::State<AppState>) -> Result<config::Config, String> {
+    state.mutate(|cfg| {
+        cfg.registrar_sessao_interrompida();
+    })
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let initial_config = config::Config::load_or_create()
+        .expect("Falha crítica ao carregar configuração inicial do Nostak");
+
     tauri::Builder::default()
+        .manage(state::AppState::new(initial_config))
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

@@ -119,7 +119,7 @@ pub fn default_templates() -> Vec<TemplateTarefa> {
     ]
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Config {
     pub tempo_foco_minutos: u64,
     pub tempo_pausa_minutos: u64,
@@ -235,12 +235,30 @@ impl Config {
         }
     }
 
-    pub fn save(&self) -> Result<(), io::Error> {
-        let path = Self::get_config_path();
+    pub fn save_atomic_to<P: AsRef<Path>>(&self, path: P) -> Result<(), io::Error> {
+        let path = path.as_ref();
         let toml_string = toml::to_string_pretty(self)
             .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
-        fs::write(path, toml_string)?;
+        let tmp_path = match path.file_name() {
+            Some(fname) => {
+                let mut tmp_name = fname.to_os_string();
+                tmp_name.push(".tmp");
+                path.with_file_name(tmp_name)
+            }
+            None => path.with_extension("tmp"),
+        };
+        fs::write(&tmp_path, &toml_string)?;
+        fs::rename(&tmp_path, path)?;
         Ok(())
+    }
+
+    pub fn save_atomic(&self) -> Result<(), io::Error> {
+        self.save_atomic_to(Self::get_config_path())
+    }
+
+    #[allow(dead_code)]
+    pub fn save(&self) -> Result<(), io::Error> {
+        self.save_atomic()
     }
 
     pub fn garantir_tarefa_ativa_valida(&mut self) {
@@ -545,5 +563,24 @@ mod tests {
 
         cfg.resetar_progresso();
         assert_eq!(cfg.progresso.total_minutos_foco, 0);
+    }
+
+    #[test]
+    fn test_save_atomic_persistencia() {
+        let temp_dir = std::env::temp_dir();
+        let target_file = temp_dir.join("nostak_test_config_atomic.toml");
+        let tmp_file = temp_dir.join("nostak_test_config_atomic.toml.tmp");
+
+        let mut cfg = Config::default();
+        cfg.tempo_foco_minutos = 42;
+        assert!(cfg.save_atomic_to(&target_file).is_ok());
+
+        assert!(target_file.exists());
+        assert!(!tmp_file.exists()); // O arquivo temporário deve ter sido renomeado/removido
+
+        let content = fs::read_to_string(&target_file).unwrap();
+        assert!(content.contains("tempo_foco_minutos = 42"));
+
+        let _ = fs::remove_file(target_file);
     }
 }
