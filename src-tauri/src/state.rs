@@ -10,6 +10,7 @@ pub struct AppState {
 }
 
 impl AppState {
+    #[allow(dead_code)]
     pub fn new(config: Config) -> Self {
         Self {
             config: Arc::new(Mutex::new(config)),
@@ -27,7 +28,6 @@ impl AppState {
         }
     }
 
-    #[cfg(test)]
     pub fn new_with_path(config: Config, path: PathBuf) -> Self {
         Self {
             config: Arc::new(Mutex::new(config)),

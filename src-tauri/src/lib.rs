@@ -182,13 +182,21 @@ pub fn register_signal_handlers() {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let initial_config = config::Config::load_or_create()
-        .expect("Falha crítica ao carregar configuração inicial do Nostak");
-
     tauri::Builder::default()
-        .manage(state::AppState::new(initial_config))
         .setup(|app| {
             register_signal_handlers();
+
+            // Resolve o caminho canônico do arquivo de configuração (respeitando XDG/AppData em produção)
+            let config_path = config::resolve_config_path(app.handle())
+                .expect("Falha ao resolver caminho de configuração canônico");
+
+            // Carrega ou inicializa a configuração persistida
+            let initial_config = config::Config::load_or_create_from_path(&config_path)
+                .expect("Falha crítica ao carregar configuração inicial do Nostak");
+
+            // Registra o AppState thread-safe associado ao caminho de persistência canônico
+            use tauri::Manager;
+            app.manage(state::AppState::new_with_path(initial_config, config_path));
 
             // Auto-cura de consistência (SRE Crash Recovery)
             if hosts_manager::has_active_blocks() {
