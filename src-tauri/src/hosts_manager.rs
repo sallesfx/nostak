@@ -7,10 +7,23 @@ use std::process::Command; // 🛠️ Módulo nativo para executar comandos no S
 const START_MARKER: &str = "# --- NOSTAK BLOCK START ---";
 const END_MARKER: &str = "# --- NOSTAK BLOCK END ---";
 
-/// Sanitiza e normaliza um domínio retornando uma tupla (raiz, www)
-fn normalize_domain(domain: &str) -> (String, String) {
-    let clean = domain
-        .trim()
+/// Valida e normaliza estritamente um domínio conforme RFC 1035 / RFC 1123,
+/// prevenindo ataques de CRLF injection, null bytes e DNS hijacking em /etc/hosts.
+pub fn validate_and_normalize_domain(raw: &str) -> Result<(String, String), String> {
+    if raw.contains('\n') || raw.contains('\r') || raw.contains('\0') {
+        return Err("Caractere de quebra de linha ou byte nulo detectado no domínio.".into());
+    }
+
+    let trimmed = raw.trim();
+    if trimmed.is_empty() {
+        return Err("Domínio não pode ser vazio.".into());
+    }
+
+    if trimmed.contains(' ') || trimmed.contains('\t') {
+        return Err("Espaço ou tabulação detectado no domínio.".into());
+    }
+
+    let clean = trimmed
         .trim_start_matches("http://")
         .trim_start_matches("https://")
         .split('/')
@@ -24,8 +37,30 @@ fn normalize_domain(domain: &str) -> (String, String) {
         clean
     };
 
+    // Validação estrita de label DNS (RFC 1035 / RFC 1123)
+    let is_valid = !root.is_empty()
+        && root.len() <= 253
+        && root.contains('.')
+        && root.split('.').all(|label| {
+            !label.is_empty()
+                && label.len() <= 63
+                && label.chars().all(|c| c.is_ascii_alphanumeric() || c == '-')
+                && !label.starts_with('-')
+                && !label.ends_with('-')
+        });
+
+    if !is_valid {
+        return Err(format!("Formato de FQDN inválido: {}", root));
+    }
+
     let www = format!("www.{}", root);
-    (root, www)
+    Ok((root, www))
+}
+
+/// Helper para retrocompatibilidade interna
+#[allow(dead_code)]
+pub fn normalize_domain(domain: &str) -> (String, String) {
+    validate_and_normalize_domain(domain).unwrap_or_else(|_| (String::new(), String::new()))
 }
 
 /// Retorna o caminho do arquivo 'hosts' de acordo com o Sistema Operacional
@@ -130,8 +165,7 @@ pub fn block_domains(domains: &[&str]) -> io::Result<()> {
 
     let mut domain_set = HashSet::new();
     for domain in domains {
-        let (root, www) = normalize_domain(domain);
-        if !root.is_empty() {
+        if let Ok((root, www)) = validate_and_normalize_domain(domain) {
             domain_set.insert(root);
             domain_set.insert(www);
         }
@@ -218,5 +252,34 @@ mod tests {
             normalize_domain("  reddit.com/r/rust "),
             ("reddit.com".to_string(), "www.reddit.com".to_string())
         );
+    }
+
+    #[test]
+    fn test_validate_and_normalize_domain_security() {
+        // Domínios válidos
+        assert_eq!(
+            validate_and_normalize_domain("https://www.globo.com/noticias"),
+            Ok(("globo.com".to_string(), "www.globo.com".to_string()))
+        );
+        assert_eq!(
+            validate_and_normalize_domain("sub.dominio.co.uk"),
+            Ok(("sub.dominio.co.uk".to_string(), "www.sub.dominio.co.uk".to_string()))
+        );
+
+        // Bloqueio de CRLF Injection e Quebra de Linha
+        assert!(validate_and_normalize_domain("example.com\n192.168.1.50 evil.com").is_err());
+        assert!(validate_and_normalize_domain("example.com\r\n0.0.0.0 bad.org").is_err());
+        assert!(validate_and_normalize_domain("example.com\r").is_err());
+        assert!(validate_and_normalize_domain("example.com\0evil.com").is_err());
+
+        // Bloqueio de espaços e caracteres inválidos
+        assert!(validate_and_normalize_domain("example .com").is_err());
+        assert!(validate_and_normalize_domain("example.com 127.0.0.1").is_err());
+
+        // Bloqueio de violações RFC 1035 / 1123
+        assert!(validate_and_normalize_domain("-badlabel.com").is_err());
+        assert!(validate_and_normalize_domain("badlabel-.com").is_err());
+        assert!(validate_and_normalize_domain("localhost").is_err()); // Deve conter '.'
+        assert!(validate_and_normalize_domain("").is_err());
     }
 }
