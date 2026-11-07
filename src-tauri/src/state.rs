@@ -1,10 +1,10 @@
 use crate::config::Config;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 
 #[derive(Clone)]
 pub struct AppState {
-    config: Arc<Mutex<Config>>,
+    config: Arc<RwLock<Config>>,
     custom_path: Option<PathBuf>,
     persist_on_mutate: bool,
 }
@@ -13,7 +13,7 @@ impl AppState {
     #[allow(dead_code)]
     pub fn new(config: Config) -> Self {
         Self {
-            config: Arc::new(Mutex::new(config)),
+            config: Arc::new(RwLock::new(config)),
             custom_path: None,
             persist_on_mutate: true,
         }
@@ -22,7 +22,7 @@ impl AppState {
     #[cfg(test)]
     pub fn new_in_memory(config: Config) -> Self {
         Self {
-            config: Arc::new(Mutex::new(config)),
+            config: Arc::new(RwLock::new(config)),
             custom_path: None,
             persist_on_mutate: false,
         }
@@ -30,7 +30,7 @@ impl AppState {
 
     pub fn new_with_path(config: Config, path: PathBuf) -> Self {
         Self {
-            config: Arc::new(Mutex::new(config)),
+            config: Arc::new(RwLock::new(config)),
             custom_path: Some(path),
             persist_on_mutate: true,
         }
@@ -52,7 +52,7 @@ impl AppState {
     pub fn get_config(&self) -> Result<Config, String> {
         let lock = self
             .config
-            .lock()
+            .read()
             .map_err(|e| format!("Poisoned lock: {}", e))?;
         Ok(lock.clone())
     }
@@ -63,7 +63,7 @@ impl AppState {
     {
         let mut lock = self
             .config
-            .lock()
+            .write()
             .map_err(|e| format!("Poisoned lock: {}", e))?;
         mutation(&mut lock);
         self.persist_internal(&lock)?;
@@ -77,7 +77,7 @@ impl AppState {
     {
         let mut lock = self
             .config
-            .lock()
+            .write()
             .map_err(|e| format!("Poisoned lock: {}", e))?;
         let res = mutation(&mut lock).map_err(|e| e.to_string())?;
         self.persist_internal(&lock)?;
@@ -137,5 +137,40 @@ mod tests {
         assert!(content.contains("tempo_foco_minutos = 50"));
 
         let _ = fs::remove_file(target_file);
+    }
+
+    #[test]
+    fn test_app_state_rwlock_concurrent_readers_and_writers() {
+        let state = AppState::new_in_memory(Config::default());
+        let mut handles = vec![];
+
+        // 10 threads leitoras simultâneas
+        for _ in 0..10 {
+            let state_clone = state.clone();
+            handles.push(thread::spawn(move || {
+                for _ in 0..50 {
+                    let cfg = state_clone.get_config();
+                    assert!(cfg.is_ok());
+                }
+            }));
+        }
+
+        // 5 threads escritoras simultâneas
+        for i in 0..5 {
+            let state_clone = state.clone();
+            handles.push(thread::spawn(move || {
+                let res = state_clone.mutate(|cfg| {
+                    cfg.adicionar_site_personalizado(format!("site{}.com", i));
+                });
+                assert!(res.is_ok());
+            }));
+        }
+
+        for h in handles {
+            h.join().unwrap();
+        }
+
+        let final_cfg = state.get_config().unwrap();
+        assert_eq!(final_cfg.sites_personalizados.len(), 5);
     }
 }
