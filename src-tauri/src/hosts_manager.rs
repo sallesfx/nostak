@@ -1,6 +1,6 @@
 use std::collections::HashSet;
-use std::fs;
-use std::io;
+use std::fs::{self, File};
+use std::io::{self, Write};
 use std::path::Path;
 use std::process::Command; // 🛠️ Módulo nativo para executar comandos no SO
 
@@ -90,32 +90,77 @@ pub fn flush_dns_cache() {
     }
 }
 
-/// Tenta escrever o conteúdo no arquivo hosts; se falhar por permissão, tenta elevação via pkexec no Linux
+/// Escreve de forma atômica no arquivo de destino utilizando arquivo temporário
+/// com fsync e renomeação atômica (renameat no POSIX / MoveFileExW no Windows).
+pub fn write_atomic_system_file(dest_path: &str, content: &str) -> io::Result<()> {
+    let target = Path::new(dest_path);
+    let parent = target.parent().unwrap_or_else(|| Path::new("/"));
+    let temp_path = parent.join(format!(".nostak_hosts_{}.tmp", std::process::id()));
+
+    {
+        let mut temp_file = File::create(&temp_path)?;
+        temp_file.write_all(content.as_bytes())?;
+        temp_file.sync_all()?; // Garante flushing dos buffers para o hardware (fsync)
+    }
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if let Ok(meta) = fs::metadata(dest_path) {
+            let mut perms = meta.permissions();
+            perms.set_mode(0o644);
+            let _ = fs::set_permissions(&temp_path, perms);
+        }
+    }
+
+    fs::rename(&temp_path, target).or_else(|e| {
+        let _ = fs::remove_file(&temp_path);
+        Err(e)
+    })
+}
+
+/// Elevação segura usando stdin do pkexec (evita criação de arquivos em /tmp e elimina TOCTOU/symlink attack)
+#[cfg(target_os = "linux")]
+fn write_hosts_elevated(hosts_path: &str, new_content: &str) -> io::Result<()> {
+    use std::process::Stdio;
+
+    let mut child = Command::new("pkexec")
+        .args(["tee", hosts_path])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .spawn()?;
+
+    if let Some(mut stdin) = child.stdin.take() {
+        stdin.write_all(new_content.as_bytes())?;
+        stdin.flush()?;
+    }
+
+    let output = child.wait_with_output()?;
+    if !output.status.success() {
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            format!("pkexec falhou: {}", String::from_utf8_lossy(&output.stderr).trim()),
+        ));
+    }
+
+    Ok(())
+}
+
+/// Escreve no arquivo hosts de forma atômica e segura.
+/// Se faltarem privilégios, eleva via canal seguro stdin com pkexec no Linux.
 fn write_hosts_file(new_content: &str) -> io::Result<()> {
     let hosts_path = get_hosts_path();
 
-    // Tenta escrita direta (caso o app esteja com permissão de escrita)
-    match fs::write(hosts_path, new_content) {
+    match write_atomic_system_file(hosts_path, new_content) {
         Ok(_) => Ok(()),
         Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {
-            if cfg!(target_os = "linux") {
-                let temp_path = "/tmp/nostak_hosts_temp";
-                fs::write(temp_path, new_content)?;
-
-                let status = Command::new("pkexec")
-                    .args(["cp", temp_path, hosts_path])
-                    .status();
-
-                let _ = fs::remove_file(temp_path);
-
-                match status {
-                    Ok(s) if s.success() => Ok(()),
-                    _ => Err(io::Error::new(
-                        io::ErrorKind::PermissionDenied,
-                        "Permissão negada. É necessário autorizar o acesso de administrador para alterar o arquivo hosts.",
-                    )),
-                }
-            } else {
+            #[cfg(target_os = "linux")]
+            {
+                write_hosts_elevated(hosts_path, new_content)
+            }
+            #[cfg(not(target_os = "linux"))]
+            {
                 Err(io::Error::new(
                     io::ErrorKind::PermissionDenied,
                     "Permissão negada. Execute o aplicativo como Administrador para alterar o arquivo hosts.",
@@ -126,13 +171,14 @@ fn write_hosts_file(new_content: &str) -> io::Result<()> {
     }
 }
 
-/// Cria um backup do arquivo hosts original antes de qualquer alteração
+/// Cria ou atualiza o backup do arquivo hosts original antes de qualquer alteração,
+/// garantindo que reflita o estado seguro limpo pré-sessão.
 pub fn create_backup() -> io::Result<()> {
     let hosts_path = get_hosts_path();
     let backup_path = format!("{}.nostak.bak", hosts_path);
 
-    if !Path::new(&backup_path).exists() {
-        if let Ok(content) = fs::read_to_string(hosts_path) {
+    if let Ok(content) = fs::read_to_string(hosts_path) {
+        if !Path::new(&backup_path).exists() || (!content.contains(START_MARKER) && !content.is_empty()) {
             let _ = fs::write(&backup_path, content);
         }
     }
@@ -281,5 +327,29 @@ mod tests {
         assert!(validate_and_normalize_domain("badlabel-.com").is_err());
         assert!(validate_and_normalize_domain("localhost").is_err()); // Deve conter '.'
         assert!(validate_and_normalize_domain("").is_err());
+    }
+
+    #[test]
+    fn test_write_atomic_system_file() {
+        let temp_dir = std::env::temp_dir();
+        let target_path = temp_dir.join(format!("nostak_atomic_hosts_test_{}.txt", std::process::id()));
+        let dest_str = target_path.to_str().unwrap();
+
+        let initial_content = "127.0.0.1 localhost\n::1 localhost\n";
+        assert!(write_atomic_system_file(dest_str, initial_content).is_ok());
+
+        assert!(target_path.exists());
+        let read_back = fs::read_to_string(&target_path).unwrap();
+        assert_eq!(read_back, initial_content);
+
+        // Atualização atômica subsequente
+        let updated_content = "127.0.0.1 localhost\n127.0.0.1 nostak.local\n";
+        assert!(write_atomic_system_file(dest_str, updated_content).is_ok());
+
+        let read_back_updated = fs::read_to_string(&target_path).unwrap();
+        assert_eq!(read_back_updated, updated_content);
+
+        // Limpeza
+        let _ = fs::remove_file(target_path);
     }
 }
