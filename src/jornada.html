@@ -172,18 +172,4 @@
 </div>
     <!-- Mobile BottomNavBar Component -->
     <nostak-mobile-nav active="jornada"></nostak-mobile-nav>
-<script>
-    // Simple Micro-interaction for mastery cards
-    document.querySelectorAll('.bg-surface-container-low').forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            card.classList.add('border-primary');
-            card.style.transform = 'translateY(-2px)';
-        });
-        card.addEventListener('mouseleave', () => {
-            card.classList.remove('border-primary');
-            card.style.transform = 'translateY(0px)';
-        });
-        card.style.transition = 'all 0.15s ease-out';
-    });
-</script>
 </body></html>

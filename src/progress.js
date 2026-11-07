@@ -195,6 +195,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) {
             console.error('[Nostak] Erro ao carregar progresso da jornada:', e);
         }
+
+        // Micro-interação para os cards de maestria
+        document.querySelectorAll('.bg-surface-container-low').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('border-primary');
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('border-primary');
+                card.style.transform = 'translateY(0px)';
+            });
+            card.style.transition = 'all 0.15s ease-out';
+        });
     }
 });
 
