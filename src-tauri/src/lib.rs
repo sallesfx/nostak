@@ -159,6 +159,27 @@ fn registrar_sessao_interrompida(state: tauri::State<AppState>) -> Result<config
     })
 }
 
+/// Registra tratadores de sinais do SO (SIGINT/SIGTERM) e pânico para garantir
+/// que bloqueios no arquivo hosts sejam sempre revertidos em caso de encerramento inesperado.
+pub fn register_signal_handlers() {
+    let _ = ctrlc::set_handler(move || {
+        println!("[Nostak SRE] Sinal de encerramento (SIGINT/SIGTERM) detectado. Baixando âncoras...");
+        if hosts_manager::has_active_blocks() {
+            let _ = hosts_manager::unblock_domains();
+        }
+        std::process::exit(0);
+    });
+
+    let default_panic = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |panic_info| {
+        eprintln!("[Nostak Crash] Pânico inesperado interceptado: {:?}", panic_info);
+        if hosts_manager::has_active_blocks() {
+            let _ = hosts_manager::unblock_domains();
+        }
+        default_panic(panic_info);
+    }));
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let initial_config = config::Config::load_or_create()
@@ -167,6 +188,14 @@ pub fn run() {
     tauri::Builder::default()
         .manage(state::AppState::new(initial_config))
         .setup(|app| {
+            register_signal_handlers();
+
+            // Auto-cura de consistência (SRE Crash Recovery)
+            if hosts_manager::has_active_blocks() {
+                println!("[Nostak SRE] Bloqueios residuais detectados na inicialização. Reconciliando hosts...");
+                let _ = hosts_manager::unblock_domains();
+            }
+
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
@@ -206,4 +235,15 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao executar a aplicação Tauri");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_register_signal_handlers_idempotent() {
+        register_signal_handlers();
+        register_signal_handlers();
+    }
 }
