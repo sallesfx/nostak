@@ -336,7 +336,7 @@ async function failVoyage() {
             playNauticalBell('voyage-failed');
         }
         updateDocumentTitle();
-        announceStatus('Aviso: Travessia interrompida. O mar oscilou, mas o leme segue com você. Bloqueios suspensos.', 'assertive');
+        announceStatus('Foco interrompido. Bloqueios de sites desativados temporariamente.', 'assertive');
         focusElementSafe('btn-restart-voyage');
     } catch (erro) {
         console.error("[Nostak Error]", erro);
@@ -358,7 +358,7 @@ async function resetVoyage() {
 
         applyPhaseVisualState('idle');
         updateTimerUI();
-        announceStatus('Temporizador pronto. Embarcação ancorada para uma nova rota.');
+        announceStatus('Temporizador pronto. Escolha uma tarefa e inicie seu foco quando desejar.');
         focusElementSafe('btn-start-voyage');
     } catch (erro) {
         console.error("[Nostak Error]", erro);
