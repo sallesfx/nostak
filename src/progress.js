@@ -123,14 +123,14 @@ export function renderJourneyPage(progresso = {}) {
         markerLabel.setAttribute('y', String(sector.y + 15));
     }
 
-    // 2. Contadores Principais (Léguas Percorridas e Sereias Silenciadas)
+    // 2. Contadores Principais (Milhas Náuticas de Foco e Distrações Bloqueadas)
     const milesEl = document.getElementById('journey-total-miles');
     const sirensEl = document.getElementById('journey-total-sirens');
     if (milesEl) {
-        milesEl.innerHTML = `${totalMinutos.toLocaleString('pt-BR')} <span class="text-headline-sm font-headline-sm opacity-60">nm</span>`;
+        milesEl.innerHTML = `${totalMinutos.toLocaleString('pt-BR')} <span class="text-headline-sm font-headline-sm opacity-60">min</span>`;
     }
     if (sirensEl) {
-        sirensEl.innerHTML = `${sirens.toLocaleString('pt-BR')} <span class="text-headline-sm font-headline-sm opacity-60">distrações</span>`;
+        sirensEl.innerHTML = `${sirens.toLocaleString('pt-BR')} <span class="text-headline-sm font-headline-sm opacity-60">sereias</span>`;
     }
 
     // 3. Conquista 1: Âncora de Aço (Meta: sessão ininterrupta de 90 min)
@@ -149,7 +149,7 @@ export function renderJourneyPage(progresso = {}) {
     }
     if (anchorMeta) anchorMeta.textContent = `Recorde atual: ${maiorSessao} / 90 min`;
 
-    // 4. Conquista 2: Visão de Horizonte (Meta: 50 sereias silenciadas)
+    // 4. Conquista 2: Canto Silenciado (Meta: 50 sereias silenciadas)
     const horizonBadge = document.getElementById('mastery-horizon-badge');
     const horizonBar = document.getElementById('mastery-horizon-bar');
     const horizonProgressbar = document.getElementById('progressbar-mastery-horizon');
@@ -161,9 +161,9 @@ export function renderJourneyPage(progresso = {}) {
     if (horizonProgressbar) {
         const val = Math.min(50, sereias);
         horizonProgressbar.setAttribute('aria-valuenow', String(val));
-        horizonProgressbar.setAttribute('aria-valuetext', `${sereias} de 50 distrações bloqueadas`);
+        horizonProgressbar.setAttribute('aria-valuetext', `${sereias} de 50 sereias silenciadas`);
     }
-    if (horizonMeta) horizonMeta.textContent = `${sereias} / 50 distrações bloqueadas`;
+    if (horizonMeta) horizonMeta.textContent = `${sereias} / 50 sereias silenciadas`;
 
     // 5. Conquista 3: Navegador Mestre (Meta: 10 viagens concluídas)
     const masterBadge = document.getElementById('mastery-master-badge');
