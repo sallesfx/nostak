@@ -19,22 +19,22 @@ function sanitizeDomain(raw) {
 function validateDomain(raw) {
     const trimmed = (raw || '').trim();
     if (!trimmed) {
-        return 'Informe o domínio do site que deseja silenciar.';
+        return 'Digite o endereço de um site para bloquear.';
     }
     const clean = sanitizeDomain(trimmed);
     if (!clean) {
         return 'Endereço de domínio inválido.';
     }
     if (clean.includes(' ')) {
-        return 'O domínio não pode conter espaços.';
+        return 'O endereço não pode ter espaços em branco.';
     }
     // Exige TLD final alfabético com pelo menos 2 caracteres (ex: .com, .br, .tech, .globo)
     const domainRegex = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;
     if (!domainRegex.test(clean)) {
-        return 'Informe um domínio válido (ex.: reddit.com, anime.tv ou gshow.globo.com).';
+        return 'Formato inválido. Digite um domínio como: youtube.com ou twitter.com';
     }
     if (currentSites.includes(clean)) {
-        return `O domínio "${clean}" já está silenciado na lista de Sereias.`;
+        return `O domínio "${clean}" já está bloqueado na sua lista.`;
     }
     return null;
 }

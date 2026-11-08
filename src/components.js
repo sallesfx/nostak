@@ -384,7 +384,7 @@ function ensureSettingsModalMounted() {
                     <div class="flex flex-col sm:flex-row gap-3">
                         <button type="button" id="btn-emergency-unblock" class="flex-1 py-2.5 px-3 rounded-sm border border-secondary/40 text-secondary hover:bg-secondary-container/30 text-xs font-label-sm uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5">
                             <span class="material-symbols-outlined text-base">anchor</span>
-                            <span>Liberar Hosts (Emergência)</span>
+                            <span>Desbloquear Rede (Emergência)</span>
                         </button>
                         <button type="button" id="btn-reset-progress" class="flex-1 py-2.5 px-3 rounded-sm border border-error/50 text-error hover:bg-error/10 text-xs font-label-sm uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5">
                             <span class="material-symbols-outlined text-base">restart_alt</span>
@@ -435,18 +435,18 @@ function ensureSettingsModalMounted() {
     document.getElementById('btn-emergency-unblock')?.addEventListener('click', async () => {
         try {
             await invokeTauri('ancorar_porto_seguro');
-            showSettingsFeedback('Bloqueios do arquivo hosts removidos e DNS limpo com sucesso.');
+            showSettingsFeedback('Todos os sites foram liberados e o cache de rede foi restaurado.');
         } catch (err) {
-            showSettingsFeedback('Falha ao liberar hosts: ' + err, true);
+            showSettingsFeedback('Falha ao desbloquear rede: ' + err, true);
         }
     });
 
     document.getElementById('btn-reset-progress')?.addEventListener('click', async () => {
         const confirmed = await nostakConfirm({
-            title: 'Zerar Progresso Náutico',
-            message: 'Deseja realmente zerar todas as milhas náuticas e conquistas registradas na sua jornada?\nEsta manobra é definitiva e não pode ser revertida.',
-            confirmText: 'Zerar Progresso',
-            cancelText: 'Manter Dados',
+            title: 'Redefinir Histórico de Viagem',
+            message: 'Todas as milhas acumuladas, conquistas e sessões concluídas serão apagadas permanentemente.\n\nTem certeza de que deseja zerar seu histórico?',
+            confirmText: 'Sim, Apagar Tudo',
+            cancelText: 'Cancelar',
             isDestructive: true
         });
         if (!confirmed) return;
