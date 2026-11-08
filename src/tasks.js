@@ -104,8 +104,8 @@ export function renderTarefas(tarefas = [], tarefaAtivaId = null) {
                 type="button"
                 data-focus-id="${tarefa.id}"
                 aria-pressed="${isActive ? 'true' : 'false'}"
-                title="${isActive ? 'Tarefa atrelada ao Temporizador' : 'Atrelar esta tarefa ao Temporizador'}"
-                aria-label="${isActive ? 'Tarefa no Leme: ' + escapeHtml(tarefa.texto) : 'Atrelar tarefa ao Temporizador: ' + escapeHtml(tarefa.texto)}"
+                title="${isActive ? 'Tarefa ativa no Temporizador' : 'Focar nesta tarefa no Temporizador'}"
+                aria-label="${isActive ? 'Tarefa em foco: ' + escapeHtml(tarefa.texto) : 'Focar tarefa no Temporizador: ' + escapeHtml(tarefa.texto)}"
                 class="btn-focus-task px-2.5 py-1 rounded-sm font-label-sm text-[11px] uppercase tracking-wider flex items-center gap-1 transition-colors shrink-0 ${
                     isActive
                         ? 'bg-primary text-on-primary font-bold cursor-default'
@@ -113,7 +113,7 @@ export function renderTarefas(tarefas = [], tarefaAtivaId = null) {
                 }"
                >
                  <span class="material-symbols-outlined text-xs" aria-hidden="true">${isActive ? 'anchor' : 'play_arrow'}</span>
-                 <span>${isActive ? 'No Leme' : 'Atrelar'}</span>
+                 <span>${isActive ? 'Em Foco' : 'Focar'}</span>
                </button>`
             : '';
 
@@ -393,12 +393,12 @@ export function initTasks(initialConfig = {}) {
             }
         });
 
-        // Clicar em Atrelar (Focar), Remover ou no texto da tarefa
+        // Clicar em Focar, Remover ou no texto da tarefa
         listContainer.addEventListener('click', async (e) => {
             const btnFocus = e.target.closest('.btn-focus-task');
             if (btnFocus) {
                 if (btnFocus.getAttribute('aria-pressed') === 'true') {
-                    return; // Já está no leme, evita chamada IPC redundante
+                    return; // Já está em foco, evita chamada IPC redundante
                 }
                 const id = parseInt(btnFocus.getAttribute('data-focus-id'), 10);
                 try {
