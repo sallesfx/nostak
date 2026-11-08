@@ -282,7 +282,7 @@ export function initTasks(initialConfig = {}) {
                 console.error('[Nostak] Erro ao adicionar tarefa:', err);
                 await nostakAlert({
                     title: 'Diário do Navegador',
-                    message: 'Não foi possível registrar a manobra: ' + err,
+                    message: 'Não foi possível adicionar a tarefa: ' + err,
                     type: 'error'
                 });
             }
