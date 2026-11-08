@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="100%" height="100%">
+  <defs>
+    <!-- Divisão central para o contraste tonal facetado do Olho -->
+    <clipPath id="leftHalf">
+      <rect x="0" y="0" width="512" height="1024" />
+    </clipPath>
+    <clipPath id="rightHalf">
+      <rect x="512" y="0" width="512" height="1024" />
+    </clipPath>
+
+    <!-- Máscara de recorte no aro superior direito para a passagem do remo -->
+    <mask id="eyeCutout">
+      <rect width="1024" height="1024" fill="white" />
+      <g transform="translate(512, 512) rotate(-36)">
+        <rect x="170" y="-72" width="230" height="144" rx="30" fill="black" />
+      </g>
+    </mask>
+  </defs>
+
+  <!-- 1. FUNDO DO ÍCONE (surface-container-lowest: #0a0f14) -->
+  <rect width="1024" height="1024" rx="224" fill="#0a0f14" />
+
+  <!-- 2. CONTORNO DO OLHO (Camadas planas: primary #f2be8c e primary-container #d4a373) -->
+  <g mask="url(#eyeCutout)">
+    <!-- Metade Esquerda (Iluminada - primary) -->
+    <path d="M 148 512 Q 512 120 876 512 Q 512 904 148 512 Z" fill="none" stroke="#f2be8c" stroke-width="36" stroke-linejoin="miter" stroke-miterlimit="10" clip-path="url(#leftHalf)" />
+    <!-- Metade Direita (Sombreada - primary-container) -->
+    <path d="M 148 512 Q 512 120 876 512 Q 512 904 148 512 Z" fill="none" stroke="#d4a373" stroke-width="36" stroke-linejoin="miter" stroke-miterlimit="10" clip-path="url(#rightHalf)" />
+  </g>
+
+  <!-- 3. ÍRIS / MOSTRADOR DO RELÓGIO (tertiary: #e0c39e) -->
+  <circle cx="512" cy="512" r="148" fill="#e0c39e" />
+
+  <!-- Marcador das 12 Horas (surface: #0f1419) -->
+  <line x1="512" y1="392" x2="512" y2="428" stroke="#0f1419" stroke-width="14" stroke-linecap="round" />
+
+  <!-- 4. PONTEIRO E REMO (Rotacionados a -36 graus) -->
+  <g transform="translate(512, 512) rotate(-36)">
+    <!-- Cavidade na íris por onde entra a haste do remo (surface-container-lowest: #0a0f14) -->
+    <path d="M 0 -16 L 154 -22 L 154 22 L 0 16 Z" fill="#0a0f14" />
+
+    <!-- Ponteiro traseiro (surface: #0f1419) -->
+    <line x1="0" y1="0" x2="-100" y2="0" stroke="#0f1419" stroke-width="16" stroke-linecap="round" />
+
+    <!-- Eixo central do relógio (surface: #0f1419) -->
+    <circle cx="0" cy="0" r="28" fill="#0f1419" />
+
+    <!-- Haste + Pá Superior do Remo (Face clara - primary: #f2be8c) -->
+    <path d="M 48 0 
+             L 185 -10 
+             C 215 -12, 235 -44, 275 -44 
+             L 368 -40 
+             Q 388 -39, 388 -18 
+             L 388 0 
+             Z" fill="#f2be8c" />
+
+    <!-- Haste + Pá Inferior do Remo (Face em latão - primary-container: #d4a373) -->
+    <path d="M 48 0 
+             L 185 10 
+             C 215 12, 235 44, 275 44 
+             L 368 40 
+             Q 388 39, 388 18 
+             L 388 0 
+             Z" fill="#d4a373" />
+  </g>
+</svg>

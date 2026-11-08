@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nostak — Foco Profundo & Produtividade Desktop em Rust</title>
+    <meta name="description" content="O primeiro aplicativo Pomodoro construído em Rust que acopla ciclos de foco ao bloqueio nativo no arquivo hosts do sistema operacional. Sem extensões frágeis.">
+    
+    <!-- Open Graph / Meta Compartilhamento -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nostak.app">
+    <meta property="og:title" content="Nostak — Foco Profundo &amp; Produtividade Desktop em Rust">
+    <meta property="og:description" content="Trave as distrações digitais diretamente no sistema operacional durante seus ciclos Pomodoro.">
+    <meta property="og:image" content="https://nostak.app/logo_nostak.svg">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" type="image/svg+xml" href="./logo_nostak.svg">
+    
+    <!-- Tipografia: EB Garamond (Serif Editorial) + Geist / Inter (Sans-serif UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Geist:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS com Extensões de Design Tokens do Nostak (Aegean Minimalist Focus) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        surface: {
+                            base: '#0a0f14',
+                            night: '#0f1419',
+                            low: '#171c21',
+                            container: '#1b2025',
+                            high: '#252a30',
+                            highest: '#30353b'
+                        },
+                        brand: {
+                            primary: '#f2be8c',
+                            'primary-container': '#d4a373',
+                            'on-primary': '#2c1600',
+                            secondary: '#94d0e1',
+                            'secondary-container': '#02505f',
+                            tertiary: '#e0c39e',
+                            error: '#ffb4ab'
+                        },
+                        content: {
+                            main: '#dee3ea',
+                            muted: '#d4c4b7',
+                            subtle: '#9c8e82',
+                            border: '#50453b',
+                            'border-subtle': '#24303d'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"EB Garamond"', 'Georgia', 'serif'],
+                        sans: ['"Geist"', '"Inter"', 'system-ui', 'sans-serif']
+                    },
+                    maxWidth: {
+                        prose: '65ch'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Acessibilidade de Foco Estrita (AYA Protocol) */
+        *:focus:not(:focus-visible) {
+            outline: none;
+        }
+        *:focus-visible {
+            outline: 2px solid #f2be8c !important;
+            outline-offset: 2px !important;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1;
+        }
+        /* Grid de coordenadas marítimas decorativo */
+        .maritime-grid {
+            background-image: radial-gradient(#24303d 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+    </style>
+</head>
+<body class="bg-surface-night text-content-main font-sans antialiased selection:bg-brand-primary selection:text-brand-on-primary">
+
+    <!-- Skip Link de Navegação (WCAG SC 2.4.1) -->
+    <a href="#conteudo-principal" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-brand-primary focus:text-brand-on-primary focus:font-bold focus:rounded-sm focus:shadow-2xl">
+        Pular para o conteúdo principal
+    </a>
+
+    <!-- ========================================== -->
+    <!-- [SEÇÃO 1: CABEÇALHO / NAVBAR]             -->
+    <!-- ========================================== -->
+    <header class="sticky top-0 z-40 w-full border-b border-content-border/60 bg-surface-night/90 backdrop-blur-md transition-colors">
+        <div class="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-3">
+                <a href="#" class="flex items-center gap-3 group focus:rounded-sm" aria-label="Nostak Início">
+                    <div class="w-8 h-8 rounded-sm overflow-hidden flex items-center justify-center border border-content-border group-hover:border-brand-primary transition-colors">
+                        <img src="./logo_nostak.svg" alt="Nostak Logo" class="w-full h-full object-cover">
+                    </div>
+                    <span class="font-serif text-xl font-bold tracking-wide text-brand-primary">Nostak</span>
+                </a>
+            </div>
+
+            <!-- Navegação Desktop -->
+            <nav class="hidden md:flex items-center gap-8" aria-label="Navegação Principal">
+                <a href="#o-mecanismo" class="text-xs uppercase tracking-wider font-semibold text-content-muted hover:text-brand-primary transition-colors">O Mecanismo</a>
+                <a href="#como-funciona" class="text-xs uppercase tracking-wider font-semibold text-content-muted hover:text-brand-primary transition-colors">Como Funciona</a>
+                <a href="#recursos" class="text-xs uppercase tracking-wider font-semibold text-content-muted hover:text-brand-primary transition-colors">Diário de Bordo</a>
+                <a href="#faq" class="text-xs uppercase tracking-wider font-semibold text-content-muted hover:text-brand-primary transition-colors">Perguntas Frequentes</a>
+            </nav>
+
+            <!-- Ações Desktop -->
+            <div class="hidden sm:flex items-center gap-4">
+                <a href="https://github.com/sallesfx/nostak" target="_blank" rel="noopener noreferrer" class="min-h-[40px] px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-content-muted hover:text-brand-primary border border-content-border hover:border-brand-primary/50 rounded-sm transition-colors flex items-center gap-1.5" aria-label="Acessar código aberto no GitHub">
+                    <span class="material-symbols-outlined text-sm">code</span>
+                    <span>GitHub</span>
+                </a>
+                <a href="#download" class="min-h-[40px] px-5 py-2 text-xs font-bold uppercase tracking-widest text-brand-on-primary bg-brand-primary hover:bg-brand-tertiary rounded-sm transition-all shadow-sm">
+                    Baixar Grátis
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main id="conteudo-principal">
+
+        <!-- ========================================== -->
+        <!-- [SEÇÃO 2: HERO SECTION (A Primeira Dobra)] -->
+        <!-- ========================================== -->
+        <section class="relative pt-16 pb-20 md:pt-24 md:pb-32 overflow-hidden border-b border-content-border/40">
+            <div class="absolute inset-0 maritime-grid opacity-25 pointer-events-none" aria-hidden="true"></div>
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center">
+                
+                <!-- Eyebrow Badge -->
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-sm border border-brand-secondary/40 bg-brand-secondary-container/20 text-brand-secondary text-xs uppercase tracking-widest font-semibold mb-6">
+                    <span class="material-symbols-outlined text-sm">anchor</span>
+                    <span>Foco Profundo &amp; Produtividade Desktop</span>
+                </div>
+
+                <!-- Headline Principal -->
+                <h1 class="font-serif text-3xl sm:text-5xl md:text-6xl text-brand-primary leading-[1.15] tracking-tight max-w-4xl mb-6">
+                    Se você já fechou 10 extensões de bloqueio para voltar a procrastinar, o Nostak trava a distração na raiz do seu computador.
+                </h1>
+
+                <!-- Subheadline (Measure Controlado) -->
+                <p class="font-sans text-base sm:text-lg text-content-muted leading-relaxed max-w-prose mb-10">
+                    O primeiro aplicativo Pomodoro construído em Rust que acopla ciclos de foco ao bloqueio real no arquivo hosts do sistema operacional. Sem abas infinitas, sem extensões frágeis e sem sabotagem.
+                </p>
+
+                <!-- Bloco de Conversão Primário (Fitts Compliant) -->
+                <div class="flex flex-col items-center w-full max-w-md gap-3 mb-12">
+                    <a href="#download" class="w-full sm:w-auto min-h-[52px] px-8 py-3.5 bg-brand-primary hover:bg-brand-tertiary text-brand-on-primary font-bold text-xs uppercase tracking-widest rounded-sm transition-all flex items-center justify-center gap-2 shadow-xl shadow-brand-primary/10">
+                        <span class="material-symbols-outlined text-lg">download</span>
+                        <span>Baixar o Nostak — Leva menos de 30 segundos</span>
+                    </a>
+                    <span class="text-xs text-content-subtle tracking-normal">
+                        Gratuito e de código aberto. Compatível com Linux e Windows. Sem login, sem anúncios e sem rastreadores de dados.
+                    </span>
+                </div>
+
+                <!-- Prova Técnica Rápida -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl pt-8 border-t border-content-border/40 text-left">
+                    <div class="flex items-center gap-3 p-3 bg-surface-low border border-content-border/50 rounded-sm">
+                        <span class="material-symbols-outlined text-brand-primary text-xl">terminal</span>
+                        <div class="text-xs">
+                            <strong class="block text-content-main">Tauri v2 &amp; Rust</strong>
+                            <span class="text-content-subtle">Consumo de RAM irrisório</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-surface-low border border-content-border/50 rounded-sm">
+                        <span class="material-symbols-outlined text-brand-secondary text-xl">lan</span>
+                        <div class="text-xs">
+                            <strong class="block text-content-main">Dual-Stack Nativo</strong>
+                            <span class="text-content-subtle">Bloqueio real IPv4 + IPv6</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-surface-low border border-content-border/50 rounded-sm">
+                        <span class="material-symbols-outlined text-brand-tertiary text-xl">lock</span>
+                        <div class="text-xs">
+                            <strong class="block text-content-main">100% Offline &amp; Local</strong>
+                            <span class="text-content-subtle">Seus dados na sua máquina</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- [SEÇÃO 3: O ESCORREGADOR PERSUASIVO]       -->
+        <!-- ========================================== -->
+        <section class="py-20 md:py-28 bg-surface-base border-b border-content-border/40">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <h2 class="font-serif text-2xl sm:text-4xl text-content-main mb-8 leading-snug">
+                    Você não sofre de falta de força de vontade.
+                </h2>
+
+                <!-- Ritmo 1/3/1 Staccato com Measure de 65ch -->
+                <div class="space-y-6 text-content-muted font-sans text-base sm:text-lg leading-relaxed max-w-prose">
+                    <p class="text-brand-primary font-semibold text-lg sm:text-xl">
+                        Focar virou um ato de resistência diária.
+                    </p>
+                    
+                    <p>
+                        Seu cérebro foi condicionado a buscar dopamina rápida a cada três minutos de hesitação cognitiva. Uma notificação qualquer, um clique no feed de notícias, uma aba de vídeo aberta "só por um instante" — e duas horas cruciais de trabalho desaparecem. Você tenta usar extensões de navegador convencionais, mas sabe a verdade: basta um clique para desativá-las na primeira dificuldade da tarefa.
+                    </p>
+
+                    <p class="border-l-2 border-brand-primary pl-4 py-1 text-content-main font-medium italic font-serif text-xl sm:text-2xl">
+                        Você está enfrentando equipes inteiras de engenharia de retenção armado apenas com boas intenções.
+                    </p>
+
+                    <p>
+                        Mas isso acaba quando o bloqueio sai do navegador e assume o controle do sistema operacional.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- [SEÇÃO 4: O NOVO MECANISMO]                -->
+        <!-- ========================================== -->
+        <section id="o-mecanismo" class="py-20 md:py-28 bg-surface-night border-b border-content-border/40">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <h2 class="font-serif text-3xl sm:text-4xl text-brand-primary mb-3">
+                        A blindagem por trás da sua travessia diária.
+                    </h2>
+                    <p class="text-content-muted text-sm sm:text-base leading-relaxed">
+                        Entenda como a engenharia do Nostak substitui a culpa pela disciplina assistida por software.
+                    </p>
+                </div>
+
+                <!-- Comparativo Lado a Lado (Von Restorff Aplicado) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                    
+                    <!-- Card Método Antigo (Atenuado / De-emphasized) -->
+                    <div class="p-8 bg-surface-low border border-content-border/50 rounded-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between pb-4 mb-6 border-b border-content-border/50">
+                                <span class="text-xs uppercase tracking-widest font-bold text-content-subtle">Fragilidade Convencional</span>
+                                <span class="material-symbols-outlined text-brand-error text-xl">cancel</span>
+                            </div>
+                            <h3 class="font-serif text-2xl text-content-main mb-6">O Método Antigo (Extensões de Navegador)</h3>
+                            <ul class="space-y-4 text-xs sm:text-sm text-content-muted leading-relaxed">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="material-symbols-outlined text-brand-error text-base shrink-0 mt-0.5">close</span>
+                                    <span>Rodam apenas dentro do navegador principal e ignoram navegadores secundários ou navegadores instalados em paralelo.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="material-symbols-outlined text-brand-error text-base shrink-0 mt-0.5">close</span>
+                                    <span>Podem ser pausadas, desativadas ou removidas em exatamente dois cliques de mouse na primeira hesitação da mente.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="material-symbols-outlined text-brand-error text-base shrink-0 mt-0.5">close</span>
+                                    <span>Não impedem que você abra janelas anônimas, sessões privadas ou clientes desktop de redes sociais e jogos.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="material-symbols-outlined text-brand-error text-base shrink-0 mt-0.5">close</span>
+                                    <span>Coletam histórico de navegação indiscriminado e aumentam desnecessariamente o consumo de memória RAM.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pt-6 mt-8 border-t border-content-border/40 text-[11px] text-content-subtle uppercase tracking-wider font-semibold">
+                            Resultado: Falha sistêmica na primeira distração
+                        </div>
+                    </div>
+
+                    <!-- Card Mecanismo Nostak (Destaque Von Restorff & Sombra Zenital) -->
+                    <div class="p-8 bg-surface-container border-2 border-brand-primary/80 rounded-sm flex flex-col justify-between relative shadow-2xl shadow-brand-primary/5">
+                        <div class="absolute -top-3 right-6 px-3 py-0.5 bg-brand-primary text-brand-on-primary text-[10px] font-bold uppercase tracking-widest rounded-sm">
+                            Proteção Nível SO
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between pb-4 mb-6 border-b border-content-border">
+                                <span class="text-xs uppercase tracking-widest font-bold text-brand-secondary">Engenharia em Rust</span>
+                                <span class="material-symbols-outlined text-brand-secondary text-xl">shield</span>
+                            </div>
+                            <h3 class="font-serif text-2xl text-brand-primary mb-6">O Mecanismo Nostak (Bloqueio via Hosts)</h3>
+                            <ul class="space-y-4 text-xs sm:text-sm text-content-main leading-relaxed">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="material-symbols-outlined text-brand-secondary text-base shrink-0 mt-0.5">check_circle</span>
+                                    <span><strong>Roteamento em Nível de Kernel:</strong> Domínios distratores são redirecionados para <code class="text-[11px] bg-surface-low px-1 py-0.5 rounded text-brand-primary">0.0.0.0</code> e <code class="text-[11px] bg-surface-low px-1 py-0.5 rounded text-brand-primary">::1</code> no arquivo hosts.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="material-symbols-outlined text-brand-secondary text-base shrink-0 mt-0.5">check_circle</span>
+                                    <span><strong>Resistente a Janelas Anônimas:</strong> O bloqueio atua antes do pacote de rede sair da máquina. Mudar de navegador ou abrir abas privadas não libera o tráfego.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="material-symbols-outlined text-brand-secondary text-base shrink-0 mt-0.5">check_circle</span>
+                                    <span><strong>Limpeza Instantânea de Cache DNS:</strong> Os bloqueios entram e saem de vigor no segundo exato em que o cronômetro inicia e encerra.</span>
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="material-symbols-outlined text-brand-secondary text-base shrink-0 mt-0.5">check_circle</span>
+                                    <span><strong>Auto-Recuperação e Segurança:</strong> Se a janela do aplicativo for encerrada bruscamente, os bloqueios originais são restaurados sem resíduos de conexão.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pt-6 mt-8 border-t border-content-border text-[11px] text-brand-secondary uppercase tracking-wider font-semibold">
+                            Resultado: Blindagem técnica irredutível de foco
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- [SEÇÃO 5: BULLETS DE FASCINAÇÃO]           -->
+        <!-- ========================================== -->
+        <section id="recursos" class="py-20 md:py-28 bg-surface-base border-b border-content-border/40">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="max-w-2xl mb-16">
+                    <span class="text-brand-secondary text-xs font-semibold uppercase tracking-widest block mb-2">Capacidades da Embarcação</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl text-content-main">
+                        O que você ganha quando senta diante da tela com o Nostak ativo:
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <div class="p-6 bg-surface-low border border-content-border/60 rounded-sm hover:border-content-border transition-colors">
+                        <span class="material-symbols-outlined text-brand-primary text-2xl mb-4">sailing</span>
+                        <h3 class="font-serif text-xl text-content-main mb-2">Ciclos de Foco Ininterrupto</h3>
+                        <p class="text-xs sm:text-sm text-content-muted leading-relaxed">
+                            Acione blocos de 25, 45, 60 minutos ou tempos personalizados com um clique — garantindo que seu computador entre instantaneamente em silêncio absoluto para você produzir no ápice da clareza.
+                        </p>
+                    </div>
+
+                    <div class="p-6 bg-surface-low border border-content-border/60 rounded-sm hover:border-content-border transition-colors">
+                        <span class="material-symbols-outlined text-brand-secondary text-2xl mb-4">menu_book</span>
+                        <h3 class="font-serif text-xl text-content-main mb-2">Diário do Navegador Integrado</h3>
+                        <p class="text-xs sm:text-sm text-content-muted leading-relaxed">
+                            Vincule tarefas e projetos diretamente ao temporizador — revelando com precisão analítica quantas sessões de esforço puro cada meta exige antes de ser entregue.
+                        </p>
+                    </div>
+
+                    <div class="p-6 bg-surface-low border border-content-border/60 rounded-sm hover:border-content-border transition-colors">
+                        <span class="material-symbols-outlined text-brand-tertiary text-2xl mb-4">notifications_active</span>
+                        <h3 class="font-serif text-xl text-content-main mb-2">Descanso Automático em Porto</h3>
+                        <p class="text-xs sm:text-sm text-content-muted leading-relaxed">
+                            Ao zerar o cronômetro de foco, a badalada náutica soa e as conexões de rede são liberadas sozinhas — garantindo que sua energia mental seja recarregada sem reconfigurações manuais.
+                        </p>
+                    </div>
+
+                    <div class="p-6 bg-surface-low border border-content-border/60 rounded-sm hover:border-content-border transition-colors">
+                        <span class="material-symbols-outlined text-brand-primary text-2xl mb-4">tune</span>
+                        <h3 class="font-serif text-xl text-content-main mb-2">Filtros por Categoria ou Domínio</h3>
+                        <p class="text-xs sm:text-sm text-content-muted leading-relaxed">
+                            Ative barreiras pré-configuradas para Redes Sociais, Streaming, Notícias e Jogos, ou cadastre suas próprias sereias personalizadas — eliminando com exatidão os seus gargalos.
+                        </p>
+                    </div>
+
+                    <div class="p-6 bg-surface-low border border-content-border/60 rounded-sm hover:border-content-border transition-colors">
+                        <span class="material-symbols-outlined text-brand-secondary text-2xl mb-4">anchor</span>
+                        <h3 class="font-serif text-xl text-content-main mb-2">Desbloqueio de Emergência</h3>
+                        <p class="text-xs sm:text-sm text-content-muted leading-relaxed">
+                            Um comando de segurança nas configurações limpa o arquivo hosts e restaura o tráfego regular imediatamente — assegurando que você nunca fique desconectado caso ocorra um imprevisto.
+                        </p>
+                    </div>
+
+                    <div class="p-6 bg-surface-low border border-content-border/60 rounded-sm hover:border-content-border transition-colors">
+                        <span class="material-symbols-outlined text-brand-tertiary text-2xl mb-4">map</span>
+                        <h3 class="font-serif text-xl text-content-main mb-2">Mapa de Navegação e Maestria</h3>
+                        <p class="text-xs sm:text-sm text-content-muted leading-relaxed">
+                            Acompanhe o avanço das suas milhas em foco e o número de distrações neutralizadas — transformando disciplina diária em progresso tangível para alimentar a consistência biológica.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- [SEÇÃO 6: O FLUXO DA SESSÃO]               -->
+        <!-- ========================================== -->
+        <section id="como-funciona" class="py-20 md:py-28 bg-surface-night border-b border-content-border/40">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <h2 class="font-serif text-3xl sm:text-4xl text-brand-primary mb-3">
+                        Três comandos simples entre você e o trabalho profundo.
+                    </h2>
+                    <p class="text-content-muted text-sm sm:text-base">
+                        Sem fricção, sem formulários longos, sem barreiras cognitivas.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                    
+                    <!-- Passo 1 -->
+                    <div class="flex flex-col items-center text-center p-6 bg-surface-container border border-content-border/50 rounded-sm relative">
+                        <div class="w-12 h-12 rounded-sm bg-surface-low border border-brand-primary/50 text-brand-primary font-serif font-bold text-xl flex items-center justify-center mb-6">
+                            01
+                        </div>
+                        <h3 class="font-serif text-xl text-content-main mb-3">Defina a Rota</h3>
+                        <p class="text-xs sm:text-sm text-content-muted leading-relaxed">
+                            Escreva a tarefa prioritária no Diário de Bordo, estime a quantidade de blocos de foco e selecione o tempo da travessia (25m, 45m ou personalizado).
+                        </p>
+                    </div>
+
+                    <!-- Passo 2 -->
+                    <div class="flex flex-col items-center text-center p-6 bg-surface-container border border-content-border/50 rounded-sm relative">
+                        <div class="w-12 h-12 rounded-sm bg-surface-low border border-brand-secondary/50 text-brand-secondary font-serif font-bold text-xl flex items-center justify-center mb-6">
+                            02
+                        </div>
+                        <h3 class="font-serif text-xl text-content-main mb-3">Clique em "Zarpar"</h3>
+                        <p class="text-xs sm:text-sm text-content-muted leading-relaxed">
+                            O cronômetro assume a tela, os sites distratores são neutralizados em todo o sistema operacional e seu fluxo de trabalho fica protegido contra impulsos automáticos.
+                        </p>
+                    </div>
+
+                    <!-- Passo 3 -->
+                    <div class="flex flex-col items-center text-center p-6 bg-surface-container border border-content-border/50 rounded-sm relative">
+                        <div class="w-12 h-12 rounded-sm bg-surface-low border border-brand-tertiary/50 text-brand-tertiary font-serif font-bold text-xl flex items-center justify-center mb-6">
+                            03
+                        </div>
+                        <h3 class="font-serif text-xl text-content-main mb-3">Descanse em Porto</h3>
+                        <p class="text-xs sm:text-sm text-content-muted leading-relaxed">
+                            Ao término do ciclo, uma notificação sonora náutica avisa a conclusão. A rede é liberada automaticamente e o cronômetro de pausa inicia sozinho.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- [SEÇÃO 7: ELIMINAÇÃO PREVENTIVA (FAQ)]      -->
+        <!-- ========================================== -->
+        <section id="faq" class="py-20 md:py-28 bg-surface-base border-b border-content-border/40">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center mb-16">
+                    <span class="text-brand-secondary text-xs font-semibold uppercase tracking-widest block mb-2">Transparência Técnica</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl text-content-main">
+                        Perguntas frequentes sobre o sistema e segurança.
+                    </h2>
+                </div>
+
+                <!-- Accordion APG Compliant (WCAG 2.2 AA) -->
+                <div class="space-y-4" id="faq-accordion">
+                    
+                    <!-- Item 1 -->
+                    <div class="border border-content-border/60 bg-surface-low rounded-sm overflow-hidden">
+                        <h3>
+                            <button type="button" class="faq-trigger w-full flex items-center justify-between p-5 text-left text-sm sm:text-base font-semibold text-content-main hover:text-brand-primary transition-colors focus:bg-surface-container" aria-expanded="false" aria-controls="faq-ans-1" id="faq-btn-1">
+                                <span>O Nostak precisa de permissão de administrador para rodar?</span>
+                                <span class="material-symbols-outlined faq-icon text-content-subtle transition-transform duration-200">expand_more</span>
+                            </button>
+                        </h3>
+                        <div id="faq-ans-1" role="region" aria-labelledby="faq-btn-1" class="faq-panel hidden p-5 pt-0 text-xs sm:text-sm text-content-muted leading-relaxed border-t border-content-border/20">
+                            Sim, apenas na hora em que você clica em Zarpar ou encerra uma sessão. Como o software altera o arquivo de rede do sistema operacional (<code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">/etc/hosts</code> no Linux ou equivalente no Windows) para bloquear o acesso às distrações de verdade, ele exige o privilégio nativo do sistema para aplicar e desfazer essa regra com segurança.
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="border border-content-border/60 bg-surface-low rounded-sm overflow-hidden">
+                        <h3>
+                            <button type="button" class="faq-trigger w-full flex items-center justify-between p-5 text-left text-sm sm:text-base font-semibold text-content-main hover:text-brand-primary transition-colors focus:bg-surface-container" aria-expanded="false" aria-controls="faq-ans-2" id="faq-btn-2">
+                                <span>E se meu computador travar ou desligar no meio de um bloco de foco? Vou ficar sem internet?</span>
+                                <span class="material-symbols-outlined faq-icon text-content-subtle transition-transform duration-200">expand_more</span>
+                            </button>
+                        </h3>
+                        <div id="faq-ans-2" role="region" aria-labelledby="faq-btn-2" class="faq-panel hidden p-5 pt-0 text-xs sm:text-sm text-content-muted leading-relaxed border-t border-content-border/20">
+                            Não. O Nostak conta com manipuladores de sinais de encerramento (SIGINT/SIGTERM) e rotinas de autorrecuperação no código Rust. Se a aplicação fechar inesperadamente, o arquivo original com backup automático é restaurado na inicialização seguinte, limpando o cache de rede imediatamente.
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="border border-content-border/60 bg-surface-low rounded-sm overflow-hidden">
+                        <h3>
+                            <button type="button" class="faq-trigger w-full flex items-center justify-between p-5 text-left text-sm sm:text-base font-semibold text-content-main hover:text-brand-primary transition-colors focus:bg-surface-container" aria-expanded="false" aria-controls="faq-ans-3" id="faq-btn-3">
+                                <span>Meus dados de navegação ou tarefas são enviados para algum servidor externo?</span>
+                                <span class="material-symbols-outlined faq-icon text-content-subtle transition-transform duration-200">expand_more</span>
+                            </button>
+                        </h3>
+                        <div id="faq-ans-3" role="region" aria-labelledby="faq-btn-3" class="faq-panel hidden p-5 pt-0 text-xs sm:text-sm text-content-muted leading-relaxed border-t border-content-border/20">
+                            Zero dados saem da sua máquina. O Nostak não possui cadastro de e-mail, telemetria oculta, banco de dados na nuvem ou cookies de rastreamento. As configurações, histórico de progresso e tarefas ficam salvos em um arquivo de texto local dentro do diretório padrão do seu próprio sistema operacional.
+                        </div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="border border-content-border/60 bg-surface-low rounded-sm overflow-hidden">
+                        <h3>
+                            <button type="button" class="faq-trigger w-full flex items-center justify-between p-5 text-left text-sm sm:text-base font-semibold text-content-main hover:text-brand-primary transition-colors focus:bg-surface-container" aria-expanded="false" aria-controls="faq-ans-4" id="faq-btn-4">
+                                <span>Por que usar o Nostak em vez de um timer comum no celular?</span>
+                                <span class="material-symbols-outlined faq-icon text-content-subtle transition-transform duration-200">expand_more</span>
+                            </button>
+                        </h3>
+                        <div id="faq-ans-4" role="region" aria-labelledby="faq-btn-4" class="faq-panel hidden p-5 pt-0 text-xs sm:text-sm text-content-muted leading-relaxed border-t border-content-border/20">
+                            O celular do lado do teclado é mais um vetor de distração sonora e visual. Além disso, temporizadores passivos apenas contam o tempo; eles não impedem que seus dedos digitem a URL de uma rede social por puro reflexo muscular. O Nostak remove a possibilidade técnica da distração enquanto você trabalha no computador.
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- [SEÇÃO 8: A CHAMADA FINAL DE AÇÃO]        -->
+        <!-- ========================================== -->
+        <section id="download" class="py-24 md:py-32 bg-surface-night relative overflow-hidden">
+            <div class="absolute inset-0 maritime-grid opacity-20 pointer-events-none" aria-hidden="true"></div>
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center">
+                
+                <h2 class="font-serif text-3xl sm:text-5xl text-brand-primary mb-6 max-w-2xl leading-tight">
+                    Pare de negociar com as distrações que custam o seu futuro.
+                </h2>
+                
+                <p class="text-content-muted text-base sm:text-lg leading-relaxed max-w-prose mb-12">
+                    Grandes projetos, estudos complexos e habilidades de alto nível exigem horas contínuas de atenção imperturbável. Retome o controle do seu ambiente digital hoje mesmo.
+                </p>
+
+                <!-- Caixa de Download Estruturada -->
+                <div class="w-full max-w-xl p-8 bg-surface-container border border-content-border rounded-sm shadow-2xl flex flex-col items-center gap-6">
+                    <span class="text-xs uppercase tracking-widest font-bold text-brand-secondary">Downloads Oficiais &amp; Verificados</span>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-6 py-3 bg-brand-primary hover:bg-brand-tertiary text-brand-on-primary font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-base">terminal</span>
+                            <span>Linux (.deb / AppImage)</span>
+                        </a>
+                        <div class="min-h-[48px] px-6 py-3 border border-content-border text-content-subtle font-bold text-xs uppercase tracking-wider rounded-sm flex items-center justify-center gap-2 cursor-not-allowed opacity-70" title="Suporte nativo Windows em desenvolvimento">
+                            <span class="material-symbols-outlined text-base">desktop_windows</span>
+                            <span>Windows (Em Breve)</span>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-content-subtle leading-relaxed text-center max-w-md pt-4 border-t border-content-border/50">
+                        Software livre sob licença aberta. Instale, configure sua primeira rota e sinta a clareza de trabalhar com a mente totalmente ancorada.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- [SEÇÃO 9: RODAPÉ (Footer)]                 -->
+    <!-- ========================================== -->
+    <footer class="bg-surface-base border-t border-content-border/60 py-16 text-xs text-content-subtle">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10">
+            
+            <div class="md:col-span-2 space-y-3">
+                <div class="flex items-center gap-2 text-brand-primary font-serif font-bold text-lg">
+                    <span class="material-symbols-outlined text-base">explore</span>
+                    <span>Nostak</span>
+                </div>
+                <p class="text-content-muted leading-relaxed max-w-sm">
+                    Navegando pelo Foco Profundo. Um ecossistema desktop minimalista para execução técnica e acadêmica sem concessões.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="font-bold text-content-main uppercase tracking-wider mb-4">Produto</h4>
+                <ul class="space-y-2.5">
+                    <li><a href="https://nostak.app" class="hover:text-brand-primary transition-colors">Site Oficial</a></li>
+                    <li><a href="https://github.com/sallesfx/nostak" target="_blank" rel="noopener noreferrer" class="hover:text-brand-primary transition-colors">Código-fonte no GitHub</a></li>
+                    <li><a href="https://github.com/sallesfx/nostak/releases" target="_blank" rel="noopener noreferrer" class="hover:text-brand-primary transition-colors">Registro de Versões (Changelog)</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="font-bold text-content-main uppercase tracking-wider mb-4">Ecossistema</h4>
+                <ul class="space-y-2.5">
+                    <li><a href="https://github.com/sallesfx/nostak/issues" target="_blank" rel="noopener noreferrer" class="hover:text-brand-primary transition-colors">Reportar Problema (Issue)</a></li>
+                    <li><a href="#faq" class="hover:text-brand-primary transition-colors">Termos &amp; Privacidade Local</a></li>
+                    <li><a href="https://instagram.com/sallesfx" target="_blank" rel="noopener noreferrer" class="hover:text-brand-primary transition-colors">Instagram @sallesfx</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-content-border/40 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+            <span>&copy; 2026 Nostak. Seus dados pertencem a você. Suas horas também.</span>
+            <span class="text-[11px] text-content-subtle/80">Projetado sob rigor normativo WCAG 2.2 AA &amp; AYA Protocol.</span>
+        </div>
+    </footer>
+
+    <!-- Script de Interação Ergonômica (Accordion WAI-ARIA APG) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const triggers = document.querySelectorAll('.faq-trigger');
+
+            triggers.forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+                    const targetId = trigger.getAttribute('aria-controls');
+                    const panel = document.getElementById(targetId);
+                    const icon = trigger.querySelector('.faq-icon');
+
+                    // Fecha outros itens para reduzir a Lei de Hick e sobrecarga visual
+                    triggers.forEach(otherTrigger => {
+                        if (otherTrigger !== trigger) {
+                            otherTrigger.setAttribute('aria-expanded', 'false');
+                            const otherPanel = document.getElementById(otherTrigger.getAttribute('aria-controls'));
+                            if (otherPanel) otherPanel.classList.add('hidden');
+                            const otherIcon = otherTrigger.querySelector('.faq-icon');
+                            if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
+                        }
+                    });
+
+                    // Alterna o item atual sem causar Layout Thrashing (INP mitigation)
+                    if (isExpanded) {
+                        trigger.setAttribute('aria-expanded', 'false');
+                        panel.classList.add('hidden');
+                        if (icon) icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        trigger.setAttribute('aria-expanded', 'true');
+                        panel.classList.remove('hidden');
+                        if (icon) icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
