@@ -4,6 +4,11 @@
  */
 
 export async function invokeTauri(cmd, args = {}) {
+    // 1. Suporte padrão com withGlobalTauri: false (Tauri v2 internals)
+    if (window.__TAURI_INTERNALS__ && typeof window.__TAURI_INTERNALS__.invoke === 'function') {
+        return await window.__TAURI_INTERNALS__.invoke(cmd, args);
+    }
+    // 2. Fallback caso withGlobalTauri esteja habilitado
     if (window.__TAURI__) {
         const invokeFn = window.__TAURI__.core?.invoke || window.__TAURI__.invoke;
         if (typeof invokeFn === 'function') {
