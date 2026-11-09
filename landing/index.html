@@ -464,7 +464,7 @@
                             </button>
                         </h3>
                         <div id="faq-ans-1" role="region" aria-labelledby="faq-btn-1" class="faq-panel hidden p-5 pt-0 text-xs sm:text-sm text-content-muted leading-relaxed border-t border-content-border/20">
-                            Não a cada sessão! Ao instalar o pacote nativo (<code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">.deb</code> ou <code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">.rpm</code>), o Nostak registra uma política de segurança nativa via <strong>Polkit</strong> com o princípio de menor privilégio. Dessa forma, a aplicação bloqueia e libera os sites no arquivo <code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">/etc/hosts</code> de maneira instantânea em segundo plano, sem interrupções nem pedidos repetitivos de senha a cada ciclo de foco.
+                            Não a cada sessão! No Linux (via pacotes nativos <code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">.deb</code> / <code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">.rpm</code>), o Nostak registra uma política de segurança nativa via <strong>Polkit</strong> com privilégio mínimo. No Windows, o executável conta com manifesto UAC embutido que solicita autorização uma única vez na inicialização. Dessa forma, você zarpa e ancora instantaneamente em segundo plano sem pedidos repetitivos de senha a cada ciclo de foco.
                         </div>
                     </div>
 
@@ -534,12 +534,12 @@
                     <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
                         <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-6 py-3 bg-brand-primary hover:bg-brand-tertiary text-brand-on-primary font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined text-base">terminal</span>
-                            <span>Linux (.deb / AppImage)</span>
+                            <span>Linux (.deb / .rpm / AppImage)</span>
                         </a>
-                        <div class="min-h-[48px] px-6 py-3 border border-content-border text-content-subtle font-bold text-xs uppercase tracking-wider rounded-sm flex items-center justify-center gap-2 cursor-not-allowed opacity-70" title="Suporte nativo Windows em desenvolvimento">
+                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-6 py-3 border border-brand-primary/60 hover:border-brand-primary text-brand-primary hover:bg-brand-primary/10 font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined text-base">desktop_windows</span>
-                            <span>Windows (Em Breve)</span>
-                        </div>
+                            <span>Windows (.exe Instalador)</span>
+                        </a>
                     </div>
 
                     <p class="text-xs text-content-subtle leading-relaxed text-center max-w-md pt-4 border-t border-content-border/50">

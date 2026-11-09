@@ -81,7 +81,13 @@ chmod +x nostak_*_amd64.AppImage
 ./nostak_*_amd64.AppImage
 ```
 
-*(Suporte nativo com instaladores para Windows e macOS está planejado no roadmap).*
+### Windows (.exe / .msi)
+
+Baixe o instalador oficial `nostak_*_x64-setup.exe` ou pacote `.msi` na página de Releases:
+- Execute o instalador e conclua o assistente de instalação do NSIS.
+- Ao abrir o Nostak pela primeira vez, confirme o prompt único de elevação do Windows (UAC). O manifesto de integridade garante permissão para aplicar os bloqueios em `System32\drivers\etc\hosts` e atualizar o cache DNS sem interrupções durante o Pomodoro.
+
+*(Suporte nativo com instaladores para macOS está planejado no roadmap).*
 
 ---
 
