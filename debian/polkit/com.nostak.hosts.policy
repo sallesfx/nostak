@@ -19,3 +19,4 @@
     <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/nostak/nostak-helper</annotate>
   </action>
 </policyconfig>
+

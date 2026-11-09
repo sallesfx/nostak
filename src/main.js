@@ -446,6 +446,14 @@ window.addEventListener('nostak:config-updated', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     initAppConfig();
 
+    // Controles principais da viagem / temporizador
+    document.getElementById('btn-start-voyage')?.addEventListener('click', startVoyage);
+    document.getElementById('btn-pause-voyage')?.addEventListener('click', pauseVoyage);
+    document.getElementById('btn-fail-voyage')?.addEventListener('click', failVoyage);
+    document.getElementById('btn-resume-voyage')?.addEventListener('click', startVoyage);
+    document.getElementById('btn-abort-paused-voyage')?.addEventListener('click', resetVoyage);
+    document.getElementById('btn-restart-voyage')?.addEventListener('click', resetVoyage);
+
     document.querySelectorAll('.btn-preset').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const foco = parseInt(e.currentTarget.getAttribute('data-foco'));
