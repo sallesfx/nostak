@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+"http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>Nostak</vendor>
+  <vendor_url>https://nostak.app</vendor_url>
+  <icon_name>nostak</icon_name>
+
+  <action id="com.nostak.hosts.manage">
+    <description>Alternar bloqueio de foco do Nostak no arquivo hosts</description>
+    <description xml:lang="pt_BR">Alternar bloqueio de foco do Nostak no arquivo hosts</description>
+    <message>O Nostak precisa de autorização para aplicar ou remover os bloqueios de rede no arquivo hosts.</message>
+    <message xml:lang="pt_BR">O Nostak precisa de autorização para aplicar ou remover os bloqueios de rede no arquivo hosts.</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/lib/nostak/nostak-helper</annotate>
+  </action>
+</policyconfig>
