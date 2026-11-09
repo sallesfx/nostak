@@ -93,36 +93,79 @@ pub fn flush_dns_cache() {
 /// Escreve de forma atômica no arquivo de destino utilizando arquivo temporário
 /// com fsync e renomeação atômica (renameat no POSIX / MoveFileExW no Windows).
 pub fn write_atomic_system_file(dest_path: &str, content: &str) -> io::Result<()> {
+    // 1. Tenta substituição atômica no diretório pai caso o processo tenha permissão de pasta
     let target = Path::new(dest_path);
     let parent = target.parent().unwrap_or_else(|| Path::new("/"));
     let temp_path = parent.join(format!(".nostak_hosts_{}.tmp", std::process::id()));
 
-    {
+    let atomic_result = (|| -> io::Result<()> {
         let mut temp_file = File::create(&temp_path)?;
         temp_file.write_all(content.as_bytes())?;
-        temp_file.sync_all()?; // Garante flushing dos buffers para o hardware (fsync)
-    }
+        temp_file.sync_all()?;
 
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        if let Ok(meta) = fs::metadata(dest_path) {
-            let mut perms = meta.permissions();
-            perms.set_mode(0o644);
-            let _ = fs::set_permissions(&temp_path, perms);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if let Ok(meta) = fs::metadata(dest_path) {
+                let mut perms = meta.permissions();
+                perms.set_mode(0o644);
+                let _ = fs::set_permissions(&temp_path, perms);
+            }
+        }
+
+        fs::rename(&temp_path, target)?;
+        Ok(())
+    })();
+
+    match atomic_result {
+        Ok(_) => Ok(()),
+        Err(_e) => {
+            let _ = fs::remove_file(&temp_path);
+            // 2. Se falhar na criação do .tmp (ex: usuário tem permissão no arquivo /etc/hosts via ACL, mas não na pasta /etc),
+            // tenta escrever e dar flush diretamente no arquivo destino.
+            let mut file = File::options().write(true).truncate(true).open(dest_path)?;
+            file.write_all(content.as_bytes())?;
+            file.sync_all()?;
+            Ok(())
         }
     }
-
-    fs::rename(&temp_path, target).inspect_err(|_| {
-        let _ = fs::remove_file(&temp_path);
-    })
 }
 
-/// Elevação segura usando stdin do pkexec (evita criação de arquivos em /tmp e elimina TOCTOU/symlink attack)
+/// Aplica o conteúdo do bloco no arquivo hosts via helper do Polkit ou pkexec tee como fallback
 #[cfg(target_os = "linux")]
-fn write_hosts_elevated(hosts_path: &str, new_content: &str) -> io::Result<()> {
+fn write_hosts_elevated(hosts_path: &str, new_content: &str, is_clear: bool) -> io::Result<()> {
     use std::process::Stdio;
 
+    // 1. Primeiro tenta o nostak-helper registrado no Polkit (sem senha interativa)
+    let helper_path = "/usr/lib/nostak/nostak-helper";
+    if Path::new(helper_path).exists() {
+        let action = if is_clear { "clear" } else { "apply" };
+        let mut child = Command::new("pkexec")
+            .arg(helper_path)
+            .arg(action)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::null())
+            .stderr(Stdio::piped())
+            .spawn()?;
+
+        if !is_clear {
+            if let Some(mut stdin) = child.stdin.take() {
+                stdin.write_all(new_content.as_bytes())?;
+                stdin.flush()?;
+            }
+        }
+
+        let output = child.wait_with_output()?;
+        if output.status.success() {
+            return Ok(());
+        }
+        eprintln!(
+            "[Nostak Polkit Helper] Falha com helper: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+
+    // 2. Fallback para pkexec tee
     let mut child = Command::new("pkexec")
         .args(["tee", hosts_path])
         .stdin(Stdio::piped())
@@ -140,7 +183,7 @@ fn write_hosts_elevated(hosts_path: &str, new_content: &str) -> io::Result<()> {
         return Err(io::Error::new(
             io::ErrorKind::PermissionDenied,
             format!(
-                "pkexec falhou: {}",
+                "pkexec falhou: {}. Verifique se o agente de autenticação PolicyKit está ativo.",
                 String::from_utf8_lossy(&output.stderr).trim()
             ),
         ));
@@ -150,8 +193,8 @@ fn write_hosts_elevated(hosts_path: &str, new_content: &str) -> io::Result<()> {
 }
 
 /// Escreve no arquivo hosts de forma atômica e segura.
-/// Se faltarem privilégios, eleva via canal seguro stdin com pkexec no Linux.
-fn write_hosts_file(new_content: &str) -> io::Result<()> {
+/// Se faltarem privilégios, eleva via canal seguro stdin com helper Polkit no Linux.
+fn write_hosts_file(new_content: &str, is_clear: bool) -> io::Result<()> {
     let hosts_path = get_hosts_path();
 
     match write_atomic_system_file(hosts_path, new_content) {
@@ -159,7 +202,7 @@ fn write_hosts_file(new_content: &str) -> io::Result<()> {
         Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {
             #[cfg(target_os = "linux")]
             {
-                write_hosts_elevated(hosts_path, new_content)
+                write_hosts_elevated(hosts_path, new_content, is_clear)
             }
             #[cfg(not(target_os = "linux"))]
             {
@@ -246,7 +289,7 @@ pub fn block_domains(domains: &[&str]) -> io::Result<()> {
     full_text.push_str(&new_block);
     full_text.push('\n');
 
-    write_hosts_file(&full_text)?;
+    write_hosts_file(&full_text, false)?;
     flush_dns_cache();
 
     println!("[Nostak] Domínios bloqueados e cache de DNS limpo!");
@@ -292,7 +335,7 @@ pub fn unblock_domains() -> io::Result<()> {
     }
 
     let new_content = filtered_lines.join("\n") + "\n";
-    write_hosts_file(&new_content)?;
+    write_hosts_file(&new_content, true)?;
     flush_dns_cache();
 
     println!("[Nostak] Domínios desbloqueados e cache de DNS limpo!");

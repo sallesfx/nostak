@@ -1,0 +1,64 @@
+#!/bin/sh
+# nostak-helper: Utilitário privilegiado para aplicar/remover bloqueios no /etc/hosts
+set -e
+
+HOSTS_PATH="/etc/hosts"
+ACTION="$1"
+START_MARKER="# --- NOSTAK BLOCK START ---"
+END_MARKER="# --- NOSTAK BLOCK END ---"
+
+case "$ACTION" in
+    apply)
+        # Lê o novo bloco via stdin
+        BLOCK_CONTENT=$(cat)
+        if [ -z "$BLOCK_CONTENT" ]; then
+            echo "[nostak-helper] Erro: conteúdo de bloqueio vazio via stdin" >&2
+            exit 1
+        fi
+
+        TEMP_FILE=$(mktemp /tmp/nostak_hosts_XXXXXX)
+        # Remove qualquer bloco anterior existente
+        awk -v start="$START_MARKER" -v end="$END_MARKER" '
+            $0 ~ start { inside=1; next }
+            $0 ~ end { inside=0; next }
+            !inside { print }
+        ' "$HOSTS_PATH" > "$TEMP_FILE"
+
+        # Adiciona o novo bloco no final
+        printf "\n%s\n" "$BLOCK_CONTENT" >> "$TEMP_FILE"
+
+        # Aplica com permissões seguras 0644
+        chmod 0644 "$TEMP_FILE"
+        cat "$TEMP_FILE" > "$HOSTS_PATH"
+        rm -f "$TEMP_FILE"
+
+        # Limpa cache DNS
+        if command -v resolvectl >/dev/null 2>&1; then
+            resolvectl flush-caches || true
+        fi
+        exit 0
+        ;;
+
+    clear)
+        TEMP_FILE=$(mktemp /tmp/nostak_hosts_XXXXXX)
+        awk -v start="$START_MARKER" -v end="$END_MARKER" '
+            $0 ~ start { inside=1; next }
+            $0 ~ end { inside=0; next }
+            !inside { print }
+        ' "$HOSTS_PATH" > "$TEMP_FILE"
+
+        chmod 0644 "$TEMP_FILE"
+        cat "$TEMP_FILE" > "$HOSTS_PATH"
+        rm -f "$TEMP_FILE"
+
+        if command -v resolvectl >/dev/null 2>&1; then
+            resolvectl flush-caches || true
+        fi
+        exit 0
+        ;;
+
+    *)
+        echo "Uso: nostak-helper {apply|clear}" >&2
+        exit 1
+        ;;
+esac
