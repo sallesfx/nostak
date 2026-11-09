@@ -464,7 +464,7 @@
                             </button>
                         </h3>
                         <div id="faq-ans-1" role="region" aria-labelledby="faq-btn-1" class="faq-panel hidden p-5 pt-0 text-xs sm:text-sm text-content-muted leading-relaxed border-t border-content-border/20">
-                            Sim, apenas na hora em que você clica em Zarpar ou encerra uma sessão. Como o software altera o arquivo de rede do sistema operacional (<code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">/etc/hosts</code> no Linux ou equivalente no Windows) para bloquear o acesso às distrações de verdade, ele exige o privilégio nativo do sistema para aplicar e desfazer essa regra com segurança.
+                            Não a cada sessão! Ao instalar o pacote nativo (<code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">.deb</code> ou <code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">.rpm</code>), o Nostak registra uma política de segurança nativa via <strong>Polkit</strong> com o princípio de menor privilégio. Dessa forma, a aplicação bloqueia e libera os sites no arquivo <code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">/etc/hosts</code> de maneira instantânea em segundo plano, sem interrupções nem pedidos repetitivos de senha a cada ciclo de foco.
                         </div>
                     </div>
 

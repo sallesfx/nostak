@@ -64,12 +64,19 @@ Quando você clica em **Zarpar**, o ruído digital é neutralizado em nível de 
 
 Consulte a página de [**Releases Oficiais**](https://github.com/sallesfx/nostak/releases) para baixar a versão mais recente.
 
-### Linux (.deb e AppImage)
+### Linux (.deb, .rpm e AppImage)
+
+> [!TIP]
+> **Recomendado:** Utilize o pacote nativo (`.deb` no Debian/Ubuntu ou `.rpm` no Fedora/openSUSE). Ele configura automaticamente a política de segurança do **Polkit** (`com.nostak.hosts.policy`), permitindo que as ações de Zarpar e Ancorar ocorram instantaneamente sem solicitar senha de administrador a cada ciclo de foco.
+
 ```bash
-# Para distribuições baseadas em Debian/Ubuntu:
+# Para distribuições baseadas em Debian/Ubuntu (Recomendado):
 sudo dpkg -i nostak_*_amd64.deb
 
-# Ou execute diretamente o executável universal portátil:
+# Para distribuições baseadas em Fedora/RHEL/openSUSE:
+sudo rpm -i nostak-*.x86_64.rpm
+
+# Ou execute diretamente o executável universal portátil (AppImage):
 chmod +x nostak_*_amd64.AppImage
 ./nostak_*_amd64.AppImage
 ```
@@ -127,6 +134,7 @@ cargo fmt --all --manifest-path src-tauri/Cargo.toml -- --check
 
 ## 🔒 Arquitetura de Segurança & Engenharia
 
+- **Princípio de Menor Privilégio (Polkit Helper)**: O binário principal do Nostak e sua interface visual rodam estritamente com privilégios de usuário comum (não-root). O gerenciamento de entradas no arquivo `/etc/hosts` é delegado a um script auxiliar dedicado (`/usr/lib/nostak/nostak-helper`) controlado pela política Polkit `com.nostak.hosts.manage`, que também executa a limpeza segura de cache DNS (`resolvectl flush-caches`).
 - **Linearizabilidade de I/O Desacoplado**: O gerenciamento de estado em memória utiliza `Arc<RwLock<Config>>`, isolando escritas concorrentes do lock síncrono de disco (`io_lock`).
 - **Persistência Atômica**: Gravações de arquivos locais utilizam arquivos temporários (`.tmp`) sucedidos de substituição atômica no sistema de arquivos (`fs::rename`), prevenindo corrupção de dados em quedas de energia.
 - **Sanitização RFC 1035**: Validação estrita de FQDN contra injeção de caracteres de controle (CRLF) nas entradas do arquivo hosts.
