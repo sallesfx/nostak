@@ -2,4 +2,6 @@
 config.toml
 repomix-nostak-ui-ux.md
 node_modules/
-
+.idea/
+*.iml
+.DS_Store
