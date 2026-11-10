@@ -87,6 +87,10 @@ Baixe o instalador oficial `nostak_*_x64-setup.exe` ou pacote `.msi` na página 
 - Execute o instalador e conclua o assistente de instalação do NSIS.
 - Ao abrir o Nostak pela primeira vez, confirme o prompt único de elevação do Windows (UAC). O manifesto de integridade garante permissão para aplicar os bloqueios em `System32\drivers\etc\hosts` e atualizar o cache DNS sem interrupções durante o Pomodoro.
 
+> [!NOTE]
+> **Aviso do Windows SmartScreen ("O Windows protegeu o seu computador"):**
+> Por ser um projeto de código aberto independente que não utiliza certificados comerciais corporativos pagos (EV Code Signing), o Windows Defender SmartScreen pode exibir um alerta preventivo no primeiro uso. Para continuar a instalação, basta clicar em **"Mais informações"** e em seguida em **"Executar assim mesmo"**. O software é 100% aberto, transparente e auditável.
+
 *(Suporte nativo com instaladores para macOS está planejado no roadmap).*
 
 ---

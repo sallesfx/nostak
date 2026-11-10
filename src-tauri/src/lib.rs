@@ -137,15 +137,18 @@ fn remover_tarefa(id: u64, state: tauri::State<AppState>) -> Result<config::Conf
 
 #[command]
 fn aplicar_template(
-    nome_template: String,
-    substituir: bool,
+    nome_template: Option<String>,
+    nome: Option<String>,
+    substituir: Option<bool>,
     state: tauri::State<AppState>,
 ) -> Result<config::Config, String> {
+    let target_name = nome_template.or(nome).unwrap_or_default();
+    let replace = substituir.unwrap_or(true);
     let (config, _) = state.mutate_result(|cfg| {
-        if cfg.aplicar_template(&nome_template, substituir) {
+        if cfg.aplicar_template(&target_name, replace) {
             Ok(())
         } else {
-            Err(format!("Template '{}' não encontrado.", nome_template))
+            Err(format!("Template '{}' não encontrado.", target_name))
         }
     })?;
     Ok(config)

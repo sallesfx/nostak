@@ -229,7 +229,8 @@ function simulateTauriCommand(cmd, args) {
             garantirTarefaAtivaMock(cfg);
             return saveMockConfig(cfg);
         case 'aplicar_template': {
-            const tpl = cfg.templates_tarefas.find(t => t.nome.toLowerCase() === (args.nome || '').toLowerCase());
+            const target = (args.nome || args.nomeTemplate || '').toLowerCase();
+            const tpl = cfg.templates_tarefas.find(t => t.nome.toLowerCase() === target);
             if (tpl) {
                 let nextId = cfg.tarefas.reduce((max, t) => Math.max(max, t.id), 0) + 1;
                 let firstNewId = null;
