@@ -67,6 +67,8 @@ pub fn normalize_domain(domain: &str) -> (String, String) {
 pub fn get_hosts_path() -> &'static str {
     if cfg!(target_os = "windows") {
         r"C:\Windows\System32\drivers\etc\hosts"
+    } else if cfg!(target_os = "macos") {
+        "/private/etc/hosts"
     } else {
         "/etc/hosts"
     }
@@ -192,8 +194,56 @@ fn write_hosts_elevated(hosts_path: &str, new_content: &str, is_clear: bool) -> 
     Ok(())
 }
 
+/// Aplica o conteúdo do bloco no arquivo hosts via elevação nativa com AppleScript / Touch ID no macOS
+#[cfg(target_os = "macos")]
+fn write_hosts_elevated_macos(new_content: &str) -> io::Result<()> {
+    // 1. Escreve o novo conteúdo sanitizado em um arquivo temporário seguro
+    let temp_path = std::env::temp_dir().join(format!(".nostak_hosts_{}.tmp", std::process::id()));
+    {
+        let mut temp_file = File::create(&temp_path)?;
+        temp_file.write_all(new_content.as_bytes())?;
+        temp_file.sync_all()?;
+    }
+
+    let temp_str = temp_path.to_string_lossy();
+    // 2. Executa cópia atômica com permissões 644 root:wheel e flush de DNS nativo via osascript
+    let shell_cmd = format!(
+        "cp '{temp}' /private/etc/hosts && chmod 644 /private/etc/hosts && chown root:wheel /private/etc/hosts && dscacheutil -flushcache && killall -HUP mDNSResponder",
+        temp = temp_str.replace('\'', "'\\''")
+    );
+
+    let apple_script = format!(
+        "do shell script \"{}\" with administrator privileges",
+        shell_cmd.replace('\\', "\\\\").replace('\"', "\\\"")
+    );
+
+    let output = Command::new("osascript")
+        .arg("-e")
+        .arg(apple_script)
+        .output();
+
+    let _ = fs::remove_file(&temp_path);
+
+    let out = output?;
+    if !out.status.success() {
+        let err_msg = String::from_utf8_lossy(&out.stderr);
+        if err_msg.contains("User canceled") || err_msg.contains("-128") {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "Autorização cancelada pelo usuário no macOS.",
+            ));
+        }
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            format!("Falha na autorização do macOS: {}", err_msg.trim()),
+        ));
+    }
+
+    Ok(())
+}
+
 /// Escreve no arquivo hosts de forma atômica e segura.
-/// Se faltarem privilégios, eleva via canal seguro stdin com helper Polkit no Linux.
+/// Se faltarem privilégios, eleva via canal seguro stdin com helper Polkit no Linux ou osascript no macOS.
 fn write_hosts_file(new_content: &str, is_clear: bool) -> io::Result<()> {
     let hosts_path = get_hosts_path();
 
@@ -204,8 +254,14 @@ fn write_hosts_file(new_content: &str, is_clear: bool) -> io::Result<()> {
             {
                 write_hosts_elevated(hosts_path, new_content, is_clear)
             }
-            #[cfg(not(target_os = "linux"))]
+            #[cfg(target_os = "macos")]
             {
+                let _ = is_clear;
+                write_hosts_elevated_macos(new_content)
+            }
+            #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+            {
+                let _ = is_clear;
                 Err(io::Error::new(
                     io::ErrorKind::PermissionDenied,
                     "Permissão negada. Execute o aplicativo como Administrador para alterar o arquivo hosts.",

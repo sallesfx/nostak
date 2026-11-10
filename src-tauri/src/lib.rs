@@ -250,6 +250,14 @@ pub fn run() {
                         .build(),
                 )?;
             }
+
+            #[cfg(target_os = "macos")]
+            {
+                if let Ok(default_menu) = tauri::menu::Menu::default(app.handle()) {
+                    let _ = app.set_menu(default_menu);
+                }
+            }
+
             Ok(())
         })
         .on_window_event(|_window, event| {
