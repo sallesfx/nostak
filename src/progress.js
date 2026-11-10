@@ -130,7 +130,7 @@ export function renderJourneyPage(progresso = {}) {
         milesEl.innerHTML = `${totalMinutos.toLocaleString('pt-BR')} <span class="text-headline-sm font-headline-sm opacity-60">min</span>`;
     }
     if (sirensEl) {
-        sirensEl.innerHTML = `${sirens.toLocaleString('pt-BR')} <span class="text-headline-sm font-headline-sm opacity-60">sereias</span>`;
+        sirensEl.innerHTML = `${sereias.toLocaleString('pt-BR')} <span class="text-headline-sm font-headline-sm opacity-60">sereias</span>`;
     }
 
     // 3. Conquista 1: Âncora de Aço (Meta: sessão ininterrupta de 90 min)
