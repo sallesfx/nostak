@@ -527,28 +527,135 @@
                     Grandes projetos, estudos complexos e habilidades de alto nível exigem horas contínuas de atenção imperturbável. Retome o controle do seu ambiente digital hoje mesmo.
                 </p>
 
-                <!-- Caixa de Download Estruturada -->
-                <div class="w-full max-w-xl p-8 bg-surface-container border border-content-border rounded-sm shadow-2xl flex flex-col items-center gap-6">
-                    <span class="text-xs uppercase tracking-widest font-bold text-brand-secondary">Downloads Oficiais &amp; Verificados</span>
-                    
-                    <div class="flex flex-col sm:flex-row gap-3 w-full justify-center">
-                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-5 py-3 bg-brand-primary hover:bg-brand-tertiary text-brand-on-primary font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
+                <!-- Caixa de Download Estruturada com Abas e Downloads Diretos -->
+                <div class="w-full max-w-2xl p-6 sm:p-8 bg-surface-container border border-content-border rounded-sm shadow-2xl flex flex-col items-center gap-6">
+                    <div class="flex items-center justify-between w-full border-b border-content-border/40 pb-4">
+                        <span class="text-xs uppercase tracking-widest font-bold text-brand-secondary flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Downloads Oficiais &amp; Verificados
+                        </span>
+                        <span id="download-version-badge" class="text-[11px] font-mono text-content-subtle bg-surface-low px-2 py-0.5 rounded border border-content-border/50">
+                            v0.1.7 (Estável)
+                        </span>
+                    </div>
+
+                    <!-- Abas de Plataforma (Linux, Windows, macOS) -->
+                    <div class="grid grid-cols-3 gap-2 w-full" role="tablist" aria-label="Plataformas Suportadas">
+                        <button type="button" role="tab" id="tab-os-linux" aria-selected="true" aria-controls="panel-os-linux" class="tab-os px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all bg-brand-primary text-brand-on-primary">
                             <span class="material-symbols-outlined text-base">terminal</span>
-                            <span>Linux (.deb / .rpm)</span>
-                        </a>
-                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-5 py-3 border border-brand-primary/60 hover:border-brand-primary text-brand-primary hover:bg-brand-primary/10 font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
+                            <span>Linux</span>
+                        </button>
+                        <button type="button" role="tab" id="tab-os-windows" aria-selected="false" aria-controls="panel-os-windows" class="tab-os px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all bg-surface-low text-content-muted hover:text-content-main border border-content-border/50">
                             <span class="material-symbols-outlined text-base">desktop_windows</span>
-                            <span>Windows (.exe)</span>
-                        </a>
-                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-5 py-3 border border-brand-secondary/60 hover:border-brand-secondary text-brand-secondary hover:bg-brand-secondary/10 font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
+                            <span>Windows</span>
+                        </button>
+                        <button type="button" role="tab" id="tab-os-macos" aria-selected="false" aria-controls="panel-os-macos" class="tab-os px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all bg-surface-low text-content-muted hover:text-content-main border border-content-border/50">
                             <span class="material-symbols-outlined text-base">laptop_mac</span>
-                            <span>macOS (.dmg)</span>
+                            <span>macOS</span>
+                        </button>
+                    </div>
+
+                    <!-- Painel Linux: Downloads Diretos -->
+                    <div id="panel-os-linux" role="tabpanel" aria-labelledby="tab-os-linux" class="panel-os w-full flex flex-col gap-3">
+                        <a id="dl-linux-deb" href="https://github.com/sallesfx/nostak/releases/download/0.1.7/Nostak_0.1.7_amd64.deb" class="p-4 bg-surface-low hover:bg-surface-base border border-brand-primary/40 hover:border-brand-primary rounded-sm transition-all flex items-center justify-between text-left group">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-brand-primary text-2xl group-hover:scale-110 transition-transform">download</span>
+                                <div>
+                                    <div class="text-sm font-bold text-content-main flex items-center gap-2">
+                                        <span>Baixar Pacote .DEB</span>
+                                        <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-primary/10 text-brand-primary font-semibold">Recomendado</span>
+                                    </div>
+                                    <div class="text-xs text-content-muted">Debian, Ubuntu, Linux Mint, Pop!_OS e derivados (Polkit integrado)</div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-content-subtle group-hover:text-brand-primary transition-colors">arrow_forward</span>
+                        </a>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <a id="dl-linux-rpm" href="https://github.com/sallesfx/nostak/releases/download/0.1.7/Nostak-0.1.7-1.x86_64.rpm" class="p-3 bg-surface-low hover:bg-surface-base border border-content-border/60 hover:border-content-border rounded-sm transition-all flex items-center justify-between text-left group">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="material-symbols-outlined text-brand-secondary text-xl">download</span>
+                                    <div>
+                                        <div class="text-xs font-bold text-content-main">Pacote RPM (.rpm)</div>
+                                        <div class="text-[11px] text-content-subtle">Fedora, RHEL, openSUSE</div>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <a id="dl-linux-appimage" href="https://github.com/sallesfx/nostak/releases/download/0.1.7/Nostak_0.1.7_amd64.AppImage" class="p-3 bg-surface-low hover:bg-surface-base border border-content-border/60 hover:border-content-border rounded-sm transition-all flex items-center justify-between text-left group">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="material-symbols-outlined text-content-muted text-xl">download</span>
+                                    <div>
+                                        <div class="text-xs font-bold text-content-main">Universal AppImage</div>
+                                        <div class="text-[11px] text-content-subtle">Portátil em qualquer distro</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Painel Windows: Downloads Diretos -->
+                    <div id="panel-os-windows" role="tabpanel" aria-labelledby="tab-os-windows" class="panel-os hidden w-full flex flex-col gap-3">
+                        <a id="dl-windows-exe" href="https://github.com/sallesfx/nostak/releases/download/0.1.7/Nostak_0.1.7_x64-setup.exe" class="p-4 bg-surface-low hover:bg-surface-base border border-brand-primary/40 hover:border-brand-primary rounded-sm transition-all flex items-center justify-between text-left group">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-brand-primary text-2xl group-hover:scale-110 transition-transform">download</span>
+                                <div>
+                                    <div class="text-sm font-bold text-content-main flex items-center gap-2">
+                                        <span>Baixar Instalador .EXE</span>
+                                        <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-primary/10 text-brand-primary font-semibold">Recomendado</span>
+                                    </div>
+                                    <div class="text-xs text-content-muted">Instalação assistida do NSIS para Windows 10 e 11 (64-bit)</div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-content-subtle group-hover:text-brand-primary transition-colors">arrow_forward</span>
+                        </a>
+
+                        <a id="dl-windows-msi" href="https://github.com/sallesfx/nostak/releases/download/0.1.7/Nostak_0.1.7_x64_en-US.msi" class="p-3 bg-surface-low hover:bg-surface-base border border-content-border/60 hover:border-content-border rounded-sm transition-all flex items-center justify-between text-left group">
+                            <div class="flex items-center gap-2.5">
+                                <span class="material-symbols-outlined text-brand-secondary text-xl">download</span>
+                                <div>
+                                    <div class="text-xs font-bold text-content-main">Pacote Windows Installer (.msi)</div>
+                                    <div class="text-[11px] text-content-subtle">Para implantações automatizadas ou corporativas</div>
+                                </div>
+                            </div>
                         </a>
                     </div>
 
-                    <p class="text-xs text-content-subtle leading-relaxed text-center max-w-md pt-4 border-t border-content-border/50">
-                        Software livre sob licença aberta. Instale, configure sua primeira rota e sinta a clareza de trabalhar com a mente totalmente ancorada.
-                    </p>
+                    <!-- Painel macOS: Downloads Diretos -->
+                    <div id="panel-os-macos" role="tabpanel" aria-labelledby="tab-os-macos" class="panel-os hidden w-full flex flex-col gap-3">
+                        <a id="dl-macos-dmg" href="https://github.com/sallesfx/nostak/releases/download/0.1.7/Nostak_0.1.7_aarch64.dmg" class="p-4 bg-surface-low hover:bg-surface-base border border-brand-secondary/40 hover:border-brand-secondary rounded-sm transition-all flex items-center justify-between text-left group">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-brand-secondary text-2xl group-hover:scale-110 transition-transform">download</span>
+                                <div>
+                                    <div class="text-sm font-bold text-content-main flex items-center gap-2">
+                                        <span>Baixar Imagem de Disco (.dmg)</span>
+                                        <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-secondary/10 text-brand-secondary font-semibold">Apple Silicon</span>
+                                    </div>
+                                    <div class="text-xs text-content-muted">Arraste para a pasta Aplicativos (macOS 10.15+, M1/M2/M3/M4)</div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-content-subtle group-hover:text-brand-secondary transition-colors">arrow_forward</span>
+                        </a>
+
+                        <a id="dl-macos-tar" href="https://github.com/sallesfx/nostak/releases/download/0.1.7/Nostak_aarch64.app.tar.gz" class="p-3 bg-surface-low hover:bg-surface-base border border-content-border/60 hover:border-content-border rounded-sm transition-all flex items-center justify-between text-left group">
+                            <div class="flex items-center gap-2.5">
+                                <span class="material-symbols-outlined text-content-muted text-xl">download</span>
+                                <div>
+                                    <div class="text-xs font-bold text-content-main">Pacote Portátil (.app.tar.gz)</div>
+                                    <div class="text-[11px] text-content-subtle">Binário comprimido independente</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Link Direto para o GitHub Releases -->
+                    <div class="pt-4 border-t border-content-border/50 w-full flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-content-subtle">
+                        <span>100% offline, sem anúncios e código aberto.</span>
+                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="hover:text-brand-primary transition-colors inline-flex items-center gap-1.5 font-semibold text-content-muted">
+                            <span>Ver todas as releases e checksums no GitHub</span>
+                            <span class="material-symbols-outlined text-xs">open_in_new</span>
+                        </a>
+                    </div>
                 </div>
 
             </div>
@@ -633,6 +740,89 @@
                     }
                 });
             });
+
+            // Gerenciamento das Abas de Download Direto por Sistema Operacional
+            const osTabs = [
+                { id: 'linux', tab: document.getElementById('tab-os-linux'), panel: document.getElementById('panel-os-linux') },
+                { id: 'windows', tab: document.getElementById('tab-os-windows'), panel: document.getElementById('panel-os-windows') },
+                { id: 'macos', tab: document.getElementById('tab-os-macos'), panel: document.getElementById('panel-os-macos') }
+            ];
+
+            function switchOsTab(activeId) {
+                osTabs.forEach(({ id, tab, panel }) => {
+                    const isActive = id === activeId;
+                    if (tab) {
+                        tab.setAttribute('aria-selected', String(isActive));
+                        if (isActive) {
+                            tab.className = 'tab-os px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all bg-brand-primary text-brand-on-primary shadow-md';
+                        } else {
+                            tab.className = 'tab-os px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all bg-surface-low text-content-muted hover:text-content-main border border-content-border/50';
+                        }
+                    }
+                    if (panel) {
+                        panel.classList.toggle('hidden', !isActive);
+                    }
+                });
+            }
+
+            osTabs.forEach(({ id, tab }) => {
+                if (tab) {
+                    tab.addEventListener('click', () => switchOsTab(id));
+                }
+            });
+
+            // Detecção Automática do Sistema Operacional do Visitante
+            const ua = navigator.userAgent.toLowerCase();
+            if (ua.includes('win')) {
+                switchOsTab('windows');
+            } else if (ua.includes('mac') || ua.includes('os x')) {
+                switchOsTab('macos');
+            } else {
+                switchOsTab('linux');
+            }
+
+            // Busca Dinâmica da Última Release no GitHub para Atualizar Links Diretos Automaticamente
+            fetch('https://api.github.com/repos/sallesfx/nostak/releases/latest')
+                .then(res => res.ok ? res.json() : null)
+                .then(release => {
+                    if (!release || !Array.isArray(release.assets)) return;
+
+                    const badge = document.getElementById('download-version-badge');
+                    if (badge && release.tag_name) {
+                        badge.textContent = `v${release.tag_name.replace(/^v/, '')} (Estável)`;
+                    }
+
+                    release.assets.forEach(asset => {
+                        const name = asset.name.toLowerCase();
+                        const url = asset.browser_download_url;
+
+                        if (name.endsWith('.deb')) {
+                            const el = document.getElementById('dl-linux-deb');
+                            if (el) el.href = url;
+                        } else if (name.endsWith('.rpm')) {
+                            const el = document.getElementById('dl-linux-rpm');
+                            if (el) el.href = url;
+                        } else if (name.endsWith('.appimage')) {
+                            const el = document.getElementById('dl-linux-appimage');
+                            if (el) el.href = url;
+                        } else if (name.endsWith('-setup.exe') || name.endsWith('.exe')) {
+                            const el = document.getElementById('dl-windows-exe');
+                            if (el) el.href = url;
+                        } else if (name.endsWith('.msi')) {
+                            const el = document.getElementById('dl-windows-msi');
+                            if (el) el.href = url;
+                        } else if (name.endsWith('.dmg')) {
+                            const el = document.getElementById('dl-macos-dmg');
+                            if (el) el.href = url;
+                        } else if (name.endsWith('.app.tar.gz')) {
+                            const el = document.getElementById('dl-macos-tar');
+                            if (el) el.href = url;
+                        }
+                    });
+                })
+                .catch(() => {
+                    // Fallbacks estáticos já garantem o download mesmo sem API
+                });
         });
     </script>
 </body>
