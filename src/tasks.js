@@ -347,7 +347,11 @@ export function initTasks(initialConfig = {}) {
                 const nome = btnApply.getAttribute('data-apply-template');
                 if (!nome) return;
                 try {
-                    const configAtualizada = await invokeTauri('aplicar_template', { nome });
+                    const configAtualizada = await invokeTauri('aplicar_template', {
+                        nome,
+                        nomeTemplate: nome,
+                        substituir: true
+                    });
                     if (configAtualizada) {
                         renderTasksState(configAtualizada);
                     }
