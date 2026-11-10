@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Nostak - Lista de Bloqueio</title>
+    <title data-i18n="meta.title_blocklist">Nostak - Lista de Bloqueio</title>
     <link rel="icon" type="image/svg+xml" href="./logo_nostak.svg" />
     <link rel="stylesheet" href="./tailwind-dist.css" />
     <link rel="stylesheet" href="./styles.css" />
@@ -23,8 +23,8 @@
         <!-- Main Canvas -->
         <main class="flex-grow p-4 md:p-8 max-w-[1200px] mx-auto overflow-y-auto">
         <header class="mb-12">
-            <h1 class="font-display-sm text-display-sm text-primary mb-2">Silenciador de Sereias</h1>
-            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-prose">Bloqueie sites e aplicativos que drenam sua atenção. Durante a travessia, o acesso a estes domínios permanecerá travado no sistema.</p>
+            <h1 data-i18n="blocklist.title" class="font-display-sm text-display-sm text-primary mb-2">Silenciador de Sereias</h1>
+            <p data-i18n="blocklist.subtitle" class="font-body-lg text-body-lg text-on-surface-variant max-w-prose">Bloqueie sites e aplicativos que drenam sua atenção. Durante a travessia, o acesso a estes domínios permanecerá travado no sistema.</p>
         </header>
         <!-- Grid: Categories -->
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-12">
@@ -32,11 +32,11 @@
             <div data-category="redes_sociais" class="bg-surface-container p-6 border border-outline-variant rounded flex flex-col justify-between h-48 hover:border-outline transition-colors">
                 <div>
                     <span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;" aria-hidden="true">public</span>
-                    <h3 id="cat-redes-title" class="font-headline-sm text-headline-sm text-on-surface">Redes Sociais</h3>
-                    <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-1">Instagram, X, TikTok, Facebook...</p>
+                    <h3 id="cat-redes-title" data-i18n="blocklist.cat_social" class="font-headline-sm text-headline-sm text-on-surface">Redes Sociais</h3>
+                    <p data-i18n="blocklist.cat_social_sample" class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-1">Instagram, X, TikTok, Facebook...</p>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="category-status font-label-sm text-label-sm uppercase tracking-wider text-primary">Ativado</span>
+                    <span data-i18n="blocklist.status_enabled" class="category-status font-label-sm text-label-sm uppercase tracking-wider text-primary">Ativado</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input aria-labelledby="cat-redes-title" role="switch" aria-checked="true" checked class="sr-only toggle-input" type="checkbox">
                         <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
@@ -50,11 +50,11 @@
             <div data-category="streaming_e_videos" class="bg-surface-container p-6 border border-outline-variant rounded flex flex-col justify-between h-48 hover:border-outline transition-colors">
                 <div>
                     <span class="material-symbols-outlined text-secondary mb-4" style="font-size: 32px;" aria-hidden="true">movie</span>
-                    <h3 id="cat-streaming-title" class="font-headline-sm text-headline-sm text-on-surface">Streaming</h3>
-                    <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-1">YouTube, Netflix, Twitch, Prime...</p>
+                    <h3 id="cat-streaming-title" data-i18n="blocklist.cat_streaming" class="font-headline-sm text-headline-sm text-on-surface">Streaming</h3>
+                    <p data-i18n="blocklist.cat_streaming_sample" class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-1">YouTube, Netflix, Twitch, Prime...</p>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="category-status font-label-sm text-label-sm uppercase tracking-wider text-primary">Ativado</span>
+                    <span data-i18n="blocklist.status_enabled" class="category-status font-label-sm text-label-sm uppercase tracking-wider text-primary">Ativado</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input aria-labelledby="cat-streaming-title" role="switch" aria-checked="true" checked class="sr-only toggle-input" type="checkbox">
                         <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
@@ -68,11 +68,11 @@
             <div data-category="noticias_e_portais" class="bg-surface-container p-6 border border-outline-variant rounded flex flex-col justify-between h-48 hover:border-outline transition-colors">
                 <div>
                     <span class="material-symbols-outlined text-tertiary mb-4" style="font-size: 32px;" aria-hidden="true">newspaper</span>
-                    <h3 id="cat-noticias-title" class="font-headline-sm text-headline-sm text-on-surface">Notícias</h3>
-                    <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-1">G1, UOL, GE, CNN Brasil...</p>
+                    <h3 id="cat-noticias-title" data-i18n="blocklist.cat_news" class="font-headline-sm text-headline-sm text-on-surface">Notícias</h3>
+                    <p data-i18n="blocklist.cat_news_sample" class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-1">G1, UOL, GE, CNN Brasil...</p>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="category-status font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Desativado</span>
+                    <span data-i18n="blocklist.status_disabled" class="category-status font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Desativado</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input aria-labelledby="cat-noticias-title" role="switch" aria-checked="false" class="sr-only toggle-input" type="checkbox">
                         <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
@@ -86,11 +86,11 @@
             <div data-category="jogos" class="bg-surface-container p-6 border border-outline-variant rounded flex flex-col justify-between h-48 hover:border-outline transition-colors">
                 <div>
                     <span class="material-symbols-outlined text-secondary mb-4" style="font-size: 32px;" aria-hidden="true">sports_esports</span>
-                    <h3 id="cat-jogos-title" class="font-headline-sm text-headline-sm text-on-surface">Jogos</h3>
-                    <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-1">Steam, Roblox, Epic, Discord...</p>
+                    <h3 id="cat-jogos-title" data-i18n="blocklist.cat_games" class="font-headline-sm text-headline-sm text-on-surface">Jogos</h3>
+                    <p data-i18n="blocklist.cat_games_sample" class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-1">Steam, Roblox, Epic, Discord...</p>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="category-status font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Desativado</span>
+                    <span data-i18n="blocklist.status_disabled" class="category-status font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Desativado</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input aria-labelledby="cat-jogos-title" role="switch" aria-checked="false" class="sr-only toggle-input" type="checkbox">
                         <div class="w-12 h-6 bg-surface-container-highest border border-outline-variant rounded-sm toggle-track relative">
@@ -105,21 +105,21 @@
         <section class="bg-surface-container border border-outline-variant rounded p-6 md:p-8 mb-12">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h2 class="font-headline-md text-headline-md text-on-surface">Sereias Personalizadas</h2>
-                    <p class="text-on-surface-variant font-body-sm mt-0.5">Cadastre domínios específicos que desviam sua atenção para silenciá-los durante o foco.</p>
+                    <h2 data-i18n="blocklist.custom_title" class="font-headline-md text-headline-md text-on-surface">Sereias Personalizadas</h2>
+                    <p data-i18n="blocklist.custom_subtitle" class="text-on-surface-variant font-body-sm mt-0.5">Cadastre domínios específicos que desviam sua atenção para silenciá-los durante o foco.</p>
                 </div>
                 <span id="custom-sites-count" class="font-label-sm text-label-sm bg-secondary-container/40 text-secondary border border-secondary/30 rounded-sm px-3.5 py-1 self-start md:self-auto font-bold uppercase tracking-wider">0 Ativos</span>
             </div>
 
             <!-- Formulário de Adicionar Nova Sereia -->
-            <!-- Formulário de Adicionar Nova Sereia -->
             <form id="form-add-sereia" class="mb-8" novalidate>
                 <div class="flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-grow">
-                        <label for="input-new-sereia" class="sr-only">Domínio do site personalizado para bloquear</label>
+                        <label for="input-new-sereia" data-i18n="blocklist.input_aria" class="sr-only">Domínio do site personalizado para bloquear</label>
                         <span class="material-symbols-outlined absolute left-3 top-3.5 text-on-surface-variant text-xl pointer-events-none" aria-hidden="true">link</span>
                         <input
                             id="input-new-sereia"
+                            data-i18n-placeholder="blocklist.input_placeholder"
                             aria-describedby="sereia-error-msg"
                             aria-invalid="false"
                             class="w-full bg-surface-container-low border border-outline-variant rounded pl-10 pr-4 py-3 focus:border-primary text-on-surface font-body-md text-sm placeholder:text-on-surface-variant/50 transition-colors"
@@ -130,7 +130,7 @@
                     </div>
                     <button type="submit" class="bg-primary-container text-on-primary hover:bg-tertiary px-6 py-3 rounded font-label-sm text-label-sm uppercase font-bold tracking-wider transition-colors flex items-center justify-center gap-2 shrink-0 h-[46px]">
                         <span class="material-symbols-outlined text-lg" aria-hidden="true">add</span>
-                        Adicionar Sereia
+                        <span data-i18n="blocklist.btn_add">Adicionar Sereia</span>
                     </button>
                 </div>
                 <p id="sereia-error-msg" class="text-xs text-error mt-2 hidden font-label-sm flex items-center gap-1.5" role="alert"></p>
@@ -143,8 +143,8 @@
 
             <div id="custom-sites-empty" class="hidden text-center py-10 border border-dashed border-outline-variant/60 rounded text-on-surface-variant">
                 <span class="material-symbols-outlined text-3xl mb-1 text-secondary/70">sailing</span>
-                <p class="font-body-md text-sm">Nenhuma sereia personalizada cadastrada.</p>
-                <p class="font-label-sm text-xs opacity-60 mt-0.5">Digite um domínio acima e clique em 'Adicionar Sereia'.</p>
+                <p data-i18n="blocklist.empty_title" class="font-body-md text-sm">Nenhuma sereia personalizada cadastrada.</p>
+                <p data-i18n="blocklist.empty_subtitle" class="font-label-sm text-xs opacity-60 mt-0.5">Digite um domínio acima e clique em 'Adicionar Sereia'.</p>
             </div>
         </section>
     </main>

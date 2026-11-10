@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Nostak - A Jornada do Navegador</title>
+    <title data-i18n="meta.title_jornada">Nostak - A Jornada do Navegador</title>
     <link rel="icon" type="image/svg+xml" href="./logo_nostak.svg" />
     <link rel="stylesheet" href="./tailwind-dist.css" />
     <link rel="stylesheet" href="./styles.css" />
@@ -27,17 +27,17 @@
             <div class="relative z-10 p-6 flex flex-col h-full">
                 <div class="flex justify-between items-start">
                     <div>
-                        <h1 class="font-display-sm text-display-sm text-primary mb-2">A Rota para Ítaca</h1>
-                        <p class="text-on-surface-variant font-body-lg max-w-md">Cada ciclo concluído afasta as distrações e aproxima sua mente do destino final.</p>
+                        <h1 data-i18n="journey.hero_title" class="font-display-sm text-display-sm text-primary mb-2">A Rota para Ítaca</h1>
+                        <p data-i18n="journey.hero_subtitle" class="text-on-surface-variant font-body-lg max-w-md">Cada ciclo concluído afasta as distrações e aproxima sua mente do destino final.</p>
                     </div>
                     <div class="bg-surface-container border border-outline-variant rounded-sm p-4">
-                        <span class="text-secondary font-label-sm uppercase tracking-widest block mb-1">POSIÇÃO ATUAL</span>
+                        <span data-i18n="journey.current_position" class="text-secondary font-label-sm uppercase tracking-widest block mb-1">POSIÇÃO ATUAL</span>
                         <span id="journey-sector-name" class="font-headline-sm text-headline-sm text-on-surface">Setor 01: Baía da Partida</span>
                     </div>
                 </div>
                 <!-- Stylized Map Path -->
-                <div class="flex-grow flex items-center justify-center relative" role="region" aria-label="Mapa da Rota de Navegação">
-                    <svg class="w-full max-w-2xl h-32" fill="none" viewBox="0 0 800 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa estilizado da rota marítima. Posição atual sincronizada com o setor ativo.">
+                <div class="flex-grow flex items-center justify-center relative" role="region" data-i18n-aria="journey.map_region_aria" aria-label="Mapa da Rota de Navegação">
+                    <svg class="w-full max-w-2xl h-32" fill="none" viewBox="0 0 800 100" xmlns="http://www.w3.org/2000/svg" role="img" data-i18n-aria="journey.map_svg_aria" aria-label="Mapa estilizado da rota marítima. Posição atual sincronizada com o setor ativo.">
                         <path d="M0 50C100 50 150 20 250 20C350 20 450 80 550 80C650 80 700 50 800 50" opacity="0.7" stroke="#94d0e1" stroke-dasharray="8 8" stroke-width="2" aria-hidden="true"></path>
                         <circle cx="90" cy="42" fill="#94d0e1" r="4" opacity="0.6" aria-hidden="true"></circle>
                         <circle cx="250" cy="20" fill="#94d0e1" r="5" opacity="0.8" aria-hidden="true"></circle>
@@ -58,7 +58,7 @@
                     <span class="material-symbols-outlined text-primary scale-150" data-icon="sailing">sailing</span>
                 </div>
                 <div>
-                    <p class="text-on-surface-variant font-label-md uppercase tracking-wider mb-1">MILHAS NÁUTICAS DE FOCO</p>
+                    <p data-i18n="journey.stat_miles" class="text-on-surface-variant font-label-md uppercase tracking-wider mb-1">MILHAS NÁUTICAS DE FOCO</p>
                     <p id="journey-total-miles" class="font-display-lg text-display-lg text-primary">0 <span class="text-headline-sm font-headline-sm opacity-60">min</span></p>
                 </div>
             </div>
@@ -67,7 +67,7 @@
                     <span class="material-symbols-outlined text-secondary scale-150" data-icon="volume_off">volume_off</span>
                 </div>
                 <div>
-                    <p class="text-on-surface-variant font-label-md uppercase tracking-wider mb-1">DISTRAÇÕES BLOQUEADAS</p>
+                    <p data-i18n="journey.stat_sirens" class="text-on-surface-variant font-label-md uppercase tracking-wider mb-1">DISTRAÇÕES BLOQUEADAS</p>
                     <p id="journey-total-sirens" class="font-display-lg text-display-lg text-secondary">0 <span class="text-headline-sm font-headline-sm opacity-60">sereias</span></p>
                 </div>
             </div>
@@ -76,7 +76,7 @@
         <section class="mb-12">
             <div class="flex items-center gap-4 mb-6">
                 <div class="h-7 w-1 bg-primary rounded-full"></div>
-                <h3 class="font-headline-md text-headline-md text-on-surface">Domínio do Mar</h3>
+                <h3 data-i18n="journey.mastery_title" class="font-headline-md text-headline-md text-on-surface">Domínio do Mar</h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Mastery Card 1 -->
@@ -85,8 +85,8 @@
                         <span class="material-symbols-outlined text-primary" data-icon="anchor" aria-hidden="true">anchor</span>
                         <span id="mastery-anchor-badge" class="text-label-sm font-label-sm bg-primary/15 text-primary border border-primary/30 rounded-sm px-2 py-0.5 uppercase">NÍVEL 0</span>
                     </div>
-                    <h4 id="mastery-anchor-title" class="font-headline-sm text-headline-sm text-on-surface mb-1">Âncora de Aço</h4>
-                    <p class="text-body-sm font-body-sm text-on-surface-variant">Sustente sessões profundas de até 90 minutos sem interromper o temporizador.</p>
+                    <h4 id="mastery-anchor-title" data-i18n="journey.card1_title" class="font-headline-sm text-headline-sm text-on-surface mb-1">Âncora de Aço</h4>
+                    <p data-i18n="journey.card1_desc" class="text-body-sm font-body-sm text-on-surface-variant">Sustente sessões profundas de até 90 minutos sem interromper o temporizador.</p>
                     <p id="mastery-anchor-meta" class="text-label-sm font-label-sm text-primary/80 mt-3 uppercase">Recorde atual: 0 / 90 min</p>
                     <div
                         id="progressbar-mastery-anchor"
@@ -106,8 +106,8 @@
                         <span class="material-symbols-outlined text-secondary" data-icon="visibility_off" aria-hidden="true">visibility_off</span>
                         <span id="mastery-horizon-badge" class="text-label-sm font-label-sm bg-secondary-container/40 text-secondary border border-secondary/30 rounded-sm px-2 py-0.5 uppercase">NÍVEL 0</span>
                     </div>
-                    <h4 id="mastery-horizon-title" class="font-headline-sm text-headline-sm text-on-surface mb-1">Canto Silenciado</h4>
-                    <p class="text-body-sm font-body-sm text-on-surface-variant">Neutralize 50 tentativas de distração mantendo suas listas ativas no mar.</p>
+                    <h4 id="mastery-horizon-title" data-i18n="journey.card2_title" class="font-headline-sm text-headline-sm text-on-surface mb-1">Canto Silenciado</h4>
+                    <p data-i18n="journey.card2_desc" class="text-body-sm font-body-sm text-on-surface-variant">Neutralize 50 tentativas de distração mantendo suas listas ativas no mar.</p>
                     <p id="mastery-horizon-meta" class="text-label-sm font-label-sm text-secondary/80 mt-3 uppercase">0 / 50 sereias silenciadas</p>
                     <div
                         id="progressbar-mastery-horizon"
@@ -127,8 +127,8 @@
                         <span class="material-symbols-outlined text-tertiary" data-icon="explore" aria-hidden="true">explore</span>
                         <span id="mastery-master-badge" class="text-label-sm font-label-sm bg-tertiary/15 text-tertiary border border-tertiary/30 rounded-sm px-2 py-0.5 uppercase font-bold">NÍVEL 0</span>
                     </div>
-                    <h4 id="mastery-master-title" class="font-headline-sm text-headline-sm text-on-surface mb-1">Capitão do Egeu</h4>
-                    <p class="text-body-sm font-body-sm text-on-surface-variant">Complete 10 travessias completas de foco sem recuar ao porto.</p>
+                    <h4 id="mastery-master-title" data-i18n="journey.card3_title" class="font-headline-sm text-headline-sm text-on-surface mb-1">Capitão do Egeu</h4>
+                    <p data-i18n="journey.card3_desc" class="text-body-sm font-body-sm text-on-surface-variant">Complete 10 travessias completas de foco sem recuar ao porto.</p>
                     <p id="mastery-master-meta" class="text-label-sm font-label-sm text-tertiary/80 mt-3 uppercase">0 / 10 viagens concluídas</p>
                     <div
                         id="progressbar-mastery-master"
@@ -148,20 +148,25 @@
         <section class="bg-surface-container-high p-8 border border-outline-variant rounded relative overflow-hidden group">
             <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-primary/10 to-transparent pointer-events-none"></div>
             <div class="relative z-10">
-                <span class="text-secondary font-label-md tracking-widest block mb-2 uppercase">Próximo Destino</span>
-                <h2 class="font-display-lg text-display-lg text-primary mb-4">O Horizonte da Maestria</h2>
-                <p class="text-on-surface-variant font-body-lg max-w-prose mb-8">
+                <span data-i18n="journey.next_dest" class="text-secondary font-label-md tracking-widest block mb-2 uppercase">Próximo Destino</span>
+                <h2 data-i18n="journey.horizon_title" class="font-display-lg text-display-lg text-primary mb-4">O Horizonte da Maestria</h2>
+                <p data-i18n="journey.horizon_desc" class="text-on-surface-variant font-body-lg max-w-prose mb-8">
                     Mantenha sua disciplina diária para conquistar postos mais altos de navegação e desbloquear novos mapas de foco.
                 </p>
                 <div class="flex gap-4">
-                    <a href="index.html" class="bg-primary-container text-on-primary px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-wider hover:bg-tertiary transition-all">
+                    <a href="index.html" data-i18n="journey.btn_sail_now" class="bg-primary-container text-on-primary px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-wider hover:bg-tertiary transition-all">
                         ZARPAR AGORA
                     </a>
-                    <a href="listabloqueio.html" class="border border-outline-variant px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-wider text-on-surface-variant hover:text-secondary hover:border-secondary transition-colors">
+                    <a href="listabloqueio.html" data-i18n="journey.btn_adjust_blocks" class="border border-outline-variant px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-wider text-on-surface-variant hover:text-secondary hover:border-secondary transition-colors">
                         AJUSTAR BLOQUEIOS
                     </a>
                 </div>
             </div>
+            <!-- Abstract graphic element -->
+            <div class="absolute -bottom-10 -right-10 opacity-10 group-hover:rotate-12 transition-transform duration-1000">
+                <span class="material-symbols-outlined text-[160px] text-primary" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+            </div>
+        </section>
             <!-- Abstract graphic element -->
             <div class="absolute -bottom-10 -right-10 opacity-10 group-hover:rotate-12 transition-transform duration-1000">
                 <span class="material-symbols-outlined text-[160px] text-primary" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>

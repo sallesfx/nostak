@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Nostak - Navegando pelo Foco Profundo</title>
+    <title data-i18n="meta.title_default">Nostak - Navegando pelo Foco Profundo</title>
     <link rel="icon" type="image/svg+xml" href="./logo_nostak.svg" />
     <link rel="stylesheet" href="./tailwind-dist.css" />
     <link rel="stylesheet" href="./styles.css" />
@@ -34,18 +34,19 @@
                         <div class="absolute top-4 left-4 z-20">
                             <span
                                 class="font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm"
-                                id="status-badge">Aguardando</span>
+                                id="status-badge" data-i18n="timer.status_idle">Aguardando</span>
                         </div>
                         <!-- 1. Idle State Content -->
                         <div class="state-content state-content-idle flex-col items-center z-10 w-full p-12">
                             <div
-                                class="mb-2 text-on-surface-variant font-label-md text-label-md uppercase tracking-[0.2em]">
+                                class="mb-2 text-on-surface-variant font-label-md text-label-md uppercase tracking-[0.2em]"
+                                data-i18n="timer.idle_subtitle">
                                 Foco Ininterrupto</div>
                             <div id="timer-display-idle" class="font-display-lg text-[4rem] leading-none text-primary mb-4 tabular-nums">25:00</div>
                             <!-- Tarefa Ativa Vinculada ao Timer -->
                             <div id="active-task-banner-idle" class="mb-6 px-4 py-1.5 rounded-sm border border-outline-variant bg-surface-container/60 text-xs font-label-md text-on-surface-variant flex items-center gap-2 max-w-md">
                                 <span class="material-symbols-outlined text-sm text-secondary">anchor</span>
-                                <span id="active-task-text-idle" class="truncate">Nenhuma tarefa atrelada • Selecione no Diário abaixo</span>
+                                <span id="active-task-text-idle" class="truncate" data-i18n="timer.no_task_idle">Nenhuma tarefa atrelada • Selecione no Diário abaixo</span>
                                 <span id="active-task-sessions-idle" class="hidden px-1.5 py-0.5 rounded-sm bg-primary/15 text-primary border border-primary/30 text-[10px] font-bold uppercase shrink-0">0/1</span>
                             </div>
                             <!-- Presets Náuticos e Botão Personalizar -->
@@ -61,13 +62,14 @@
                                 </button>
                                 <button type="button" id="btn-open-custom-timer" class="px-3 py-1.5 rounded-sm border border-dashed border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary text-xs font-label-md transition-all flex items-center gap-1.5">
                                     <span class="material-symbols-outlined text-[14px]">tune</span>
-                                    <span>Personalizar</span>
+                                    <span data-i18n="timer.btn_customize">Personalizar</span>
                                 </button>
                             </div>
                             <div class="flex gap-4">
                                 <button
                                     type="button"
                                     id="btn-start-voyage"
+                                    data-i18n="timer.btn_start"
                                     class="bg-primary-container text-on-primary px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-tertiary transition-colors">
                                     Zarpar
                                 </button>
@@ -80,47 +82,47 @@
                                 <div class="flex items-center justify-between border-b border-outline-variant pb-3 mb-6">
                                     <div class="flex items-center gap-2 text-primary">
                                         <span class="material-symbols-outlined text-lg" aria-hidden="true">explore</span>
-                                        <h3 id="custom-timer-dialog-title" class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Calibrar Rota de Foco</h3>
+                                        <h3 id="custom-timer-dialog-title" data-i18n="timer.custom_title" class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Calibrar Rota de Foco</h3>
                                     </div>
-                                    <button type="button" id="btn-close-custom-timer" aria-label="Fechar modal de calibração" class="text-on-surface-variant hover:text-primary transition-colors">
+                                    <button type="button" id="btn-close-custom-timer" data-i18n-aria="timer.custom_close_aria" aria-label="Fechar modal de calibração" class="text-on-surface-variant hover:text-primary transition-colors">
                                         <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
                                     </button>
                                 </div>
 
                                 <form id="form-custom-timer" class="space-y-6">
                                     <div>
-                                        <label for="input-custom-focus" class="block text-xs uppercase font-label-md text-on-surface-variant tracking-wider mb-2 cursor-pointer">
+                                        <label for="input-custom-focus" data-i18n="timer.custom_focus_label" class="block text-xs uppercase font-label-md text-on-surface-variant tracking-wider mb-2 cursor-pointer">
                                             Tempo em Alto Mar (Foco)
                                         </label>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" id="btn-focus-minus" aria-label="Diminuir tempo de foco em 5 minutos" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">-</button>
+                                            <button type="button" id="btn-focus-minus" data-i18n-aria="timer.custom_focus_minus_aria" aria-label="Diminuir tempo de foco em 5 minutos" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">-</button>
                                             <div class="relative flex-1">
                                                 <input type="number" id="input-custom-focus" min="1" max="180" value="25" class="w-full bg-surface-container-low rounded-sm border border-outline-variant px-4 py-2 text-center text-primary font-display-md text-xl font-bold focus:border-primary tabular-nums">
-                                                <span class="absolute right-3 top-2.5 text-xs text-on-surface-variant uppercase pointer-events-none">min</span>
+                                                <span class="absolute right-3 top-2.5 text-xs text-on-surface-variant uppercase pointer-events-none" data-i18n="timer.minutes_unit">min</span>
                                             </div>
-                                            <button type="button" id="btn-focus-plus" aria-label="Aumentar tempo de foco em 5 minutos" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">+</button>
+                                            <button type="button" id="btn-focus-plus" data-i18n-aria="timer.custom_focus_plus_aria" aria-label="Aumentar tempo de foco em 5 minutos" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-primary hover:text-primary flex items-center justify-center font-bold text-lg transition-colors">+</button>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label for="input-custom-break" class="block text-xs uppercase font-label-md text-on-surface-variant tracking-wider mb-2 cursor-pointer">
+                                        <label for="input-custom-break" data-i18n="timer.custom_break_label" class="block text-xs uppercase font-label-md text-on-surface-variant tracking-wider mb-2 cursor-pointer">
                                             Porto de Descanso (Pausa)
                                         </label>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" id="btn-break-minus" aria-label="Diminuir tempo de pausa em 1 minuto" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-secondary hover:text-secondary flex items-center justify-center font-bold text-lg transition-colors">-</button>
+                                            <button type="button" id="btn-break-minus" data-i18n-aria="timer.custom_break_minus_aria" aria-label="Diminuir tempo de pausa em 1 minuto" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-secondary hover:text-secondary flex items-center justify-center font-bold text-lg transition-colors">-</button>
                                             <div class="relative flex-1">
                                                 <input type="number" id="input-custom-break" min="1" max="60" value="5" class="w-full bg-surface-container-low rounded-sm border border-outline-variant px-4 py-2 text-center text-secondary font-display-md text-xl font-bold focus:border-secondary tabular-nums">
-                                                <span class="absolute right-3 top-2.5 text-xs text-on-surface-variant uppercase pointer-events-none">min</span>
+                                                <span class="absolute right-3 top-2.5 text-xs text-on-surface-variant uppercase pointer-events-none" data-i18n="timer.minutes_unit">min</span>
                                             </div>
-                                            <button type="button" id="btn-break-plus" aria-label="Aumentar tempo de pausa em 1 minuto" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-secondary hover:text-secondary flex items-center justify-center font-bold text-lg transition-colors">+</button>
+                                            <button type="button" id="btn-break-plus" data-i18n-aria="timer.custom_break_plus_aria" aria-label="Aumentar tempo de pausa em 1 minuto" class="w-10 h-10 rounded-sm border border-outline-variant text-on-surface hover:border-secondary hover:text-secondary flex items-center justify-center font-bold text-lg transition-colors">+</button>
                                         </div>
                                     </div>
 
                                     <div class="flex gap-3 pt-4 border-t border-outline-variant">
-                                        <button type="button" id="btn-cancel-custom-timer" class="flex-1 py-2.5 rounded-sm border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline text-xs uppercase tracking-wider font-label-md transition-colors">
+                                        <button type="button" id="btn-cancel-custom-timer" data-i18n="timer.custom_cancel" class="flex-1 py-2.5 rounded-sm border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline text-xs uppercase tracking-wider font-label-md transition-colors">
                                             Cancelar
                                         </button>
-                                        <button type="submit" class="flex-1 py-2.5 rounded-sm bg-primary-container text-on-primary font-bold text-xs uppercase tracking-widest hover:bg-tertiary transition-colors">
+                                        <button type="submit" data-i18n="timer.custom_submit" class="flex-1 py-2.5 rounded-sm bg-primary-container text-on-primary font-bold text-xs uppercase tracking-widest hover:bg-tertiary transition-colors">
                                             Definir Rota
                                         </button>
                                     </div>
@@ -167,25 +169,28 @@
                             </div>
                             <div class="relative z-20 flex flex-col items-center pt-20">
                                 <div
-                                    class="mb-2 text-secondary font-label-md text-label-md uppercase tracking-[0.2em]">
+                                    class="mb-2 text-secondary font-label-md text-label-md uppercase tracking-[0.2em]"
+                                    data-i18n="timer.status_focus">
                                     Em Alto Mar</div>
                                 <div class="font-display-lg text-[4rem] leading-none text-primary mb-4 tabular-nums"
                                     id="timer-display-active">25:00</div>
                                 <div id="active-task-banner-active" class="mb-6 px-4 py-1.5 rounded-sm border border-primary/40 bg-surface-container/80 text-xs font-label-md text-on-surface flex items-center gap-2 max-w-md">
                                     <span class="material-symbols-outlined text-sm text-primary">sailing</span>
-                                    <span id="active-task-text-active" class="truncate">Navegando em Foco Livre</span>
+                                    <span id="active-task-text-active" class="truncate" data-i18n="timer.navigating_free_focus">Navegando em Foco Livre</span>
                                     <span id="active-task-sessions-active" class="hidden px-1.5 py-0.5 rounded-sm bg-primary/15 text-primary border border-primary/30 text-[10px] font-bold uppercase shrink-0">0/1</span>
                                 </div>
                                 <div class="flex gap-4">
                                     <button
                                         type="button"
                                         id="btn-pause-voyage"
+                                        data-i18n="timer.btn_pause"
                                         class="border border-secondary/50 text-secondary px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-secondary-container/30 transition-colors">
                                         Ancorar (Pausa)
                                     </button>
                                     <button
                                         type="button"
                                         id="btn-fail-voyage"
+                                        data-i18n="timer.btn_interrupt"
                                         class="border border-error/70 text-error px-8 py-3 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-error/10 transition-colors">
                                         Interromper Foco
                                     </button>
@@ -217,6 +222,7 @@
                             <div class="relative z-20 flex flex-col items-center pt-24">
                                 <div
                                     id="paused-phase-title"
+                                    data-i18n="timer.paused_title"
                                     class="mb-2 text-secondary font-label-md text-label-md uppercase tracking-[0.2em]">
                                     Ancorado em Porto Seguro</div>
                                 <div id="timer-display-paused" class="font-display-lg text-[4rem] leading-none text-primary mb-8 tabular-nums opacity-60">
@@ -225,12 +231,14 @@
                                     <button
                                         type="button"
                                         id="btn-resume-voyage"
+                                        data-i18n="timer.btn_resume"
                                         class="bg-primary-container text-on-primary px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:bg-tertiary transition-colors">
                                         Retomar Viagem
                                     </button>
                                     <button
                                         type="button"
                                         id="btn-abort-paused-voyage"
+                                        data-i18n="timer.btn_abort"
                                         class="border border-outline-variant text-on-surface px-8 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:border-secondary hover:text-secondary transition-colors">
                                         Encerrar
                                     </button>
@@ -268,11 +276,12 @@
                             </svg>
                         </div>
                         <div class="relative z-20 flex flex-col items-center pt-24">
-                            <h3 class="font-headline-md text-headline-md text-error mb-2">Travessia Interrompida</h3>
-                            <p class="text-on-surface-variant font-body-md text-body-md mb-8">O mar oscilou, mas o leme continua em suas mãos. Reajuste a bússola e tente de novo.</p>
+                            <h3 data-i18n="timer.interrupted_title" class="font-headline-md text-headline-md text-error mb-2">Travessia Interrompida</h3>
+                            <p data-i18n="timer.interrupted_desc" class="text-on-surface-variant font-body-md text-body-md mb-8">O mar oscilou, mas o leme continua em suas mãos. Reajuste a bússola e tente de novo.</p>
                             <button
                                 type="button"
                                 id="btn-restart-voyage"
+                                data-i18n="timer.btn_new_route"
                                 class="border border-outline-variant text-on-surface px-12 py-3.5 rounded font-label-md text-label-md font-bold uppercase tracking-widest hover:border-primary hover:text-primary transition-colors">
                                 Preparar Nova Rota
                             </button>
@@ -283,8 +292,8 @@
                     <section class="bg-surface-container-low border border-outline-variant rounded p-8">
                         <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-outline-variant pb-4">
                             <div>
-                                <h3 class="font-headline-md text-headline-md text-on-surface">Diário do Navegador</h3>
-                                <p class="font-label-sm text-xs text-on-surface-variant mt-0.5">Conecte tarefas ao temporizador e acompanhe suas sessões de foco</p>
+                                <h3 data-i18n="tasks.title" class="font-headline-md text-headline-md text-on-surface">Diário do Navegador</h3>
+                                <p data-i18n="tasks.subtitle" class="font-label-sm text-xs text-on-surface-variant mt-0.5">Conecte tarefas ao temporizador e acompanhe suas sessões de foco</p>
                             </div>
                             <div class="flex items-center gap-3">
                                 <button
@@ -292,9 +301,10 @@
                                     type="button"
                                     aria-expanded="false"
                                     aria-controls="form-save-template"
+                                    data-i18n-title="tasks.btn_save_template_title"
                                     title="Salvar tarefas atuais como um novo Template"
                                     class="text-secondary font-label-md text-xs flex items-center gap-1 hover:text-primary transition-colors uppercase tracking-wider px-2.5 py-1.5 border border-secondary/30 rounded-sm bg-secondary-container/10">
-                                    <span class="material-symbols-outlined text-sm">bookmark_add</span> Salvar Template
+                                    <span class="material-symbols-outlined text-sm">bookmark_add</span> <span data-i18n="tasks.btn_save_template">Salvar Template</span>
                                 </button>
                                 <button
                                     id="btn-toggle-add-task"
@@ -302,7 +312,7 @@
                                     aria-expanded="false"
                                     aria-controls="form-add-task"
                                     class="text-primary font-label-md text-label-md flex items-center gap-1.5 hover:text-tertiary transition-colors uppercase tracking-wider">
-                                    <span class="material-symbols-outlined text-lg">add</span> Nova Tarefa
+                                    <span class="material-symbols-outlined text-lg">add</span> <span data-i18n="tasks.btn_new_task">Nova Tarefa</span>
                                 </button>
                             </div>
                         </div>
@@ -312,7 +322,7 @@
                             <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
                                 <div class="flex items-center gap-1.5 text-on-surface-variant font-label-sm text-xs uppercase tracking-wider">
                                     <span class="material-symbols-outlined text-sm text-secondary">route</span>
-                                    <span>Templates de Rota (Carregar Tarefas Padrão):</span>
+                                    <span data-i18n="tasks.templates_label">Templates de Rota (Carregar Tarefas Padrão):</span>
                                 </div>
                             </div>
                             <div id="templates-list" class="flex flex-wrap items-center gap-2">
@@ -320,10 +330,11 @@
                             </div>
                             <!-- Formulário Inline para Salvar Template -->
                             <form id="form-save-template" class="hidden mt-3 pt-3 border-t border-outline-variant flex flex-col sm:flex-row gap-2">
-                                <label for="input-template-name" class="sr-only">Nome do template de tarefas</label>
+                                <label for="input-template-name" data-i18n="tasks.template_name_aria" class="sr-only">Nome do template de tarefas</label>
                                 <input
                                     id="input-template-name"
                                     type="text"
+                                    data-i18n-placeholder="tasks.template_name_placeholder"
                                     placeholder="Nome do template (ex: Alemão, Matemática, Concurso)..."
                                     class="flex-grow bg-surface-container-low border border-outline-variant rounded-sm px-3 py-1.5 text-xs text-on-surface placeholder:text-on-surface-variant/50 focus:border-secondary transition-colors"
                                     required
@@ -332,12 +343,14 @@
                                     <button
                                         id="btn-cancel-save-template"
                                         type="button"
+                                        data-i18n="tasks.template_cancel"
                                         class="px-3 py-1.5 rounded-sm border border-outline-variant text-on-surface-variant hover:text-on-surface text-xs uppercase tracking-wider font-label-md transition-colors"
                                     >
                                         Cancelar
                                     </button>
                                     <button
                                         type="submit"
+                                        data-i18n="tasks.template_save"
                                         class="px-4 py-1.5 rounded-sm bg-secondary-container text-secondary border border-secondary/40 hover:bg-secondary hover:text-on-primary text-xs uppercase tracking-wider font-label-md font-bold transition-colors"
                                     >
                                         Salvar Rota
@@ -349,47 +362,51 @@
                         <!-- Formulário Inline para Adicionar Tarefa -->
                         <form id="form-add-task" class="hidden mb-6 p-4 bg-surface-container border border-outline-variant rounded-sm space-y-3">
                             <div class="flex flex-col sm:flex-row gap-3">
-                                <label for="input-task-title" class="sr-only">Descrição da próxima tarefa</label>
+                                <label for="input-task-title" data-i18n="tasks.input_task_aria" class="sr-only">Descrição da próxima tarefa</label>
                                 <input
                                     id="input-task-title"
                                     type="text"
+                                    data-i18n-placeholder="tasks.input_task_placeholder"
                                     placeholder="Ex.: Revisar documentação, rascunhar artigo, resolver exercícios..."
                                     class="flex-grow bg-surface-container-low border border-outline-variant rounded-sm px-3.5 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary transition-colors"
                                     required
                                 />
-                                <label for="select-task-sessions" class="sr-only">Quantidade de sessões Pomodoro</label>
+                                <label for="select-task-sessions" data-i18n="tasks.sessions_aria" class="sr-only">Quantidade de sessões Pomodoro</label>
                                 <select
                                     id="select-task-sessions"
+                                    data-i18n-title="tasks.sessions_title"
                                     title="Quantidade de sessões Pomodoro para esta tarefa"
                                     class="bg-surface-container-low border border-outline-variant rounded-sm px-3 py-2.5 text-xs font-label-md uppercase tracking-wider text-primary focus:border-primary transition-colors sm:w-36"
                                 >
-                                    <option value="1">1 Sessão</option>
+                                    <option value="1" data-i18n="tasks.session_option_1">1 Sessão</option>
                                     <option value="2">2 Sessões</option>
                                     <option value="3">3 Sessões</option>
                                     <option value="4">4 Sessões</option>
                                     <option value="5">5 Sessões</option>
                                     <option value="6">6 Sessões</option>
                                 </select>
-                                <label for="select-task-category" class="sr-only">Categoria da tarefa</label>
+                                <label for="select-task-category" data-i18n="tasks.category_aria" class="sr-only">Categoria da tarefa</label>
                                 <select
                                     id="select-task-category"
                                     class="bg-surface-container-low border border-outline-variant rounded-sm px-3.5 py-2.5 text-xs font-label-md uppercase tracking-wider text-on-surface focus:border-primary transition-colors sm:w-32"
                                 >
-                                    <option value="Rotina">Rotina</option>
-                                    <option value="Urgente">Urgente</option>
-                                    <option value="Foco">Foco</option>
+                                    <option value="Rotina" data-i18n="tasks.category_routine">Rotina</option>
+                                    <option value="Urgente" data-i18n="tasks.category_urgent">Urgente</option>
+                                    <option value="Foco" data-i18n="tasks.category_focus">Foco</option>
                                 </select>
                             </div>
                             <div class="flex justify-end gap-2 pt-1">
                                 <button
                                     id="btn-cancel-add-task"
                                     type="button"
+                                    data-i18n="tasks.btn_cancel"
                                     class="px-4 py-1.5 rounded-sm border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline text-xs uppercase tracking-wider font-label-md transition-colors"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
+                                    data-i18n="tasks.btn_add"
                                     class="px-5 py-1.5 rounded-sm bg-primary-container text-on-primary hover:bg-tertiary text-xs uppercase tracking-wider font-label-md font-bold transition-colors"
                                 >
                                     Adicionar Tarefa
@@ -405,8 +422,8 @@
                         <!-- Estado Vazio -->
                         <div id="tasks-empty" class="hidden text-center py-8 border border-dashed border-outline-variant/60 rounded-sm text-on-surface-variant">
                             <span class="material-symbols-outlined text-2xl mb-1 text-secondary/70">menu_book</span>
-                            <p class="font-body-md text-sm">Seu diário de bordo está vazio.</p>
-                            <p class="font-label-sm text-xs opacity-80 mt-0.5">Adicione sua primeira tarefa acima ou carregue uma rota de estudos pronta.</p>
+                            <p data-i18n="tasks.empty_title" class="font-body-md text-sm">Seu diário de bordo está vazio.</p>
+                            <p data-i18n="tasks.empty_subtitle" class="font-label-sm text-xs opacity-80 mt-0.5">Adicione sua primeira tarefa acima ou carregue uma rota de estudos pronta.</p>
                         </div>
                     </section>
                 </div>
@@ -414,13 +431,13 @@
                 <aside class="lg:col-span-4 flex flex-col gap-6">
                     <!-- Progress Panel -->
                     <div class="bg-surface-container-low border border-outline-variant rounded p-6">
-                        <h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-6">
+                        <h4 data-i18n="metrics.title" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-6">
                             Status da Viagem</h4>
                         <div class="flex flex-col gap-8">
                             <!-- Metric 1 -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
-                                    <span id="label-metric-fuel" class="font-body-md text-body-md text-on-surface">Combustível Mental</span>
+                                    <span id="label-metric-fuel" data-i18n="metrics.fuel" class="font-body-md text-body-md text-on-surface">Combustível Mental</span>
                                     <span id="metric-fuel-label" class="font-label-md text-label-md text-primary">100%</span>
                                 </div>
                                 <div
@@ -438,7 +455,7 @@
                             <!-- Metric 2 -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
-                                    <span id="label-metric-distance" class="font-body-md text-body-md text-on-surface">Distância Percorrida</span>
+                                    <span id="label-metric-distance" data-i18n="metrics.distance" class="font-body-md text-body-md text-on-surface">Distância Percorrida</span>
                                     <span id="metric-distance-label" class="font-label-md text-label-md text-secondary">0nm</span>
                                 </div>
                                 <div
@@ -456,8 +473,8 @@
                             <!-- Metric 3 -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-end">
-                                    <span id="label-metric-wind" class="font-body-md text-body-md text-on-surface">Vento de Popa</span>
-                                    <span id="metric-wind-label" class="font-label-md text-label-md text-tertiary">Calmo</span>
+                                    <span id="label-metric-wind" data-i18n="metrics.wind" class="font-body-md text-body-md text-on-surface">Vento de Popa</span>
+                                    <span id="metric-wind-label" data-i18n="metrics.wind_calm" class="font-label-md text-label-md text-tertiary">Calmo</span>
                                 </div>
                                 <div
                                     id="progressbar-wind"
@@ -476,11 +493,11 @@
                     <!-- Atmospheric Map Component (Offline & Vetorial) -->
                     <div class="bg-surface-container-low border border-outline-variant rounded flex flex-col overflow-hidden">
                         <div class="p-6 border-b border-outline-variant flex justify-between items-center">
-                            <h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">
+                            <h4 data-i18n="metrics.region_title" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">
                                 Região de Navegação</h4>
                             <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider uppercase bg-primary/10 text-primary border border-primary/30">
                                 <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                                Satélite Ativo
+                                <span data-i18n="metrics.satellite_active">Satélite Ativo</span>
                             </span>
                         </div>
                         <div class="h-48 relative overflow-hidden bg-[#0e1317] cursor-crosshair group">
@@ -571,19 +588,19 @@
                         </div>
                         <div
                             class="p-3 bg-surface-container flex items-center justify-between font-label-sm text-label-sm text-secondary tracking-widest px-4 border-t border-outline-variant/60">
-                            <span>COORDENADAS: 37°00'N 25°00'E</span>
-                            <span class="text-on-surface-variant font-mono text-[10px]">CÍCLADES • MAR EGEU</span>
+                            <span data-i18n="metrics.coordinates">COORDENADAS: 37°00'N 25°00'E</span>
+                            <span data-i18n="metrics.cyclades" class="text-on-surface-variant font-mono text-[10px]">CÍCLADES • MAR EGEU</span>
                         </div>
                     </div>
                     <!-- Stats Quick View -->
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-surface-container-low border border-outline-variant rounded p-4">
-                            <div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Horas em Foco
+                            <div data-i18n="metrics.hours_focus" class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Horas em Foco
                             </div>
                             <div id="stat-hours-total" class="font-headline-md text-headline-md text-primary">0h</div>
                         </div>
                         <div class="bg-surface-container-low border border-outline-variant rounded p-4">
-                            <div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Total de
+                            <div data-i18n="metrics.total_miles" class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Total de
                                 Milhas</div>
                             <div id="stat-miles-total" class="font-headline-md text-headline-md text-secondary">0</div>
                         </div>

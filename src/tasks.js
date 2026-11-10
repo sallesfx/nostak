@@ -1,5 +1,8 @@
 import { invokeTauri } from './ipc.js';
 import { nostakAlert } from './components.js';
+import { t, getLanguage, translateDefault } from './i18n.js';
+
+let lastRenderedConfig = null;
 
 function escapeHtml(str) {
     const div = document.createElement('div');
@@ -33,9 +36,9 @@ function updateActiveTaskBanner(tarefas = [], tarefaAtivaId = null) {
     if (activeTask) {
         const concluidas = activeTask.sessoes_concluidas || 0;
         const estimadas = activeTask.sessoes_estimadas || 1;
-        const sessionLabel = `${concluidas}/${estimadas} sessões`;
+        const sessionLabel = t('timer.sessions_count', { done: concluidas, total: estimadas });
 
-        if (textIdle) textIdle.textContent = `Manobra: ${activeTask.texto}`;
+        if (textIdle) textIdle.textContent = `${t('timer.active_task_prefix')}${translateDefault(activeTask.texto)}`;
         if (sessionsIdle) {
             sessionsIdle.textContent = sessionLabel;
             sessionsIdle.classList.remove('hidden');
@@ -45,20 +48,20 @@ function updateActiveTaskBanner(tarefas = [], tarefaAtivaId = null) {
             bannerIdle.classList.remove('border-outline-variant', 'text-on-surface-variant');
         }
 
-        if (textActive) textActive.textContent = activeTask.texto;
+        if (textActive) textActive.textContent = translateDefault(activeTask.texto);
         if (sessionsActive) {
             sessionsActive.textContent = sessionLabel;
             sessionsActive.classList.remove('hidden');
         }
     } else {
-        if (textIdle) textIdle.textContent = 'Nenhuma tarefa atrelada • Adicione no Diário abaixo';
+        if (textIdle) textIdle.textContent = t('timer.no_task_empty');
         if (sessionsIdle) sessionsIdle.classList.add('hidden');
         if (bannerIdle) {
             bannerIdle.classList.remove('border-primary/40', 'text-on-surface');
             bannerIdle.classList.add('border-outline-variant', 'text-on-surface-variant');
         }
 
-        if (textActive) textActive.textContent = 'Navegando em Foco Livre';
+        if (textActive) textActive.textContent = t('timer.navigating_free_focus');
         if (sessionsActive) sessionsActive.classList.add('hidden');
     }
 }
@@ -98,14 +101,20 @@ export function renderTarefas(tarefas = [], tarefaAtivaId = null) {
             : 'flex-grow font-body-md text-body-md text-on-surface cursor-pointer select-none';
 
         const badgeClasses = getCategoryBadgeClasses(tarefa.categoria);
+        const displayText = translateDefault(tarefa.texto);
+
+        const isEn = getLanguage() === 'en';
+        const focusBtnLabel = isActive
+            ? (isEn ? 'In Focus' : 'Em Foco')
+            : (isEn ? 'Focus' : 'Focar');
 
         const focusBtnHtml = !tarefa.concluida
             ? `<button
                 type="button"
                 data-focus-id="${tarefa.id}"
                 aria-pressed="${isActive ? 'true' : 'false'}"
-                title="${isActive ? 'Tarefa ativa no Temporizador' : 'Focar nesta tarefa no Temporizador'}"
-                aria-label="${isActive ? 'Tarefa em foco: ' + escapeHtml(tarefa.texto) : 'Focar tarefa no Temporizador: ' + escapeHtml(tarefa.texto)}"
+                title="${isActive ? (isEn ? 'Active task in Timer' : 'Tarefa ativa no Temporizador') : (isEn ? 'Focus this task in Timer' : 'Focar nesta tarefa no Temporizador')}"
+                aria-label="${isActive ? (isEn ? 'Task in focus: ' : 'Tarefa em foco: ') + escapeHtml(displayText) : (isEn ? 'Focus task in Timer: ' : 'Focar tarefa no Temporizador: ') + escapeHtml(displayText)}"
                 class="btn-focus-task px-2.5 py-1 rounded-sm font-label-sm text-[11px] uppercase tracking-wider flex items-center gap-1 transition-colors shrink-0 ${
                     isActive
                         ? 'bg-primary text-on-primary font-bold cursor-default'
@@ -113,24 +122,30 @@ export function renderTarefas(tarefas = [], tarefaAtivaId = null) {
                 }"
                >
                  <span class="material-symbols-outlined text-xs" aria-hidden="true">${isActive ? 'anchor' : 'play_arrow'}</span>
-                 <span>${isActive ? 'Em Foco' : 'Focar'}</span>
+                 <span>${focusBtnLabel}</span>
                </button>`
             : '';
+
+        const rawCat = (tarefa.categoria || 'Rotina').toLowerCase();
+        let displayCat = tarefa.categoria || 'Rotina';
+        if (rawCat === 'urgente') displayCat = t('tasks.category_urgent');
+        else if (rawCat === 'foco') displayCat = t('tasks.category_focus');
+        else if (rawCat === 'rotina') displayCat = t('tasks.category_routine');
 
         item.innerHTML = `
             <input
                 type="checkbox"
                 data-task-id="${tarefa.id}"
-                aria-label="Marcar tarefa ${escapeHtml(tarefa.texto)} como concluída"
+                aria-label="${isEn ? 'Mark task as completed: ' : 'Marcar tarefa como concluída: '}${escapeHtml(displayText)}"
                 class="task-checkbox w-4 h-4 bg-transparent border-outline text-primary-container rounded-sm cursor-pointer shrink-0"
                 ${tarefa.concluida ? 'checked' : ''}
             />
             <span data-task-id="${tarefa.id}" class="task-text ${textClasses}">
-                ${escapeHtml(tarefa.texto)}
+                ${escapeHtml(displayText)}
             </span>
             <div class="flex items-center gap-2 ml-auto shrink-0">
                 <span
-                    title="Sessões Pomodoro concluídas / estimadas"
+                    title="${isEn ? 'Pomodoro sessions completed / estimated' : 'Sessões Pomodoro concluídas / estimadas'}"
                     class="px-2 py-0.5 rounded-sm font-label-sm text-xs tabular-nums border ${
                         tarefa.concluida
                             ? 'border-outline-variant text-on-surface-variant/60'
@@ -140,15 +155,15 @@ export function renderTarefas(tarefas = [], tarefaAtivaId = null) {
                     ⏱ ${concluidas}/${estimadas}
                 </span>
                 <span class="${badgeClasses} px-2 py-0.5 rounded-sm font-label-sm text-label-sm uppercase shrink-0">
-                    ${escapeHtml(tarefa.categoria || 'Rotina')}
+                    ${escapeHtml(displayCat)}
                 </span>
                 ${focusBtnHtml}
                 <button
                     type="button"
                     data-remove-id="${tarefa.id}"
                     class="btn-remove-task text-on-surface-variant/60 hover:text-error hover:bg-error/10 w-7 h-7 flex items-center justify-center rounded-sm transition-colors shrink-0"
-                    title="Remover tarefa"
-                    aria-label="Remover tarefa: ${escapeHtml(tarefa.texto)}"
+                    title="${isEn ? 'Remove task' : 'Remover tarefa'}"
+                    aria-label="${isEn ? 'Remove task: ' : 'Remover tarefa: '}${escapeHtml(displayText)}"
                 >
                     <span class="material-symbols-outlined text-base" aria-hidden="true">close</span>
                 </button>
@@ -164,9 +179,10 @@ export function renderTemplates(templates = []) {
     if (!container) return;
 
     container.innerHTML = '';
+    const isEn = getLanguage() === 'en';
 
     if (!templates || templates.length === 0) {
-        container.innerHTML = `<span class="text-xs text-on-surface-variant/60 italic">Nenhum template salvo.</span>`;
+        container.innerHTML = `<span class="text-xs text-on-surface-variant/60 italic">${isEn ? 'No route templates saved.' : 'Nenhum template salvo.'}</span>`;
         return;
     }
 
@@ -176,6 +192,8 @@ export function renderTemplates(templates = []) {
             ? tpl.itens.reduce((acc, i) => acc + (i.sessoes_estimadas || 1), 0)
             : 0;
 
+        const sessionWord = isEn ? (totalSessions === 1 ? 'session' : 'sessions') : (totalSessions === 1 ? 'sessão' : 'sessões');
+
         const chip = document.createElement('div');
         chip.className = 'inline-flex items-center rounded-sm border border-outline-variant bg-surface-container-low hover:border-secondary transition-colors overflow-hidden';
 
@@ -183,18 +201,18 @@ export function renderTemplates(templates = []) {
             <button
                 type="button"
                 data-apply-template="${escapeHtml(tpl.nome)}"
-                title="Carregar ${totalTasks} tarefa(s) (${totalSessions} sessões Pomodoro)"
+                title="${isEn ? `Load ${totalTasks} task(s) (${totalSessions} ${sessionWord})` : `Carregar ${totalTasks} tarefa(s) (${totalSessions} sessões Pomodoro)`}"
                 class="btn-apply-template px-3 h-7 text-xs font-label-md text-on-surface hover:text-secondary flex items-center gap-1.5 transition-colors"
             >
                 <span class="material-symbols-outlined text-xs text-primary">auto_awesome</span>
-                <span class="font-bold">${escapeHtml(tpl.nome)}</span>
-                <span class="text-[10px] text-on-surface-variant">(${totalSessions} sessões)</span>
+                <span class="font-bold">${escapeHtml(translateDefault(tpl.nome))}</span>
+                <span class="text-[10px] text-on-surface-variant">(${totalSessions} ${sessionWord})</span>
             </button>
             <button
                 type="button"
                 data-remove-template="${escapeHtml(tpl.nome)}"
-                title="Excluir template ${escapeHtml(tpl.nome)}"
-                aria-label="Excluir template ${escapeHtml(tpl.nome)}"
+                title="${isEn ? 'Delete template ' : 'Excluir template '}${escapeHtml(translateDefault(tpl.nome))}"
+                aria-label="${isEn ? 'Delete template ' : 'Excluir template '}${escapeHtml(translateDefault(tpl.nome))}"
                 class="btn-remove-template w-7 h-7 flex items-center justify-center text-on-surface-variant/50 hover:text-error hover:bg-error/10 border-l border-outline-variant transition-colors shrink-0"
             >
                 <span class="material-symbols-outlined text-xs" aria-hidden="true">close</span>
@@ -207,6 +225,7 @@ export function renderTemplates(templates = []) {
 
 export function renderTasksState(config = {}) {
     if (!config) return;
+    lastRenderedConfig = config;
     renderTarefas(config.tarefas || [], config.tarefa_ativa_id ?? null);
     renderTemplates(config.templates_tarefas || []);
 }
@@ -441,6 +460,12 @@ export function initTasks(initialConfig = {}) {
             }
         });
     }
+
+    window.addEventListener('nostak:language-changed', () => {
+        if (lastRenderedConfig) {
+            renderTasksState(lastRenderedConfig);
+        }
+    });
 }
 
 
