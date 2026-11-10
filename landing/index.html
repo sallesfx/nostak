@@ -464,7 +464,7 @@
                             </button>
                         </h3>
                         <div id="faq-ans-1" role="region" aria-labelledby="faq-btn-1" class="faq-panel hidden p-5 pt-0 text-xs sm:text-sm text-content-muted leading-relaxed border-t border-content-border/20">
-                            Não a cada sessão! No Linux (via pacotes nativos <code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">.deb</code> / <code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">.rpm</code>), o Nostak registra uma política de segurança nativa via <strong>Polkit</strong> com privilégio mínimo. No Windows, o executável conta com manifesto UAC embutido que solicita autorização uma única vez na inicialização. Dessa forma, você zarpa e ancora instantaneamente em segundo plano sem pedidos repetitivos de senha a cada ciclo de foco.
+                            Não a cada sessão! No Linux (via pacotes nativos <code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">.deb</code> / <code class="text-[11px] bg-surface-night px-1 py-0.5 rounded text-brand-primary">.rpm</code>), o Nostak registra uma política de segurança nativa via <strong>Polkit</strong> com privilégio mínimo. No Windows, o executável conta com manifesto UAC embutido. No macOS, a aplicação integra-se à autorização nativa do sistema (com suporte a <strong>Touch ID</strong> e senha de administrador). Dessa forma, você zarpa e ancora instantaneamente em segundo plano com fluidez.
                         </div>
                     </div>
 
@@ -531,14 +531,18 @@
                 <div class="w-full max-w-xl p-8 bg-surface-container border border-content-border rounded-sm shadow-2xl flex flex-col items-center gap-6">
                     <span class="text-xs uppercase tracking-widest font-bold text-brand-secondary">Downloads Oficiais &amp; Verificados</span>
                     
-                    <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-6 py-3 bg-brand-primary hover:bg-brand-tertiary text-brand-on-primary font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
+                    <div class="flex flex-col sm:flex-row gap-3 w-full justify-center">
+                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-5 py-3 bg-brand-primary hover:bg-brand-tertiary text-brand-on-primary font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined text-base">terminal</span>
-                            <span>Linux (.deb / .rpm / AppImage)</span>
+                            <span>Linux (.deb / .rpm)</span>
                         </a>
-                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-6 py-3 border border-brand-primary/60 hover:border-brand-primary text-brand-primary hover:bg-brand-primary/10 font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
+                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-5 py-3 border border-brand-primary/60 hover:border-brand-primary text-brand-primary hover:bg-brand-primary/10 font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined text-base">desktop_windows</span>
-                            <span>Windows (.exe Instalador)</span>
+                            <span>Windows (.exe)</span>
+                        </a>
+                        <a href="https://github.com/sallesfx/nostak/releases/latest" target="_blank" rel="noopener noreferrer" class="min-h-[48px] px-5 py-3 border border-brand-secondary/60 hover:border-brand-secondary text-brand-secondary hover:bg-brand-secondary/10 font-bold text-xs uppercase tracking-wider rounded-sm transition-all flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-base">laptop_mac</span>
+                            <span>macOS (.dmg)</span>
                         </a>
                     </div>
 

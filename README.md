@@ -91,7 +91,12 @@ Baixe o instalador oficial `nostak_*_x64-setup.exe` ou pacote `.msi` na página 
 > **Aviso do Windows SmartScreen ("O Windows protegeu o seu computador"):**
 > Por ser um projeto de código aberto independente que não utiliza certificados comerciais corporativos pagos (EV Code Signing), o Windows Defender SmartScreen pode exibir um alerta preventivo no primeiro uso. Para continuar a instalação, basta clicar em **"Mais informações"** e em seguida em **"Executar assim mesmo"**. O software é 100% aberto, transparente e auditável.
 
-*(Suporte nativo com instaladores para macOS está planejado no roadmap).*
+### macOS (.dmg)
+
+Baixe a imagem de disco oficial `nostak_*_aarch64.dmg` (Apple Silicon) ou compatível na página de Releases:
+- Abra o arquivo `.dmg` baixado e arraste o ícone do **Nostak** para a pasta **Aplicativos** (`/Applications`).
+- **Primeira Abertura (Gatekeeper)**: Por ser um software livre independente e sem taxa de assinatura corporativa da Apple, no primeiro acesso clique com o **botão direito** no aplicativo em Aplicativos e selecione **"Abrir"** (ou acesse *Ajustes do Sistema > Privacidade e Segurança > Abrir mesmo assim*).
+- **Elevação do Sistema**: Ao zarpar uma sessão de foco, o macOS solicitará autorização nativa do sistema (com suporte a **Touch ID** ou senha de administrador) para gerenciar `/private/etc/hosts` e limpar o cache DNS com segurança.
 
 ---
 
