@@ -2,6 +2,7 @@ import { invokeTauri, playNauticalBell } from './ipc.js';
 import { initTasks, renderTasksState } from './tasks.js';
 import { renderDashboardProgress } from './progress.js';
 import { openModalDialog, closeModalDialog, bindModalKeyboardTrap, nostakAlert } from './components.js';
+import { t } from './i18n.js';
 
 const TIMER_STORAGE_KEY = 'nostak_active_timer';
 const DEFAULT_TITLE = 'Nostak - Navegando pelo Foco Profundo';
@@ -62,13 +63,13 @@ function formatTime(seconds) {
 function updateDocumentTitle() {
     const timeStr = formatTime(secondsRemaining);
     if (currentPhase === 'focus') {
-        document.title = `[${timeStr}] Em Alto Mar • Nostak`;
+        document.title = t('meta.title_focus', { time: timeStr });
     } else if (currentPhase === 'break') {
-        document.title = `[${timeStr}] Porto Seguro • Nostak`;
+        document.title = t('meta.title_break', { time: timeStr });
     } else if (currentPhase === 'paused') {
-        document.title = `[Pausado] Porto Seguro • Nostak`;
+        document.title = t('meta.title_paused');
     } else {
-        document.title = DEFAULT_TITLE;
+        document.title = t('meta.title_default');
     }
 }
 
@@ -85,7 +86,7 @@ function updateTimerUI() {
             pausedDisplay.textContent = timeStr;
             pausedDisplay.classList.remove('opacity-60');
         } else {
-            pausedDisplay.textContent = 'Pausado';
+            pausedDisplay.textContent = t('timer.status_paused');
             pausedDisplay.classList.add('opacity-60');
         }
     }
@@ -136,7 +137,7 @@ function applyPhaseVisualState(phase) {
             container.className = 'state-active bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
         }
         if (badge) {
-            badge.textContent = 'Em Alto Mar';
+            badge.textContent = t('timer.status_focus');
             badge.className = 'font-label-md text-label-md text-primary uppercase tracking-widest px-2.5 py-1 border border-primary/50 bg-primary/10 rounded-sm';
         }
     } else if (phase === 'break') {
@@ -144,27 +145,27 @@ function applyPhaseVisualState(phase) {
             container.className = 'state-paused bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
         }
         if (badge) {
-            badge.textContent = 'Porto Seguro (Descanso)';
+            badge.textContent = t('timer.status_break');
             badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
         }
-        if (title) title.textContent = 'Descanso em Porto Seguro • Sites Liberados';
-        if (resumeBtn) resumeBtn.textContent = 'Encerrar Pausa e Focar';
+        if (title) title.textContent = t('timer.break_title');
+        if (resumeBtn) resumeBtn.textContent = t('timer.btn_end_break');
     } else if (phase === 'paused') {
         if (container) {
             container.className = 'state-paused bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
         }
         if (badge) {
-            badge.textContent = 'Porto Seguro (Pausa)';
+            badge.textContent = t('timer.status_paused');
             badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
         }
-        if (title) title.textContent = 'Ancorado em Porto Seguro';
-        if (resumeBtn) resumeBtn.textContent = 'Retomar Viagem';
+        if (title) title.textContent = t('timer.paused_title');
+        if (resumeBtn) resumeBtn.textContent = t('timer.btn_resume');
     } else {
         if (container) {
             container.className = 'state-idle bg-surface-container-low border border-outline-variant rounded flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[500px] transition-all duration-500';
         }
         if (badge) {
-            badge.textContent = 'Aguardando';
+            badge.textContent = t('timer.status_idle');
             badge.className = 'font-label-md text-label-md text-secondary uppercase tracking-widest px-2.5 py-1 border border-secondary/40 bg-secondary-container/20 rounded-sm';
         }
     }
@@ -220,10 +221,10 @@ async function completeFocusPhase() {
     }
 
     if (autoIniciarDescanso) {
-        announceStatus(`Ciclo de foco concluído. Iniciando descanso de ${breakMinutes} minutos em Porto Seguro.`);
+        announceStatus(t('timer.a11y_focus_end_break', { mins: breakMinutes }));
         startBreakSession();
     } else {
-        announceStatus('Ciclo de foco concluído. Embarcação atracada e sites liberados.');
+        announceStatus(t('timer.a11y_focus_end'));
         finishBreakSession();
     }
 }
@@ -245,19 +246,19 @@ async function startVoyage() {
         updateTimerUI();
         saveTimerSessionState();
         startCountdownLoop();
-        announceStatus(`Iniciando travessia em Alto Mar. Temporizador de foco ativo por ${focusMinutes} minutos.`);
+        announceStatus(t('timer.a11y_start', { mins: focusMinutes }));
         focusElementSafe('btn-pause-voyage');
 
     } catch (erro) {
         console.error("[Nostak Error]", erro);
         await nostakAlert({
-            title: 'Atenção Navegador',
-            message: 'Não foi possível erguer as velas e bloquear os sites.\n\nDetalhes: ' + erro,
+            title: t('timer.alert_start_error_title'),
+            message: t('timer.alert_start_error_msg') + erro,
             type: 'error'
         });
 
         if (badge) {
-            badge.textContent = 'Erro de Permissão';
+            badge.textContent = t('timer.status_error');
             badge.className = 'font-label-md text-label-md text-error uppercase tracking-widest px-2.5 py-1 border border-error/50 bg-error-container/20 rounded-sm';
         }
     }
@@ -276,10 +277,10 @@ function startBreakSession() {
 
 function finishBreakSession() {
     const badge = document.getElementById('status-badge');
-    announceStatus('Período de descanso em Porto Seguro concluído. Embarcação pronta para zarpar.');
+    announceStatus(t('timer.a11y_break_end'));
     resetVoyage().then(() => {
         if (badge) {
-            badge.textContent = 'Viagem Concluída';
+            badge.textContent = t('timer.status_completed');
         }
     });
 }
@@ -298,7 +299,7 @@ async function pauseVoyage() {
         applyPhaseVisualState('paused');
         updateTimerUI();
         saveTimerSessionState();
-        announceStatus('Embarcação ancorada em Porto Seguro. Temporizador pausado.');
+        announceStatus(t('timer.a11y_pause'));
         focusElementSafe('btn-resume-voyage');
     } catch (erro) {
         console.error("[Nostak Error]", erro);
@@ -329,14 +330,14 @@ async function failVoyage() {
         }
 
         if (badge) {
-            badge.textContent = 'Interrompido';
+            badge.textContent = t('timer.interrupted_title');
             badge.className = 'font-label-md text-label-md text-error uppercase tracking-widest px-2.5 py-1 border border-error/50 bg-error-container/20 rounded-sm';
         }
         if (somAtivo) {
             playNauticalBell('voyage-failed');
         }
         updateDocumentTitle();
-        announceStatus('Foco interrompido. Bloqueios de sites desativados temporariamente.', 'assertive');
+        announceStatus(t('timer.a11y_interrupted'), 'assertive');
         focusElementSafe('btn-restart-voyage');
     } catch (erro) {
         console.error("[Nostak Error]", erro);
@@ -533,6 +534,12 @@ document.addEventListener('DOMContentLoaded', () => {
             closeCustomModal();
         });
     }
+
+    window.addEventListener('nostak:language-changed', () => {
+        applyPhaseVisualState(currentPhase);
+        updateTimerUI();
+        updateDocumentTitle();
+    });
 });
 
 // Torna as funções disponíveis globalmente para handlers inline

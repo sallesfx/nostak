@@ -4,6 +4,7 @@
  */
 
 import { invokeTauri, playNauticalBell } from './ipc.js';
+import { t, getLanguage, toggleLanguage, applyTranslations } from './i18n.js';
 
 // Helper para descobrir a rota atual
 function detectActiveRoute(element) {
@@ -171,10 +172,10 @@ function ensureFeedbackDialogMounted() {
 }
 
 export function nostakConfirm({
-    title = 'Confirmação',
+    title = t('dialog.confirm_title'),
     message = '',
-    confirmText = 'Confirmar',
-    cancelText = 'Cancelar',
+    confirmText = t('dialog.confirm_btn'),
+    cancelText = t('dialog.cancel_btn'),
     isDestructive = false
 } = {}) {
     const modal = ensureFeedbackDialogMounted();
@@ -214,9 +215,9 @@ export function nostakConfirm({
 }
 
 export function nostakAlert({
-    title = 'Atenção',
+    title = t('dialog.alert_title'),
     message = '',
-    confirmText = 'Entendido',
+    confirmText = t('dialog.understood_btn'),
     type = 'info'
 } = {}) {
     const modal = ensureFeedbackDialogMounted();
@@ -268,6 +269,8 @@ export async function openSettingsModal() {
     }
     if (!modal) return;
 
+    updateLanguageButtonLabel();
+
     try {
         const config = await invokeTauri('obter_configuracoes');
         if (config) {
@@ -297,6 +300,14 @@ export async function openSettingsModal() {
     openModalDialog(modal, '#settings-input-focus');
 }
 
+function updateLanguageButtonLabel() {
+    const lbl = document.getElementById('label-current-language');
+    if (lbl) {
+        const lang = getLanguage();
+        lbl.textContent = lang === 'en' ? 'English (EN)' : 'Português (PT)';
+    }
+}
+
 function showSettingsFeedback(msg, isError = false) {
     const feedbackEl = document.getElementById('settings-status-feedback');
     if (!feedbackEl) return;
@@ -317,29 +328,45 @@ function ensureSettingsModalMounted() {
     wrapper.setAttribute('aria-hidden', 'true');
     wrapper.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden';
     wrapper.innerHTML = `
-        <div class="bg-surface-container border border-outline-variant rounded-md p-6 sm:p-8 max-w-lg w-full mx-4 relative">
+        <div class="bg-surface-container border border-outline-variant rounded-md p-6 sm:p-8 max-w-lg w-full mx-4 relative max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-outline-variant pb-3 mb-6">
                 <div class="flex items-center gap-2 text-primary">
                     <span class="material-symbols-outlined text-lg" aria-hidden="true">tune</span>
-                    <h3 id="settings-dialog-title" class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Configurações da Embarcação</h3>
+                    <h3 id="settings-dialog-title" data-i18n="settings.dialog_title" class="font-headline-sm text-headline-sm uppercase tracking-widest font-bold">Configurações da Embarcação</h3>
                 </div>
-                <button type="button" id="btn-close-global-settings" aria-label="Fechar configurações" class="text-on-surface-variant hover:text-primary transition-colors">
+                <button type="button" id="btn-close-global-settings" data-i18n-aria="settings.close_aria" aria-label="Fechar configurações" class="text-on-surface-variant hover:text-primary transition-colors">
                     <span class="material-symbols-outlined text-xl" aria-hidden="true">close</span>
                 </button>
             </div>
 
             <form id="form-global-settings" class="space-y-6">
+                <!-- Seletor de Modo de Idioma -->
+                <div class="space-y-3">
+                    <h4 data-i18n="settings.section_language" class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Idioma / Language</h4>
+
+                    <div class="flex items-center justify-between p-3.5 bg-surface-container-low border border-outline-variant rounded-sm">
+                        <div class="pr-4">
+                            <div id="settings-title-language" data-i18n="settings.language_title" class="font-body-md text-sm text-on-surface font-medium">Idioma da Embarcação</div>
+                            <p data-i18n="settings.language_desc" class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Alternar entre Inglês e Português na interface.</p>
+                        </div>
+                        <button type="button" id="btn-toggle-language" class="px-3.5 py-2 rounded-sm border border-primary/50 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-label-md font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shrink-0">
+                            <span class="material-symbols-outlined text-base" aria-hidden="true">language</span>
+                            <span id="label-current-language">English</span>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Preferências de Áudio e Ciclo -->
                 <div class="space-y-3">
-                    <h4 class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Preferências de Travessia</h4>
+                    <h4 data-i18n="settings.section_preferences" class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Preferências de Travessia</h4>
 
                     <div class="flex items-center justify-between p-3.5 bg-surface-container-low border border-outline-variant rounded-sm">
                         <div class="pr-4">
                             <div class="font-body-md text-sm text-on-surface flex items-center gap-2">
-                                <span id="settings-title-sound">Sino Náutico (Alerta Sonoro)</span>
-                                <button type="button" id="btn-test-bell" class="text-[11px] font-label-sm text-primary hover:text-on-primary hover:bg-primary/20 px-2.5 py-1 rounded-sm border border-primary/30 uppercase tracking-wider transition-colors">Testar</button>
+                                <span id="settings-title-sound" data-i18n="settings.sound_title">Sino Náutico (Alerta Sonoro)</span>
+                                <button type="button" id="btn-test-bell" data-i18n="settings.sound_test" class="text-[11px] font-label-sm text-primary hover:text-on-primary hover:bg-primary/20 px-2.5 py-1 rounded-sm border border-primary/30 uppercase tracking-wider transition-colors">Testar</button>
                             </div>
-                            <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Tocar badalada suave ao concluir ciclos de foco e descanso.</p>
+                            <p data-i18n="settings.sound_desc" class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Tocar badalada suave ao concluir ciclos de foco e descanso.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
                             <input id="settings-toggle-sound" aria-labelledby="settings-title-sound" role="switch" aria-checked="true" class="sr-only toggle-input" type="checkbox" checked>
@@ -351,8 +378,8 @@ function ensureSettingsModalMounted() {
 
                     <div class="flex items-center justify-between p-3.5 bg-surface-container-low border border-outline-variant rounded-sm">
                         <div class="pr-4">
-                            <div id="settings-title-autobreak" class="font-body-md text-sm text-on-surface">Descanso Automático</div>
-                            <p class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Iniciar a contagem de Porto Seguro automaticamente ao finalizar o foco.</p>
+                            <div id="settings-title-autobreak" data-i18n="settings.autobreak_title" class="font-body-md text-sm text-on-surface">Descanso Automático</div>
+                            <p data-i18n="settings.autobreak_desc" class="font-label-sm text-xs text-on-surface-variant opacity-75 mt-0.5">Iniciar a contagem de Porto Seguro automaticamente ao finalizar o foco.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
                             <input id="settings-toggle-autobreak" aria-labelledby="settings-title-autobreak" role="switch" aria-checked="true" class="sr-only toggle-input" type="checkbox" checked>
@@ -365,14 +392,14 @@ function ensureSettingsModalMounted() {
 
                 <!-- Tempos Padrão -->
                 <div class="space-y-3">
-                    <h4 class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Calibração Padrão (Minutos)</h4>
+                    <h4 data-i18n="settings.section_times" class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Calibração Padrão (Minutos)</h4>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="p-3 bg-surface-container-low border border-outline-variant rounded-sm">
-                            <label for="settings-input-focus" class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5 cursor-pointer">Foco em Alto Mar</label>
+                            <label for="settings-input-focus" data-i18n="settings.focus_time" class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5 cursor-pointer">Foco em Alto Mar</label>
                             <input type="number" id="settings-input-focus" min="1" max="180" value="25" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-primary font-display-md text-lg font-bold focus:border-primary tabular-nums">
                         </div>
                         <div class="p-3 bg-surface-container-low border border-outline-variant rounded-sm">
-                            <label for="settings-input-break" class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5 cursor-pointer">Pausa em Porto</label>
+                            <label for="settings-input-break" data-i18n="settings.break_time" class="block text-xs uppercase font-label-sm text-on-surface-variant mb-1.5 cursor-pointer">Pausa em Porto</label>
                             <input type="number" id="settings-input-break" min="1" max="60" value="5" class="w-full bg-surface-container border border-outline-variant rounded-sm px-3 py-1.5 text-center text-secondary font-display-md text-lg font-bold focus:border-secondary tabular-nums">
                         </div>
                     </div>
@@ -380,15 +407,15 @@ function ensureSettingsModalMounted() {
 
                 <!-- Manutenção & Segurança -->
                 <div class="space-y-3">
-                    <h4 class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Manutenção e Segurança</h4>
+                    <h4 data-i18n="settings.section_maintenance" class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Manutenção e Segurança</h4>
                     <div class="flex flex-col sm:flex-row gap-3">
                         <button type="button" id="btn-emergency-unblock" class="flex-1 py-2.5 px-3 rounded-sm border border-secondary/40 text-secondary hover:bg-secondary-container/30 text-xs font-label-sm uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5">
                             <span class="material-symbols-outlined text-base">anchor</span>
-                            <span>Desbloquear Rede (Emergência)</span>
+                            <span data-i18n="settings.unblock_emergency">Desbloquear Rede (Emergência)</span>
                         </button>
                         <button type="button" id="btn-reset-progress" class="flex-1 py-2.5 px-3 rounded-sm border border-error/50 text-error hover:bg-error/10 text-xs font-label-sm uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5">
                             <span class="material-symbols-outlined text-base">restart_alt</span>
-                            <span>Zerar Progresso</span>
+                            <span data-i18n="settings.reset_progress">Zerar Progresso</span>
                         </button>
                     </div>
                 </div>
@@ -397,10 +424,10 @@ function ensureSettingsModalMounted() {
 
                 <!-- Rodapé de Ações -->
                 <div class="flex gap-3 pt-4 border-t border-outline-variant">
-                    <button type="button" id="btn-cancel-global-settings" class="flex-1 py-2.5 rounded-sm border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline text-xs uppercase tracking-wider font-label-md transition-colors">
+                    <button type="button" id="btn-cancel-global-settings" data-i18n="settings.btn_close" class="flex-1 py-2.5 rounded-sm border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-outline text-xs uppercase tracking-wider font-label-md transition-colors">
                         Fechar
                     </button>
-                    <button type="submit" class="flex-1 py-2.5 rounded-sm bg-primary-container text-on-primary font-bold text-xs uppercase tracking-widest hover:bg-tertiary transition-colors">
+                    <button type="submit" data-i18n="settings.btn_save" class="flex-1 py-2.5 rounded-sm bg-primary-container text-on-primary font-bold text-xs uppercase tracking-widest hover:bg-tertiary transition-colors">
                         Salvar Alterações
                     </button>
                 </div>
@@ -409,6 +436,9 @@ function ensureSettingsModalMounted() {
     `;
 
     document.body.appendChild(wrapper);
+
+    updateLanguageButtonLabel();
+    applyTranslations(wrapper);
 
     const closeModal = () => closeModalDialog(wrapper);
     bindModalKeyboardTrap(wrapper, closeModal);
@@ -419,6 +449,11 @@ function ensureSettingsModalMounted() {
 
     document.getElementById('btn-close-global-settings')?.addEventListener('click', closeModal);
     document.getElementById('btn-cancel-global-settings')?.addEventListener('click', closeModal);
+
+    document.getElementById('btn-toggle-language')?.addEventListener('click', () => {
+        toggleLanguage();
+        updateLanguageButtonLabel();
+    });
 
     document.getElementById('btn-test-bell')?.addEventListener('click', () => {
         playNauticalBell('focus-end');
@@ -435,30 +470,30 @@ function ensureSettingsModalMounted() {
     document.getElementById('btn-emergency-unblock')?.addEventListener('click', async () => {
         try {
             await invokeTauri('ancorar_porto_seguro');
-            showSettingsFeedback('Todos os sites foram liberados e o cache de rede foi restaurado.');
+            showSettingsFeedback(t('settings.feedback_unblocked'));
         } catch (err) {
-            showSettingsFeedback('Falha ao desbloquear rede: ' + err, true);
+            showSettingsFeedback(t('settings.feedback_unblock_error') + err, true);
         }
     });
 
     document.getElementById('btn-reset-progress')?.addEventListener('click', async () => {
         const confirmed = await nostakConfirm({
-            title: 'Redefinir Histórico de Viagem',
-            message: 'Todas as milhas acumuladas, conquistas e sessões concluídas serão apagadas permanentemente.\n\nTem certeza de que deseja zerar seu histórico?',
-            confirmText: 'Sim, Apagar Tudo',
-            cancelText: 'Cancelar',
+            title: t('settings.reset_confirm_title'),
+            message: t('settings.reset_confirm_msg'),
+            confirmText: t('settings.reset_confirm_btn'),
+            cancelText: t('settings.reset_cancel_btn'),
             isDestructive: true
         });
         if (!confirmed) return;
 
         try {
             const configAtualizada = await invokeTauri('resetar_progresso');
-            showSettingsFeedback('Histórico de progresso da jornada redefinido para zero.');
+            showSettingsFeedback(t('settings.feedback_reset_success'));
             if (configAtualizada) {
                 window.dispatchEvent(new CustomEvent('nostak:config-updated', { detail: configAtualizada }));
             }
         } catch (err) {
-            showSettingsFeedback('Erro ao zerar progresso: ' + err, true);
+            showSettingsFeedback(t('settings.feedback_reset_error') + err, true);
         }
     });
 
@@ -480,7 +515,7 @@ function ensureSettingsModalMounted() {
             }
             closeModal();
         } catch (err) {
-            showSettingsFeedback('Erro ao salvar configurações: ' + err, true);
+            showSettingsFeedback(t('settings.feedback_save_error') + err, true);
         }
     });
 }
@@ -496,6 +531,12 @@ export class NostakHeader extends HTMLElement {
         this.querySelector('#btn-header-settings')?.addEventListener('click', () => {
             openSettingsModal();
         });
+        window.addEventListener('nostak:language-changed', () => {
+            this.render();
+            this.querySelector('#btn-header-settings')?.addEventListener('click', () => {
+                openSettingsModal();
+            });
+        });
     }
 
     render() {
@@ -506,7 +547,7 @@ export class NostakHeader extends HTMLElement {
                     <span class="font-headline-md text-headline-md font-bold text-primary tracking-wide">Nostak</span>
                 </a>
                 <div class="flex items-center gap-4">
-                    <button type="button" class="material-symbols-outlined text-on-surface-variant hover:text-primary hover:bg-surface-container-high p-2 rounded transition-colors" title="Configurações" aria-label="Abrir configurações da embarcação" id="btn-header-settings">
+                    <button type="button" class="material-symbols-outlined text-on-surface-variant hover:text-primary hover:bg-surface-container-high p-2 rounded transition-colors" title="${t('nav.settings')}" aria-label="${t('nav.settings_aria')}" id="btn-header-settings">
                         settings
                     </button>
                 </div>
@@ -523,6 +564,10 @@ export class NostakSidebar extends HTMLElement {
     connectedCallback() {
         this.render();
         this.bindEvents();
+        window.addEventListener('nostak:language-changed', () => {
+            this.render();
+            this.bindEvents();
+        });
     }
 
     static get observedAttributes() {
@@ -558,32 +603,32 @@ export class NostakSidebar extends HTMLElement {
                     <img src="./logo_nostak.svg" alt="Logo Nostak" class="w-10 h-10 rounded-md border border-outline-variant/60 shrink-0" />
                     <div>
                         <h2 class="font-headline-md text-headline-md text-primary leading-none">Nostak</h2>
-                        <p class="text-on-surface-variant font-label-sm text-label-sm mt-1 uppercase tracking-wider opacity-80">Navegando pelo Foco</p>
+                        <p class="text-on-surface-variant font-label-sm text-label-sm mt-1 uppercase tracking-wider opacity-80">${t('nav.brand_subtitle')}</p>
                     </div>
                 </div>
                 <nav class="flex-grow flex flex-col gap-1">
                     <a class="${linkClasses('jornada')}" href="jornada.html">
-                        <span class="material-symbols-outlined">route</span> Jornada
+                        <span class="material-symbols-outlined">route</span> ${t('nav.journey')}
                     </a>
                     <a class="${linkClasses('temporizador')}" href="index.html">
-                        <span class="material-symbols-outlined">timer</span> Temporizador
+                        <span class="material-symbols-outlined">timer</span> ${t('nav.timer')}
                     </a>
                     <a class="${linkClasses('listabloqueio')}" href="listabloqueio.html">
-                        <span class="material-symbols-outlined">block</span> Lista de Bloqueio
+                        <span class="material-symbols-outlined">block</span> ${t('nav.blocklist')}
                     </a>
                 </nav>
                 <div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-1">
                     <button type="button" id="btn-sidebar-settings" class="w-full text-left flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors font-label-sm text-label-sm">
-                        <span class="material-symbols-outlined text-[20px]">tune</span> Configurações
+                        <span class="material-symbols-outlined text-[20px]">tune</span> ${t('nav.settings')}
                     </button>
                     <div class="pt-3 mt-1 border-t border-outline-variant/60 flex items-center justify-center gap-6">
-                        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="https://nostak.app/" target="_blank" rel="noopener noreferrer" title="Site Oficial — nostak.app">
+                        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="https://nostak.app/" target="_blank" rel="noopener noreferrer" title="${t('nav.website_title')}">
                             <span class="material-symbols-outlined text-[18px]">language</span>
-                            <span>Site</span>
+                            <span>${t('nav.website')}</span>
                         </a>
-                        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="https://www.instagram.com/sallesfx" target="_blank" rel="noopener noreferrer" title="Instagram — @sallesfx">
+                        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="https://www.instagram.com/sallesfx" target="_blank" rel="noopener noreferrer" title="${t('nav.instagram_title')}">
                             <span class="material-symbols-outlined text-[18px]">photo_camera</span>
-                            <span>Instagram</span>
+                            <span>${t('nav.instagram')}</span>
                         </a>
                     </div>
                 </div>
@@ -599,6 +644,9 @@ export class NostakSidebar extends HTMLElement {
 export class NostakMobileNav extends HTMLElement {
     connectedCallback() {
         this.render();
+        window.addEventListener('nostak:language-changed', () => {
+            this.render();
+        });
     }
 
     static get observedAttributes() {
@@ -624,15 +672,15 @@ export class NostakMobileNav extends HTMLElement {
             <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container border-t border-outline-variant flex justify-around py-2 px-2 z-50">
                 <a class="${linkClasses('jornada')}" href="jornada.html">
                     <span class="material-symbols-outlined">route</span>
-                    <span class="text-[10px] font-label-md mt-0.5">Jornada</span>
+                    <span class="text-[10px] font-label-md mt-0.5">${t('nav.journey')}</span>
                 </a>
                 <a class="${linkClasses('temporizador')}" href="index.html">
                     <span class="material-symbols-outlined">timer</span>
-                    <span class="text-[10px] font-label-md mt-0.5">Tempo</span>
+                    <span class="text-[10px] font-label-md mt-0.5">${t('nav.timer_short')}</span>
                 </a>
                 <a class="${linkClasses('listabloqueio')}" href="listabloqueio.html">
                     <span class="material-symbols-outlined">block</span>
-                    <span class="text-[10px] font-label-md mt-0.5">Bloqueio</span>
+                    <span class="text-[10px] font-label-md mt-0.5">${t('nav.blocklist_short')}</span>
                 </a>
             </nav>
         `;
@@ -648,4 +696,11 @@ if (!customElements.get('nostak-sidebar')) {
 }
 if (!customElements.get('nostak-mobile-nav')) {
     customElements.define('nostak-mobile-nav', NostakMobileNav);
+}
+
+// Inicializa traduções no carregamento do documento
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => applyTranslations());
+} else {
+    applyTranslations();
 }

@@ -1,7 +1,9 @@
 import { invokeTauri } from './ipc.js';
 import { nostakAlert } from './components.js';
+import { t, getLanguage } from './i18n.js';
 
 let currentSites = [];
+let lastRenderedBlockConfig = null;
 
 function sanitizeDomain(raw) {
     if (!raw) return '';
@@ -19,28 +21,29 @@ function sanitizeDomain(raw) {
 function validateDomain(raw) {
     const trimmed = (raw || '').trim();
     if (!trimmed) {
-        return 'Digite o endereço de um site para bloquear.';
+        return t('blocklist.val_empty');
     }
     const clean = sanitizeDomain(trimmed);
     if (!clean) {
-        return 'Endereço de domínio inválido.';
+        return t('blocklist.val_invalid');
     }
     if (clean.includes(' ')) {
-        return 'O endereço não pode ter espaços em branco.';
+        return t('blocklist.val_spaces');
     }
     // Exige TLD final alfabético com pelo menos 2 caracteres (ex: .com, .br, .tech, .globo)
     const domainRegex = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;
     if (!domainRegex.test(clean)) {
-        return 'Formato inválido. Digite um domínio como: youtube.com ou twitter.com';
+        return t('blocklist.val_format');
     }
     if (currentSites.includes(clean)) {
-        return `O domínio "${clean}" já está bloqueado na sua lista.`;
+        return t('blocklist.val_exists', { domain: clean });
     }
     return null;
 }
 
 export function renderConfiguracoes(config) {
     if (!config) return;
+    lastRenderedBlockConfig = config;
 
     // Atualiza os interruptores das categorias
     const ativas = config.categorias_ativas || [];
@@ -55,7 +58,7 @@ export function renderConfiguracoes(config) {
             input.setAttribute('aria-checked', String(isAtiva));
         }
         if (statusLabel) {
-            statusLabel.textContent = isAtiva ? 'Ativado' : 'Desativado';
+            statusLabel.textContent = isAtiva ? t('blocklist.status_enabled') : t('blocklist.status_disabled');
             statusLabel.classList.toggle('text-on-surface-variant', !isAtiva);
             statusLabel.classList.toggle('text-primary', isAtiva);
         }
@@ -69,7 +72,7 @@ export function renderConfiguracoes(config) {
     const emptyState = document.getElementById('custom-sites-empty');
 
     if (countBadge) {
-        countBadge.textContent = `${sites.length} ${sites.length === 1 ? 'Ativo' : 'Ativos'}`;
+        countBadge.textContent = t('blocklist.custom_count', { count: sites.length });
     }
 
     if (listContainer) {
@@ -81,12 +84,14 @@ export function renderConfiguracoes(config) {
             sites.forEach(site => {
                 const item = document.createElement('div');
                 item.className = 'flex items-center justify-between bg-surface-container-low border border-outline-variant rounded-sm px-4 py-3 group hover:border-outline transition-colors';
+                const removeTitle = getLanguage() === 'en' ? 'Remove Siren' : 'Remover Sereia';
+                const removeAria = t('blocklist.btn_remove_aria', { domain: site });
                 item.innerHTML = `
                     <div class="flex items-center gap-3 overflow-hidden">
                         <span class="material-symbols-outlined text-secondary text-xl">block</span>
                         <span class="font-body-md text-sm text-on-surface truncate">${site}</span>
                     </div>
-                    <button type="button" class="btn-remove-site text-on-surface-variant hover:text-error hover:bg-error/10 w-7 h-7 flex items-center justify-center transition-colors rounded-sm shrink-0" data-site="${site}" title="Remover Sereia" aria-label="Remover sereia ${site} da lista de bloqueio">
+                    <button type="button" class="btn-remove-site text-on-surface-variant hover:text-error hover:bg-error/10 w-7 h-7 flex items-center justify-center transition-colors rounded-sm shrink-0" data-site="${site}" title="${removeTitle}" aria-label="${removeAria}">
                         <span class="material-symbols-outlined text-lg" aria-hidden="true">close</span>
                     </button>
                 `;
@@ -236,5 +241,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    window.addEventListener('nostak:language-changed', () => {
+        if (lastRenderedBlockConfig) {
+            renderConfiguracoes(lastRenderedBlockConfig);
+        }
+    });
 });
 

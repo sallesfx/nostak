@@ -1,28 +1,32 @@
 import { invokeTauri } from './ipc.js';
+import { t, getLanguage } from './i18n.js';
+
+let lastRenderedProgress = null;
 
 /**
  * Calcula o setor marítimo atual e a coordenada no SVG com base nas milhas (minutos focados).
  */
 function getMaritimeSector(miles) {
     if (miles >= 600) {
-        return { name: 'Setor 05: Arquipélago da Maestria', x: 750, y: 50 };
+        return { name: t('journey.sector_5'), x: 750, y: 50 };
     }
     if (miles >= 360) {
-        return { name: 'Setor 04: Mar de Silêncio', x: 550, y: 80 };
+        return { name: t('journey.sector_4'), x: 550, y: 80 };
     }
     if (miles >= 180) {
-        return { name: 'Setor 03: Águas de Bronze', x: 400, y: 50 };
+        return { name: t('journey.sector_3'), x: 400, y: 50 };
     }
     if (miles >= 60) {
-        return { name: 'Setor 02: Estreito da Disciplina', x: 250, y: 20 };
+        return { name: t('journey.sector_2'), x: 250, y: 20 };
     }
-    return { name: 'Setor 01: Baía da Partida', x: 90, y: 42 };
+    return { name: t('journey.sector_1'), x: 90, y: 42 };
 }
 
 /**
  * Atualiza o painel lateral "Status da Viagem" e os cards rápidos na index.html
  */
 export function renderDashboardProgress(progresso = {}) {
+    lastRenderedProgress = progresso;
     const totalMinutos = progresso.total_minutos_foco || 0;
     const concluidas = progresso.sessoes_concluidas || 0;
     const interrompidas = progresso.sessoes_interrompidas || 0;
@@ -40,7 +44,7 @@ export function renderDashboardProgress(progresso = {}) {
     if (fuelBar) fuelBar.style.width = `${fuelPercent}%`;
     if (fuelProgressbar) {
         fuelProgressbar.setAttribute('aria-valuenow', String(fuelPercent));
-        fuelProgressbar.setAttribute('aria-valuetext', `${fuelPercent}% de combustível mental`);
+        fuelProgressbar.setAttribute('aria-valuetext', t('metrics.fuel_valuetext', { value: fuelPercent }));
     }
 
     // 2. Distância Percorrida (meta de ciclo de 120nm por setor)
@@ -52,25 +56,25 @@ export function renderDashboardProgress(progresso = {}) {
     if (distBar) distBar.style.width = `${sectorProgress}%`;
     if (distProgressbar) {
         distProgressbar.setAttribute('aria-valuenow', String(sectorProgress));
-        distProgressbar.setAttribute('aria-valuetext', `${totalMinutos} milhas náuticas percorridas`);
+        distProgressbar.setAttribute('aria-valuetext', t('metrics.distance_valuetext', { value: totalMinutos }));
     }
 
     // 3. Vento de Popa (estabilidade de foco)
     const windLabel = document.getElementById('metric-wind-label');
     const windBar = document.getElementById('metric-wind-bar');
     const windProgressbar = document.getElementById('progressbar-wind');
-    let windText = 'Calmo';
+    let windText = t('metrics.wind_calm');
     let windWidth = 50;
 
     if (totalTentativas > 0) {
         if (fuelPercent >= 85) {
-            windText = 'Forte';
+            windText = t('metrics.wind_strong');
             windWidth = 95;
         } else if (fuelPercent >= 60) {
-            windText = 'Estável';
+            windText = t('metrics.wind_steady');
             windWidth = 75;
         } else {
-            windText = 'Turbulento';
+            windText = t('metrics.wind_calm');
             windWidth = 35;
         }
     }
@@ -78,7 +82,7 @@ export function renderDashboardProgress(progresso = {}) {
     if (windBar) windBar.style.width = `${windWidth}%`;
     if (windProgressbar) {
         windProgressbar.setAttribute('aria-valuenow', String(windWidth));
-        windProgressbar.setAttribute('aria-valuetext', `Vento ${windText}`);
+        windProgressbar.setAttribute('aria-valuetext', `${t('metrics.wind')}: ${windText}`);
     }
 
     // 4. Cards de Estatísticas Rápidas (Horas Foco & Total de Milhas)
@@ -97,10 +101,12 @@ export function renderDashboardProgress(progresso = {}) {
  * Atualiza a página "A Jornada do Navegador" (jornada.html)
  */
 export function renderJourneyPage(progresso = {}) {
+    lastRenderedProgress = progresso;
     const totalMinutos = progresso.total_minutos_foco || 0;
     const concluidas = progresso.sessoes_concluidas || 0;
     const maiorSessao = progresso.maior_sessao_minutos || 0;
     const sereias = progresso.sereias_silenciadas || 0;
+    const isEn = getLanguage() === 'en';
 
     // 1. Setor e Posição no Mapa SVG
     const sector = getMaritimeSector(totalMinutos);
@@ -121,16 +127,18 @@ export function renderJourneyPage(progresso = {}) {
     if (markerLabel) {
         markerLabel.setAttribute('x', String(sector.x + 15));
         markerLabel.setAttribute('y', String(sector.y + 15));
+        markerLabel.textContent = t('journey.marker_you');
     }
 
     // 2. Contadores Principais (Milhas Náuticas de Foco e Distrações Bloqueadas)
     const milesEl = document.getElementById('journey-total-miles');
     const sirensEl = document.getElementById('journey-total-sirens');
+    const locale = isEn ? 'en-US' : 'pt-BR';
     if (milesEl) {
-        milesEl.innerHTML = `${totalMinutos.toLocaleString('pt-BR')} <span class="text-headline-sm font-headline-sm opacity-60">min</span>`;
+        milesEl.innerHTML = `${totalMinutos.toLocaleString(locale)} <span class="text-headline-sm font-headline-sm opacity-60">${t('journey.unit_min')}</span>`;
     }
     if (sirensEl) {
-        sirensEl.innerHTML = `${sereias.toLocaleString('pt-BR')} <span class="text-headline-sm font-headline-sm opacity-60">sereias</span>`;
+        sirensEl.innerHTML = `${sereias.toLocaleString(locale)} <span class="text-headline-sm font-headline-sm opacity-60">${t('journey.unit_sirens')}</span>`;
     }
 
     // 3. Conquista 1: Âncora de Aço (Meta: sessão ininterrupta de 90 min)
@@ -139,15 +147,15 @@ export function renderJourneyPage(progresso = {}) {
     const anchorProgressbar = document.getElementById('progressbar-mastery-anchor');
     const anchorMeta = document.getElementById('mastery-anchor-meta');
     const anchorPct = Math.min(100, Math.round((maiorSessao / 90) * 100));
-    const anchorLvl = maiorSessao >= 90 ? 'COMPLETO' : `NÍVEL ${Math.min(4, Math.floor(maiorSessao / 20) + (maiorSessao > 0 ? 1 : 0))}`;
+    const anchorLvl = maiorSessao >= 90 ? (isEn ? 'COMPLETE' : 'COMPLETO') : t('journey.badge_level', { level: Math.min(4, Math.floor(maiorSessao / 20) + (maiorSessao > 0 ? 1 : 0)) });
     if (anchorBadge) anchorBadge.textContent = anchorLvl;
     if (anchorBar) anchorBar.style.width = `${anchorPct}%`;
     if (anchorProgressbar) {
         const val = Math.min(90, maiorSessao);
         anchorProgressbar.setAttribute('aria-valuenow', String(val));
-        anchorProgressbar.setAttribute('aria-valuetext', `${maiorSessao} de 90 minutos ininterruptos`);
+        anchorProgressbar.setAttribute('aria-valuetext', `${maiorSessao} / 90 ${t('journey.unit_min')}`);
     }
-    if (anchorMeta) anchorMeta.textContent = `Recorde atual: ${maiorSessao} / 90 min`;
+    if (anchorMeta) anchorMeta.textContent = t('journey.card1_meta', { curr: maiorSessao });
 
     // 4. Conquista 2: Canto Silenciado (Meta: 50 sereias silenciadas)
     const horizonBadge = document.getElementById('mastery-horizon-badge');
@@ -155,15 +163,15 @@ export function renderJourneyPage(progresso = {}) {
     const horizonProgressbar = document.getElementById('progressbar-mastery-horizon');
     const horizonMeta = document.getElementById('mastery-horizon-meta');
     const horizonPct = Math.min(100, Math.round((sereias / 50) * 100));
-    const horizonLvl = sereias >= 50 ? 'COMPLETO' : `NÍVEL ${Math.min(4, Math.floor(sereias / 12) + (sereias > 0 ? 1 : 0))}`;
+    const horizonLvl = sereias >= 50 ? (isEn ? 'COMPLETE' : 'COMPLETO') : t('journey.badge_level', { level: Math.min(4, Math.floor(sereias / 12) + (sereias > 0 ? 1 : 0)) });
     if (horizonBadge) horizonBadge.textContent = horizonLvl;
     if (horizonBar) horizonBar.style.width = `${horizonPct}%`;
     if (horizonProgressbar) {
         const val = Math.min(50, sereias);
         horizonProgressbar.setAttribute('aria-valuenow', String(val));
-        horizonProgressbar.setAttribute('aria-valuetext', `${sereias} de 50 sereias silenciadas`);
+        horizonProgressbar.setAttribute('aria-valuetext', `${sereias} / 50 ${t('journey.unit_sirens')}`);
     }
-    if (horizonMeta) horizonMeta.textContent = `${sereias} / 50 sereias silenciadas`;
+    if (horizonMeta) horizonMeta.textContent = t('journey.card2_meta', { curr: sereias });
 
     // 5. Conquista 3: Navegador Mestre (Meta: 10 viagens concluídas)
     const masterBadge = document.getElementById('mastery-master-badge');
@@ -171,15 +179,15 @@ export function renderJourneyPage(progresso = {}) {
     const masterProgressbar = document.getElementById('progressbar-mastery-master');
     const masterMeta = document.getElementById('mastery-master-meta');
     const masterPct = Math.min(100, Math.round((concluidas / 10) * 100));
-    const masterLvl = concluidas >= 10 ? 'COMPLETO' : `NÍVEL ${Math.min(4, Math.floor(concluidas / 2) + (concluidas > 0 ? 1 : 0))}`;
+    const masterLvl = concluidas >= 10 ? (isEn ? 'COMPLETE' : 'COMPLETO') : t('journey.badge_level', { level: Math.min(4, Math.floor(concluidas / 2) + (concluidas > 0 ? 1 : 0)) });
     if (masterBadge) masterBadge.textContent = masterLvl;
     if (masterBar) masterBar.style.width = `${masterPct}%`;
     if (masterProgressbar) {
         const val = Math.min(10, concluidas);
         masterProgressbar.setAttribute('aria-valuenow', String(val));
-        masterProgressbar.setAttribute('aria-valuetext', `${concluidas} de 10 viagens concluídas`);
+        masterProgressbar.setAttribute('aria-valuetext', `${concluidas} / 10`);
     }
-    if (masterMeta) masterMeta.textContent = `${concluidas} / 10 viagens concluídas`;
+    if (masterMeta) masterMeta.textContent = t('journey.card3_meta', { curr: concluidas });
 }
 
 // Se estivermos na página jornada.html, carrega automaticamente ao iniciar
@@ -218,6 +226,16 @@ window.addEventListener('nostak:config-updated', (e) => {
             renderJourneyPage(e.detail.progresso);
         }
         renderDashboardProgress(e.detail.progresso);
+    }
+});
+
+// Atualiza em tempo real ao alterar o idioma
+window.addEventListener('nostak:language-changed', () => {
+    if (lastRenderedProgress) {
+        if (document.getElementById('journey-total-miles')) {
+            renderJourneyPage(lastRenderedProgress);
+        }
+        renderDashboardProgress(lastRenderedProgress);
     }
 });
 
