@@ -351,11 +351,9 @@ pub fn run() {
                 api.prevent_close();
                 let _ = window.hide();
             }
-            tauri::WindowEvent::Destroyed => {
-                if hosts_manager::has_active_blocks() {
-                    println!("[Nostak] Janela fechada durante sessão ativa. Removendo bloqueios de segurança...");
-                    let _ = hosts_manager::unblock_domains();
-                }
+            tauri::WindowEvent::Destroyed if hosts_manager::has_active_blocks() => {
+                println!("[Nostak] Janela fechada durante sessão ativa. Removendo bloqueios de segurança...");
+                let _ = hosts_manager::unblock_domains();
             }
             _ => {}
         })
