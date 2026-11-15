@@ -622,11 +622,11 @@ export class NostakSidebar extends HTMLElement {
                         <span class="material-symbols-outlined text-[20px]">tune</span> ${t('nav.settings')}
                     </button>
                     <div class="pt-3 mt-1 border-t border-outline-variant/60 flex items-center justify-center gap-6">
-                        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="https://nostak.app/" target="_blank" rel="noopener noreferrer" title="${t('nav.website_title')}">
+                        <a data-external-link class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="https://nostak.app/" target="_blank" rel="noopener noreferrer" title="${t('nav.website_title')}">
                             <span class="material-symbols-outlined text-[18px]">language</span>
                             <span>${t('nav.website')}</span>
                         </a>
-                        <a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="https://www.instagram.com/sallesfx" target="_blank" rel="noopener noreferrer" title="${t('nav.instagram_title')}">
+                        <a data-external-link class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-sm text-label-sm" href="https://www.instagram.com/nostak.app" target="_blank" rel="noopener noreferrer" title="${t('nav.instagram_title')}">
                             <span class="material-symbols-outlined text-[18px]">photo_camera</span>
                             <span>${t('nav.instagram')}</span>
                         </a>
@@ -634,6 +634,20 @@ export class NostakSidebar extends HTMLElement {
                 </div>
             </aside>
         `;
+
+        this.querySelectorAll('a[data-external-link]').forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = link.href;
+                if (window.__TAURI__?.core?.invoke) {
+                    window.__TAURI__.core.invoke('open_external_url', { url }).catch((err) => {
+                        console.error('Erro ao abrir link externo:', err);
+                    });
+                } else {
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                }
+            });
+        });
     }
 }
 

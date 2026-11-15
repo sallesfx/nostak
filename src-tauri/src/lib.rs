@@ -219,6 +219,39 @@ pub fn register_signal_handlers() {
     });
 }
 
+#[tauri::command]
+fn open_external_url(url: String) -> Result<(), String> {
+    if !url.starts_with("https://") && !url.starts_with("http://") {
+        return Err("URL inválida: apenas http:// e https:// são permitidos.".to_string());
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        std::process::Command::new("xdg-open")
+            .arg(&url)
+            .spawn()
+            .map_err(|e| format!("Falha ao abrir URL no Linux: {}", e))?;
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open")
+            .arg(&url)
+            .spawn()
+            .map_err(|e| format!("Falha ao abrir URL no macOS: {}", e))?;
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("cmd")
+            .args(["/C", "start", "", &url])
+            .spawn()
+            .map_err(|e| format!("Falha ao abrir URL no Windows: {}", e))?;
+    }
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -286,7 +319,8 @@ pub fn run() {
             salvar_template,
             remover_template,
             registrar_sessao_concluida,
-            registrar_sessao_interrompida
+            registrar_sessao_interrompida,
+            open_external_url
         ])
         .run(tauri::generate_context!())
         .expect("Erro ao executar a aplicação Tauri");

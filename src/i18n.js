@@ -28,7 +28,7 @@ export const translations = {
             website: 'Site',
             website_title: 'Site Oficial — nostak.app',
             instagram: 'Instagram',
-            instagram_title: 'Instagram — @sallesfx'
+            instagram_title: 'Instagram — @nostak.app'
         },
         settings: {
             dialog_title: 'Configurações da Embarcação',
@@ -274,7 +274,7 @@ export const translations = {
             website: 'Website',
             website_title: 'Official Website — nostak.app',
             instagram: 'Instagram',
-            instagram_title: 'Instagram — @sallesfx'
+            instagram_title: 'Instagram — @nostak.app'
         },
         settings: {
             dialog_title: 'Vessel Settings',
