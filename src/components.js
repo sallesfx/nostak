@@ -718,3 +718,42 @@ if (document.readyState === 'loading') {
 } else {
     applyTranslations();
 }
+
+async function checkForUpdates() {
+    if (!window.__TAURI__?.core?.invoke) return;
+    if (sessionStorage.getItem('nostak_update_checked')) return;
+    sessionStorage.setItem('nostak_update_checked', '1');
+
+    try {
+        const update = await window.__TAURI__.core.invoke('plugin:updater|check');
+        if (!update || !update.rid) return;
+
+        const banner = document.createElement('div');
+        banner.className = 'fixed bottom-4 right-4 z-50 bg-surface-container-high border border-outline-variant text-on-surface px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 text-sm';
+        banner.innerHTML = `
+            <span>Nova versão disponível: <strong>v${update.version}</strong></span>
+            <button type="button" id="btn-update-now" class="px-3 py-1 bg-primary text-on-primary rounded font-medium hover:opacity-90 transition-opacity">Atualizar</button>
+            <button type="button" id="btn-update-later" class="px-2 py-1 text-on-surface-variant hover:text-on-surface">Depois</button>
+        `;
+        document.body.appendChild(banner);
+
+        banner.querySelector('#btn-update-later').addEventListener('click', () => banner.remove());
+        banner.querySelector('#btn-update-now').addEventListener('click', async () => {
+            const btn = banner.querySelector('#btn-update-now');
+            btn.disabled = true;
+            btn.textContent = 'Baixando...';
+            try {
+                await window.__TAURI__.core.invoke('plugin:updater|download_and_install', { rid: update.rid });
+                await window.__TAURI__.core.invoke('plugin:process|restart');
+            } catch (err) {
+                console.error('Erro ao atualizar:', err);
+                btn.disabled = false;
+                btn.textContent = 'Tentar novamente';
+            }
+        });
+    } catch (err) {
+        console.debug('Verificação de atualização ignorada:', err);
+    }
+}
+
+checkForUpdates();
