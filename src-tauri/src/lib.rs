@@ -267,7 +267,11 @@ pub fn run() {
                 .expect("Falha crítica ao carregar configuração inicial do Nostak");
 
             // Registra o AppState thread-safe associado ao caminho de persistência canônico
-            use tauri::Manager;
+            use tauri::{
+    menu::{Menu, MenuItem},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    Manager,
+};
             app.manage(state::AppState::new_with_path(initial_config, config_path));
 
             // Auto-cura de consistência (SRE Crash Recovery)
@@ -291,15 +295,67 @@ pub fn run() {
                 }
             }
 
+            let show_item = MenuItem::with_id(app, "show", "Abrir Nostak", true, None::<&str>)?;
+            let quit_item = MenuItem::with_id(app, "quit", "Sair", true, None::<&str>)?;
+            let tray_menu = Menu::with_items(app, &[&show_item, &quit_item])?;
+
+            let mut tray_builder = TrayIconBuilder::new()
+                .tooltip("Nostak")
+                .menu(&tray_menu)
+                .show_menu_on_left_click(false)
+                .on_menu_event(|app, event| match event.id.as_ref() {
+                    "show" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.unminimize();
+                            let _ = window.set_focus();
+                        }
+                    }
+                    "quit" => {
+                        if hosts_manager::has_active_blocks() {
+                            println!("[Nostak] Encerrando pela bandeja. Removendo bloqueios de segurança...");
+                            let _ = hosts_manager::unblock_domains();
+                        }
+                        app.exit(0);
+                    }
+                    _ => {}
+                })
+                .on_tray_icon_event(|tray, event| {
+                    if let TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        ..
+                    } = event
+                    {
+                        let app = tray.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.unminimize();
+                            let _ = window.set_focus();
+                        }
+                    }
+                });
+
+            if let Some(icon) = app.default_window_icon() {
+                tray_builder = tray_builder.icon(icon.clone());
+            }
+
+            tray_builder.build(app)?;
+
             Ok(())
         })
-        .on_window_event(|_window, event| {
-            if let tauri::WindowEvent::CloseRequested { .. } | tauri::WindowEvent::Destroyed = event {
+        .on_window_event(|window, event| match event {
+            tauri::WindowEvent::CloseRequested { api, .. } => {
+                api.prevent_close();
+                let _ = window.hide();
+            }
+            tauri::WindowEvent::Destroyed => {
                 if hosts_manager::has_active_blocks() {
                     println!("[Nostak] Janela fechada durante sessão ativa. Removendo bloqueios de segurança...");
                     let _ = hosts_manager::unblock_domains();
                 }
             }
+            _ => {}
         })
         .invoke_handler(tauri::generate_handler![
             zarpar_jornada,
